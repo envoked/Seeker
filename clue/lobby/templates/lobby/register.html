@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form action="/lobby/register/" method="POST">
+    <h1>Register</h1>
+    {{ register_form.as_p }}
+    <input type="submit" value="Register" />
+</form>
+{% endblock %}

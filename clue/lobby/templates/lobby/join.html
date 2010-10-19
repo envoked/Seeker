@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<table>
+    <tr>
+        <th>Lobby</th>
+        <th>Creator</th>
+        <th>Created</th>
+    </tr>
+{% for lobby in lobbies %}
+    <tr>
+        <td><a href="/lobby/{{ lobby.id }}/">{{ lobby.name }}</a></td>
+        <td>{{ lobby.creator.username }}</td>
+        <td>{{ lobby.created }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

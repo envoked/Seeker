@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if message %}
+    <h3>{{ message }}</h3>
+{% endif %}
+<form action="/lobby/login/" method="POST">
+    {% csrf_token %}
+    <label>Username</label> <input name="username" />
+    <label>Password</label> <input name="password" />
+    <input type="submit" />
+</form>
+{% endblock %}
