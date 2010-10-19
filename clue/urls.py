@@ -8,7 +8,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Example:
     (r'^lobby/', include('clue.lobby.urls')),
-
+    (r'^accounts/login/$', 'django.contrib.auth.views.login'),
+    (r'^accounts/logout/$', 'django.contrib.auth.views.logout'),
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),

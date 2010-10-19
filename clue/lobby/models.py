@@ -18,3 +18,5 @@ class Message(models.Model):
     content = models.TextField()
     sender = models.ForeignKey(User, related_name='sent')
     to = models.ForeignKey(User, related_name='received')
+    created = models.DateTimeField(auto_now_add=True)
+    lobby = models.ForeignKey(Lobby, related_name='messages')

@@ -1,22 +1,26 @@
+{% load extras %}
+
 <html>
     <head>
         <title>Who's Clue - {% block title %}{% endblock %}</title>
         <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
-        <script src="{{ assets }}/main.js"></script>
-        <link rel="stylesheet" href="{{ assets }}/main.css" />
+        <script src="{% media_url %}/main.js"></script>
+        <script src="{% media_url %}/lobby/lobby.js"></script>
+        <link rel="stylesheet" href="{% media_url %}/main.css" />
     </head>
     <body>
         <div class="header">
             {% if user.id %}
                 Logged in as {{ user.username }}
-                <a class="logout" href="/lobby/logout">Logout</a>
+                <a class="logout" href="/accounts/logout/">Logout</a>
             {% else %}
-                <a class="logout" href="/lobby/login">Login</a>
+                <a class="logout" href="/accounts/login/">Login</a>
             {% endif %}
         </div>
-        
+        <div class="content">
         {% block content %}
         
         {% endblock %}
+        </div>
     </body>
 </html>

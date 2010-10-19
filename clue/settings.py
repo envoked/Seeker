@@ -50,7 +50,7 @@ MEDIA_ROOT = '/www/media/clue/'
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://127.0.0.1/media/clue/'
+MEDIA_URL = 'http://localhost/media/clue'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -87,8 +87,8 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     '/Developer/lb/trunk/templates',
-    '/Developer/whoclue-django/clue/templates/',
-    '/Developer/whoclue-django/clue/lobby/templates/'
+    '/Developer/whoclue-2/clue/templates/',
+    '/Developer/whoclue-2/clue/lobby/templates/'
 )
 
 INSTALLED_APPS = (

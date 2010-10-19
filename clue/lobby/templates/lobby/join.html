@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+<h3>Recent Lobbies</h3>
 <table>
     <tr>
         <th>Lobby</th>
@@ -16,5 +16,7 @@
     </tr>
 {% endfor %}
 </table>
+
+<a href="/lobby/create/">Create a Lobby</a>
 
 {% endblock %}

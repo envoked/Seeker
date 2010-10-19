@@ -4,22 +4,32 @@ from django.http import *
 from django.shortcuts import render_to_response,  get_object_or_404
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import *
 from lobby import *
 from lobby.models import *
+from lb.util import expand
 
 context = {
     'assets': settings.MEDIA_URL
 }
 
+@render_to('lobby/index.html')
+def index(request):
+    return locals()
+
+@login_required
+@render_to('lobby/join.html')
 def join(request):
     context['user'] = request.user
     one_hour_ago = datetime.datetime.now() - timedelta(hours=1)
     lobbies = Lobby.objects.filter(created__gte=one_hour_ago).all()
     
     context.update(locals())
-    return render_to_response('lobby/join.html', context)
-    
+    return context
+
+@login_required
+@render_to('lobby/create.html')
 def create(request):
     context['user'] = request.user
     
@@ -32,13 +42,15 @@ def create(request):
         return HttpResponseRedirect('/lobby/%d/' % new_lobby.id)
     else:
         context['create_lobby_form'] = CreateLobbyForm()
-    return render_to_response('lobby/create.html', context)
+        
+    return context
     
+@login_required
 @render_to('lobby/lobby.html')
 def lobby(request, id):
     lobby = Lobby.objects.get(id=id)
     
-    if request.user != lobby.creator:
+    if request.user.is_authenticated():
         member = Member(
             lobby = lobby,
             user = request.user
@@ -47,6 +59,10 @@ def lobby(request, id):
             member.save()
         except:
             pass
+        
+    send_message_form = SendMessageForm({'lobby': lobby.id, 'content':" "})
+    lobby_json = json.dumps(expand(lobby))
+    user_json = json.dumps(expand(request.user))
     return locals()
     #return render_to_response(request, 'lobby/lobby.html', locals())
     

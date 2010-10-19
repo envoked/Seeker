@@ -1,6 +1,12 @@
 from django import forms
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.contrib.auth.models import User
+
+try:
+    import simplejson as json
+except:
+    import json
 
 def render_to(template_name):
     def renderer(func):
@@ -21,4 +27,9 @@ class CreateUserForm(forms.Form):
     
 class CreateLobbyForm(forms.Form):
     name = forms.CharField(max_length=255)
+    
+class SendMessageForm(forms.Form):
+    content = forms.CharField(max_length=1000, widget=forms.Textarea)
+    to = forms.ChoiceField(choices=(), required=False)
+    lobby = forms.IntegerField(widget=forms.HiddenInput)
     
