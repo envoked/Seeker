@@ -78,7 +78,7 @@ def register(request):
             )
             new_user.backend = 'django.contrib.auth.backends.ModelBackend'
             auth.login(request, new_user)
-            return HttpResponseRedirect('/lobby/join/')
+            return HttpResponseRedirect('/lobby/')
     else:
         context['register_form'] = CreateUserForm()
     
