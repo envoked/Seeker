@@ -7,6 +7,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Example:
+    (r'^$', 'lobby.views.index'),
     (r'^lobby/', include('clue.lobby.urls')),
     (r'^accounts/login/$', 'django.contrib.auth.views.login'),
     (r'^accounts/logout/$', 'django.contrib.auth.views.logout'),
