@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% for player in game.player_set.all %}
+    <div>
+        <h3>{{ player.user.username }}</h3>
+        <ul>
+    
+        {% for clue in player.clue_set.all %}
+            <li>{{ clue.subject_role }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    
+{% endfor %}
+{% endblock %}
