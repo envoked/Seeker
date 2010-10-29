@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div>
+        <h3>Clues for {{ user.username }}</h3>
+        <ul>
+    
+        {% for clue in player.clue_set.all %}
+            <li>{{ clue.fact }}</li>
+        {% endfor %}
+        </ul>
+        
+        <a href="/seeker/game/{{ game.id }}/debug_clues/">Show All Clues</a>
+        <a href="javascript: $('answer').show()">Show Answer</a>
+        <ul id="answer" style="display: none">
+        {% for player in game.player_set.all %}
+            <li>{{ player.playerrole }} </li>
+        {% endfor %}
+        </ul>
+        
+    </div>
+    
+
+{% endblock %}
