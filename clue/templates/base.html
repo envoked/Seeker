@@ -12,9 +12,9 @@
         <div class="header">
             {% if user.id %}
                 Logged in as {{ user.username }}
-                <a class="logout" href="/accounts/logout/">Logout</a>
+                <a class="logout" href="/logout/">Logout</a>
             {% else %}
-                <a class="logout" href="/accounts/login/">Login</a>
+                <a class="logout" href="/login/">Login</a>
             {% endif %}
         </div>
         <div class="content">

@@ -25,8 +25,17 @@ class CreateUserForm(forms.Form):
     password = forms.CharField(max_length=30)
     email = forms.CharField(max_length=255)
     
+difficulty_choices = (
+    ('0', 'Easy'),
+    ('1', 'Medium'),
+    ('2', 'Hard')
+)
+    
 class CreateLobbyForm(forms.Form):
     name = forms.CharField(max_length=255)
+    num_players = forms.IntegerField()
+    hours = forms.IntegerField()
+    difficuly = forms.ChoiceField(choices=difficulty_choices)
     
 class SendMessageForm(forms.Form):
     content = forms.CharField(max_length=1000, widget=forms.Textarea)

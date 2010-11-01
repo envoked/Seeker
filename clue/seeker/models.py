@@ -5,24 +5,36 @@ class Game(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
     creator = models.ForeignKey(User)
-
-class Role(models.Model):
-    name = models.CharField(max_length=255)
-    
-    def __str__(self):
-        return self.name
     
 class Player(models.Model):
     user = models.ForeignKey(User)
-    role = models.ForeignKey(Role)
     game = models.ForeignKey(Game)
     joined = models.DateTimeField(auto_now_add=True)
     
+class Fact(models.Model):
+    player = models.ForeignKey(Player)
+    
+    class Meta:
+        abstract = True
+    
+#Specific to "Role" game
+class Role(models.Model):
+    name = models.CharField(max_length=255)
+
     def __str__(self):
-        return str(self.user) + " as " + str(self.role)
+        return self.name
     
 class PlayerRole(models.Model):
-    player = models.ForeignKey(Player)
+    player = models.OneToOneField(Player)
+    role = models.ForeignKey(Role)
+    
+    
+    def __str__(self):
+        return str(self.player.user) + " as " + str(self.role)
+    
+
+#Specific to "Role" game
+class RoleFact(Fact):
     role = models.ForeignKey(Role)  
     neg = models.BooleanField()
     
@@ -32,10 +44,12 @@ class PlayerRole(models.Model):
         else:
             return str(self.player.user) + " is the " + str(self.role)
     
+#Nonspefic, could be used to deliver any sort of Fact to a player
 class Clue(models.Model):
     player = models.ForeignKey(Player)
-    subject_role = models.ForeignKey(PlayerRole)
+    #this will change when we have more kinds of facts
+    fact = models.ForeignKey(RoleFact)
     game = models.ForeignKey(Game)
     
     def __str__(self):
-        return "For %s : %s" % (self.player.user, str(self.subject_role))
+        return "For %s : %s" % (self.player.user, str(self.fact))

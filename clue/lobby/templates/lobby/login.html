@@ -5,8 +5,8 @@
 {% if message %}
     <h3>{{ message }}</h3>
 {% endif %}
-<form action="/lobby/login/" method="POST">
-    {% csrf_token %}
+<form action="/login/?next={{ next }}" method="POST">
+
     <label>Username</label> <input name="username" />
     <label>Password</label> <input name="password" />
     <input type="submit" />

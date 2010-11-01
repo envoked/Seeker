@@ -40,3 +40,22 @@ def get_members(request):
     out = serialize_qs(members, related=['user'])
 
     return HttpResponse(json.dumps(out))
+    
+@login_required
+def add_cpu_user(request):
+    lobby = Lobby.objects.get(id=request.REQUEST['lobby'])
+    members = lobby.members.all()
+    user_ids = []
+    
+    for member in members:
+        user_ids.append(member.user.id)
+    
+    user = User.objects.filter(is_active=False).exclude(id__in=user_ids)[0]
+    
+    cpu_member = Member(
+        user = user,
+        lobby = lobby
+    )
+    cpu_member.save()
+    
+    return HttpResponse("")

@@ -36,7 +36,9 @@ def create(request):
     if request.method == 'POST':
         new_lobby = Lobby(
             creator = request.user,
-            name = request.POST['name']
+            name = request.POST['name'],
+            num_players = request.POST['num_players'],
+            hours = request.POST['hours']
         )
         new_lobby.save()
         return HttpResponseRedirect('/lobby/%d/' % new_lobby.id)
@@ -48,7 +50,7 @@ def create(request):
 @login_required
 @render_to('lobby/lobby.html')
 def lobby(request, id):
-    lobby = Lobby.objects.get(id=id)
+    lobby = get_object_or_404(Lobby, id=id, game=None)
     
     if request.user.is_authenticated():
         member = Member(
@@ -65,6 +67,36 @@ def lobby(request, id):
     user_json = json.dumps(expand(request.user))
     return locals()
     #return render_to_response(request, 'lobby/lobby.html', locals())
+    
+def start_game(request, lobby_id):
+    """
+    Turns a Lobby into a Game
+    Can only be called once by the creator
+    """
+    lobby = Lobby.objects.get(id=lobby_id)
+    from seeker.models import Game, Player
+    game = Game(
+        start = datetime.datetime.now(),
+        end = datetime.datetime.now(),
+        creator = lobby.creator
+    )
+    game.save()
+
+    for member in lobby.members.all():        
+        player = Player(
+            user = member.user,
+            game = game
+        )
+        player.save()
+    
+    lobby.game = game
+    lobby.save()
+    
+    from seeker.games import BasicRoleGame
+    gameplay = BasicRoleGame(game)
+    game = gameplay.play()
+        
+    return HttpResponseRedirect('/seeker/game/%d/' % game.id)
     
 def register(request):
     
@@ -90,18 +122,21 @@ def login(request):
         username = request.POST['username']
         password = request.POST['password']
         user = auth.authenticate(username=username, password=password)
+        print user
         if user is not None:
             if user.is_active:
                 auth.login(request, user)
-                return HttpResponseRedirect("/lobby/join/")
+                if 'next' in request.POST:
+                    return HttpResponseRedirect(request.POST['next'])
+                return HttpResponseRedirect("/lobby/")
             else:
                 context['message'] = 'Your account has been disabled'
         else:
             context['message'] = 'Incorrect login'
     
-    return render_to_response('lobby/login.html', context)
+    return render_to_response('lobby/login.html', context, RequestContext(context))
     
 def logout(request):
     auth.logout(request)
-    return HttpResponseRedirect('/lobby')
+    return HttpResponseRedirect('/')
     

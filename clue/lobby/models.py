@@ -1,10 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import *
+from seeker.models import Game
 
 class Lobby(models.Model):
     name = models.CharField(max_length=255)
     creator = models.ForeignKey(User)
+    num_players = models.IntegerField()
+    hours = models.IntegerField()
     created = models.DateTimeField(auto_now_add=True)
+    #Once a lobby turns into a game, this will reference it ant the lobby is dead
+    game = models.ForeignKey(Game, null=True)
     
 class Member(models.Model):
     lobby = models.ForeignKey(Lobby, related_name='members')

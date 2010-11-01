@@ -47,17 +47,30 @@ Lobby = {
     _drawMembers: function()
     {
         $('members').update("")
-        $('id_to').update("")
+        //$('id_to').update("")
+        
         Lobby.members.each(function(member)
         {
-            if (member.user.id == User.id) return false
+            if (member.user.id == User.id) return false;
             h = "<li><b>" + member.user.username + "</b>"
             h += " at " + member.created + "</li>"
             $('members').innerHTML += h
             
-            $('id_to').innerHTML += '<option value="' + member.user.id + '">' + member.user.username + '</option>'
+            //$('id_to').innerHTML += '<option value="' + member.user.id + '">' + member.user.username + '</option>'
         });
+    },
+    
+    addCpuUser: function()
+    {
+        new Ajax.Request('/lobby/members/add_cpu_user/', {
+            parameters: {'lobby': Lobby.id},
+            onSuccess: function(resp)
+            {
+                
+            }
+        })
     }
 }
 
-update_messages = new PeriodicalExecuter(Lobby.updateMessages, 2)
+update_members = new PeriodicalExecuter(Lobby.updateMembers, 2)
+//update_messages = new PeriodicalExecuter(Lobby.updateMessages, 2)
