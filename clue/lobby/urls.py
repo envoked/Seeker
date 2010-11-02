@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     (r'^messages/send/$', 'lobby.ajax.send_message'),
     (r'^messages/get/$', 'lobby.ajax.get_messages'),
     (r'^members/get/$', 'lobby.ajax.get_members'),
+    (r'^get_lobby/$', 'lobby.ajax.get_lobby'),
     #for testing
     (r'^members/add_cpu_user/$', 'lobby.ajax.add_cpu_user')
 )

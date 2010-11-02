@@ -6,15 +6,18 @@ Lobby = {
     init: function()
     {
         this.updateMembers()
+        this._update_members = new PeriodicalExecuter(Lobby.updateMembers, 2)
     },
     
     updateMembers: function()
     {
-        new Ajax.Request('/lobby/members/get/', {
+        new Ajax.Request('/lobby/get_lobby/', {
             parameters: {'lobby': Lobby.id},
             onSuccess: function(resp)
             {
-                Lobby.members = resp.responseText.evalJSON()
+                data = resp.responseText.evalJSON()
+                if (data['game']) document.location = '/seeker/game/' + data['game']
+                Lobby.members = data['members']
                 Lobby._drawMembers()
             }
         })   
@@ -26,7 +29,8 @@ Lobby = {
             parameters: {'lobby': Lobby.id},
             onSuccess: function(resp)
             {
-                Lobby.messages = resp.responseText.evalJSON()
+                data = resp.responseText.evalJSON()
+                Lobby.messages = data
                 Lobby._drawMessages()
             }
         })
@@ -72,5 +76,4 @@ Lobby = {
     }
 }
 
-update_members = new PeriodicalExecuter(Lobby.updateMembers, 2)
 //update_messages = new PeriodicalExecuter(Lobby.updateMessages, 2)
