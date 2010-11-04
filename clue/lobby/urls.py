@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     (r'^messages/get/$', 'lobby.ajax.get_messages'),
     (r'^members/get/$', 'lobby.ajax.get_members'),
     (r'^get_lobby/$', 'lobby.ajax.get_lobby'),
+    (r'^members/invite/$', 'lobby.ajax.invite_member'),
     #for testing
     (r'^members/add_cpu_user/$', 'lobby.ajax.add_cpu_user')
 )

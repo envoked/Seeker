@@ -73,6 +73,17 @@ Lobby = {
                 
             }
         })
+    },
+    
+    inviteMember: function()
+    {
+        new Ajax.Request('/lobby/members/invite/', {
+            parameters: {'lobby': Lobby.id, 'email': $('email').value},
+            onSuccess: function(resp)
+            {
+                
+            }
+        })  
     }
 }
 

@@ -67,3 +67,23 @@ def add_cpu_user(request):
     cpu_member.save()
     
     return HttpResponse("")
+    
+@login_required
+def invite_member(request):
+    lobby = Lobby.objects.get(id=request.REQUEST['lobby'])
+    email_address = request.REQUEST['email']
+    
+    lobby_link = 'http://clue.saverothbury.com/lobby/%d/' % lobby.id
+    body = "You're invited to join the seeker game '%s'. \n\n %s" % (lobby.name, lobby_link)
+    
+    print body
+    
+    import smtplib
+    s = smtplib.SMTP()
+    s.connect()
+    s.sendmail('noreply@saverothbury.com', [email_address], body)
+    s.quit()
+    
+    return HttpResponse("")
+    
+    
