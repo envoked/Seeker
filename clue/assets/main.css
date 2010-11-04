@@ -1,63 +1,134 @@
-/* v1.0 | 20080212 */
+@charset "UTF-8";
+/* CSS Document */
+/*	1. 	Zero Out Browser Defaults */
+/* Derived from Tantek å?elik's undohtml.css */
+/* http:/tantek.com/ */
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, font, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	outline: 0;
-	font-size: 100%;
-	vertical-align: baseline;
-	background: transparent;
+:link,:visited 
+{	/*text-decoration: none;*/
+    }
+
+ul,ol 
+{	list-style: none;
+    }
+
+h1,h2,h3,h4,h5,h6 
+{	font-size: 1em;
+    }
+
+ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form
+{ 	margin: 0; 
+    padding: 0;
+    }
+
+dl, dt, dd
+{	margin: 0;
+    padding: 0;
+    }
+    
+img
+{	padding: 0;
+    border: 0;}
+
+    
+p {margin: 0;}
+	
+/*GENERAL ARCHITECTURE*/
+
+/*not visible in the phone */
+html {
+    background-color: #333
 }
+
 body {
-	line-height: 1;
-}
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
+	/*font-family:"Helvetica Neue", Arial, Helvetica, sans-serif;*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size:16px;
+	color:#3B3B3B;
+    width: 320px;
+    height: 480px;
+    background-color: #F5F5F5;
+    margin: 0px auto;
 }
 
-/* remember to define focus styles! */
-:focus {
-	outline: 0;
+
+#wrapper {
+	width:240px;
+	height:320px;
+	margin:16px auto;
+	border:1px solid black;
+	background-color:#F5F5F5;
+		
 }
 
-/* remember to highlight inserts somehow! */
-ins {
-	text-decoration: none;
-}
-del {
-	text-decoration: line-through;
-}
-
-/* tables still need 'cellspacing="0"' in the markup */
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
+#header {
+	height:48px;
+	border-bottom:1px solid #4D4D4D;
+    background: #2C6097 url('img/header.png') top left no-repeat;
+    color: white
+	/*border:1px solid #BABABA;*/
 }
 
-/*-------------------------------*/
-body {
-    font-family: "Trebuchet MS", "Helvetica", sans-serif;
+#header a { color: white }
+
+#user_header {
+    float: right;
+    width: 75px;
+    font-size: 0.8em
 }
 
-h1 { margin: 10px 0px; font-size: 1.6em }
-h3 { margin: 8px 0px; font-size: 1.3em }
+#content {
+	height:414px;
+    overflow-y: auto
+}
 
-div.header { background-color: #eee; padding: 10px }
-div.content { padding: 10px }
+#footer {
+	height:18px;
+	margin-top:18px;
+	background: #333333 url('img/footer.png') top left repeat-x;
+}
+
+/* General Styles */
+h1{
+	padding:0px 18px 0px 0px;		
+}
+
+a {
+	/*text-decoration:none;*/
+	color:#262626;
+    font-weight: 200;	
+}
+
+a:hover {
+	color:#B9B9B9;
+}
+
+form {
+	padding:9px 18px 9px 0px;	
+}
+
+/* Content */
+
+#content ul.big li {
+	height:18px;
+	padding:9px 9px 9px 32px;
+	margin:2px;
+	background-color: #CFCFCF;
+	
+}
+
+#login {
+	margin-top:6px;
+	padding-left:32px;
+}
+
+#launch {
+	padding:18px 18px 0px 32px;
+}
+
+.error {
+    border: 1px solid red;
+    padding: 5px;
+    color: red;
+    background-color: #FFBCAF
+}

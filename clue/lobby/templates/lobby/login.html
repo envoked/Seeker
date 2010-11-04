@@ -2,13 +2,15 @@
 
 {% block content %}
 
-{% if message %}
-    <h3>{{ message }}</h3>
-{% endif %}
-<form action="/login/?next={{ next }}" method="POST">
+<h3>Login</h3>
 
-    <label>Username</label> <input name="username" />
-    <label>Password</label> <input name="password" />
+{% if message %}
+    <p class="error">{{ message }}</p>
+{% endif %}
+
+<form action="/login/?next={{ next }}" method="POST">
+    <label>Username</label> <input name="username" /><br />
+    <label>Password</label> <input name="password" /><br />
     <input type="submit" />
 </form>
 {% endblock %}

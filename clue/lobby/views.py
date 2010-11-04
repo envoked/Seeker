@@ -16,7 +16,15 @@ context = {
 
 @render_to('lobby/index.html')
 def index(request):
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('/lobby/home/')
     return locals()
+
+@login_required
+@render_to('lobby/home.html')
+def home(request):
+    return locals()
+    
 
 @login_required
 @render_to('lobby/join.html')
@@ -31,21 +39,22 @@ def join(request):
 @login_required
 @render_to('lobby/create.html')
 def create(request):
-    context['user'] = request.user
     
     if request.method == 'POST':
-        new_lobby = Lobby(
-            creator = request.user,
-            name = request.POST['name'],
-            num_players = request.POST['num_players'],
-            hours = request.POST['hours']
-        )
-        new_lobby.save()
-        return HttpResponseRedirect('/lobby/%d/' % new_lobby.id)
+        create_lobby_form = CreateLobbyForm(request.POST)
+        if create_lobby_form.is_valid():
+            new_lobby = Lobby(
+                creator = request.user,
+                name = request.POST['name'],
+                num_players = request.POST['num_players'],
+                hours = request.POST['hours']
+            )
+            new_lobby.save()
+            return HttpResponseRedirect('/lobby/%d/' % new_lobby.id)
     else:
-        context['create_lobby_form'] = CreateLobbyForm()
+        create_lobby_form = CreateLobbyForm()
         
-    return context
+    return locals()
     
 @login_required
 @render_to('lobby/lobby.html')

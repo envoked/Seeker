@@ -2,6 +2,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',
     (r'^$', 'lobby.views.join'),
+    (r'^home/$', 'lobby.views.home'),
     (r'^create/$', 'lobby.views.create'),
     (r'^register/$', 'lobby.views.register'),
     (r'^(?P<id>[0-9]+)/$', 'lobby.views.lobby'),

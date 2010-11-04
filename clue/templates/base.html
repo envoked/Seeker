@@ -2,25 +2,29 @@
 
 <html>
     <head>
-        <title>Who's Clue - {% block title %}{% endblock %}</title>
+        <title>Seeker - {% block title %}{% endblock %}</title>
         <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
         <script src="{% media_url %}/main.js"></script>
         <script src="{% media_url %}/lobby/lobby.js"></script>
         <link rel="stylesheet" href="{% media_url %}/main.css" />
     </head>
     <body>
-        <div class="header">
+        <div id="header">
+            <div id="user_header">
             {% if user.id %}
-                Logged in as {{ user.username }}
-                <a class="logout" href="/logout/">Logout</a>
+                Hi, {{ user.username }}
+                <br/>
+                <a href="/lobby/home/">Home</a> | <a class="logout" href="/logout/">Logout</a>
             {% else %}
                 <a class="logout" href="/login/">Login</a>
             {% endif %}
+            </div>
         </div>
-        <div class="content">
+        <div id="content">
         {% block content %}
         
         {% endblock %}
         </div>
+        <div id="footer"></div>
     </body>
 </html>
