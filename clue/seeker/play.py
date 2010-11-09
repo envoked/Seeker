@@ -38,3 +38,18 @@ def debug_clues(request, game_id):
     }
 
     return context
+
+
+@render_to('guesser.html')
+def guesser(request,game_id):
+	game = get_object_or_404(Game, id=game_id)		
+    
+	player = get_object_or_404(Player,
+        user = request.user,
+        game = game
+    )	
+	context =	{
+		'game'  : game,
+		'player': player
+	}
+	return context

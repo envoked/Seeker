@@ -6,10 +6,17 @@ class Game(models.Model):
     end = models.DateTimeField()
     creator = models.ForeignKey(User)
     
+        
+
 class Player(models.Model):
     user = models.ForeignKey(User)
     game = models.ForeignKey(Game)
     joined = models.DateTimeField(auto_now_add=True)
+
+
+    def currentGame(self):
+        self.game_set.all[0]
+
     
 class Fact(models.Model):
     player = models.ForeignKey(Player)
