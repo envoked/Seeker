@@ -3,5 +3,8 @@
 {% block content %}
 
 <h2> WOOT</h2>
-    
+ {% for player in game.player_set.all%}
+     <li>{{ player.name }}</li>
+ {% endfor %}
+ </ul>   
 {% endblock %}

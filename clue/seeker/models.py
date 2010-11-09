@@ -16,6 +16,9 @@ class Player(models.Model):
 
     def currentGame(self):
         self.game_set.all[0]
+	
+	def name(self):
+		return "self.user.name"
 
     
 class Fact(models.Model):
