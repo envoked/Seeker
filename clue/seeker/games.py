@@ -4,8 +4,8 @@ class BasicRoleGame():
     
     def __init__(self, game):
         self.game = game
-        self.num_clues = 4
         self.num_players = game.player_set.count()
+        self.num_clues = self.num_players - 1 # Number of clues per player
         self.process_players()
             
     def process_players(self):
@@ -26,6 +26,7 @@ class BasicRoleGame():
                 role = role
             )
             
+            # Create clues
             for i in range(0, self.num_clues):
  
                 pr.save()
