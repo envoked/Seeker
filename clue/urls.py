@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     (r'^seeker/', include('clue.seeker.urls')),
     (r'^login/$', 'lobby.views.login'),
     (r'^logout/$', 'lobby.views.logout'),
+    (r'^accounts/profile/$', 'lobby.views.profile'),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:

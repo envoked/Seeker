@@ -138,6 +138,7 @@ def setup(request,redirect_url=None,
           registration_form_class=FacebookUserCreationForm,
           template_name='facebook/setup.html',
           extra_context=None):
+    log.debug(request)
     """
     setup
     ===============================
