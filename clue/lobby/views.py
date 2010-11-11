@@ -124,7 +124,11 @@ def register(request):
         context['register_form'] = CreateUserForm()
     
     return render_to_response('lobby/register.html', context)
-    
+
+@login_required
+@render_to('profile.html')
+def profile(request):
+    return {}
 
 def login(request):
     if 'username' in request.POST and 'password' in request.POST:

@@ -1,0 +1,11 @@
+{% extends "site_base.html" %}
+
+{% block content %}
+
+<h3>Hi, {{ user.username }}</h3>
+<h4>Facebook</h4>
+{{ user.facebook.facebook_id }}
+
+{% debug %}
+
+{% endblock%}
