@@ -81,12 +81,14 @@ class FacebookConnectMiddleware(object):
                         pass
 
         except Exception, ex:
+            import traceback
+            traceback.print_exc()
+            log.exception(ex)
             # Because this is a middleware, we can't assume the errors will
             # be caught anywhere useful.
             logout(request)
             request.facebook.session_key = None
             request.facebook.uid = None
-            log.exception(ex)
 
         return None
 

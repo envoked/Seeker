@@ -1,4 +1,5 @@
 # Django settings for clue project.
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -69,7 +70,6 @@ TEMPLATE_LOADERS = (
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
-    'lobby.context_processors.debug_mode',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -78,6 +78,9 @@ MIDDLEWARE_CLASSES = (
     #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'facebook.djangofb.FacebookMiddleware',
+    'facebookconnect.middleware.FacebookConnectMiddleware'
+    
 )
 
 ROOT_URLCONF = 'clue.urls'
@@ -86,9 +89,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/Developer/lb/trunk/templates',
-    '/Developer/whoclue-2/clue/templates/',
-    '/Developer/whoclue-2/clue/lobby/templates/'
+    os.path.join(os.getcwd(), 'templates')
 )
 
 INSTALLED_APPS = (
@@ -99,5 +100,30 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    'lobby'
+    'lobby',
+    'seeker',
+    'facebookconnect'
 )
+
+AUTHENTICATION_BACKENDS = (
+    'facebookconnect.models.FacebookBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+DUMMY_FACEBOOK_INFO = {
+    'uid':0,
+    'name':'(Private)',
+    'first_name':'(Private)',
+    'pic_square_with_logo':'http://www.facebook.com/pics/t_silhouette.gif',
+    'affiliations':None,
+    'status':None,
+    'proxied_email':None,
+}
+
+LOGIN_URL = '/login/'
+LOGOUT_URL = '/logout/'
+
+FACEBOOK_API_KEY = 'baa973193a1795271a02548dbc26d511'
+FACEBOOK_SECRET_KEY = '099e81627dc77c30ab2888e4565524b7'
+FACEBOOK_INTERNAL = True
+LOGGING_PATH = 'log/'

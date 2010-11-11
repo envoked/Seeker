@@ -17,9 +17,6 @@
 #You should have received a copy of the GNU General Public License
 #along with django-facebookconnect.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-log = logging.getLogger('facebookconnect.views')
-
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
@@ -29,6 +26,9 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.conf import settings
 
+import logging, util
+log = util.getLogger('facebookconnect.views')
+
 from facebook.djangofb import require_login as require_fb_login
 
 from facebookconnect.models import FacebookProfile
@@ -37,6 +37,7 @@ from facebookconnect.forms import FacebookUserCreationForm
 def facebook_login(request, redirect_url=None,
                    template_name='facebook/login.html',
                    extra_context=None):
+
     """
     facebook_login
     ===============================
