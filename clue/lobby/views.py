@@ -8,7 +8,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import *
 from lobby import *
 from lobby.models import *
+from seeker.models import Player
 from lb.util import expand
+import traceback
 
 context = {
     'assets': settings.MEDIA_URL
@@ -23,8 +25,13 @@ def index(request):
 @login_required
 @render_to('lobby/home.html')
 def home(request):
+    try:
+        player = Player.objects.filter(user=request.user).get(game__is_current=True)
+    except:
+        traceback.print_exc()
+        player = None
+        
     return locals()
-    
 
 @login_required
 @render_to('lobby/join.html')
@@ -39,7 +46,6 @@ def join(request):
 @login_required
 @render_to('lobby/create.html')
 def create(request):
-    
     if request.method == 'POST':
         create_lobby_form = CreateLobbyForm(request.POST)
         if create_lobby_form.is_valid():

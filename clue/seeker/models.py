@@ -5,20 +5,19 @@ class Game(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
     creator = models.ForeignKey(User)
+    is_current = models.BooleanField(default=True)
     
-        
 
 class Player(models.Model):
     user = models.ForeignKey(User)
     game = models.ForeignKey(Game)
     joined = models.DateTimeField(auto_now_add=True)
 
-
-    def currentGame(self):
+    def current_game(self):
         self.game_set.all[0]
-	
-	def name(self):
-		return "self.user.name"
+
+    def name(self):
+        return "self.user.name"
 
     
 class Fact(models.Model):

@@ -3,7 +3,11 @@
 {% block content %}
 <h1>Home</h1>
 <ul class="big">
-    <li><a href="/lobby/create/">New game</a></li>
+    {% if player %}
+        <li><a href="/seeker/game/{{ player.game.id}}/">You're in a game</a></li>
+    {% else %}
+        <li><a href="/lobby/create/">New game</a></li>
+    {% endif %}
     <li><a href="/accounts/profile/">Profile</a></li>
     <li><a href="/accounts/settings/">Settings</a></li>            
 </ul>
