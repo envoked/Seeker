@@ -3,10 +3,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.models import User
 
-try:
-    import simplejson as json
-except:
-    import json
+import django.utils.simplejson as json
+
 
 def render_to(template_name):
     def renderer(func):
