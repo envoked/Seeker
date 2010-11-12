@@ -21,7 +21,7 @@ def game(request, game_id):
         user = request.user,
         game = game
     )
-    
+
     context = {
         'game': game,
         'player': player
@@ -43,13 +43,15 @@ def debug_clues(request, game_id):
 @render_to('guesser.html')
 def guesser(request,game_id):
 	game = get_object_or_404(Game, id=game_id)
-	    
 	player = get_object_or_404(Player,
         user = request.user,
         game = game
     )
-
+	roles = PlayerRole.objects.filter(player__in =game.player_set.all()).exclude(role = player.playerrole.role)
+	
 	context =	{
 		'game'  : game,
-		'player': player	}
+		'player': player,
+		'roles' : roles
+			}
 	return context

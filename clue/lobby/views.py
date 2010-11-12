@@ -88,11 +88,16 @@ def start_game(request, lobby_id):
     Turns a Lobby into a Game
     Can only be called once by the creator
     """
+    one_hour = timedelta(hours=1)
+    
+    
     lobby = Lobby.objects.get(id=lobby_id)
+    num_hours = lobby.hours
+    
     from seeker.models import Game, Player
     game = Game(
         start = datetime.datetime.now(),
-        end = datetime.datetime.now(),
+        end = datetime.datetime.now() + (one_hour * num_hours),
         creator = lobby.creator
     )
     game.save()
@@ -134,7 +139,6 @@ def register(request):
 @login_required
 @render_to('profile.html')
 def profile(request):
-    print request
     return {}
 
 def login(request):

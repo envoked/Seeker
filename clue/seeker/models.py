@@ -59,6 +59,8 @@ class Clue(models.Model):
     #this will change when we have more kinds of facts
     fact = models.ForeignKey(RoleFact)
     game = models.ForeignKey(Game)
+    sent = models.BooleanField()
+    send_time = models.DateTimeField()
     
     def __str__(self):
         return "For %s : %s" % (self.player.user, str(self.fact))
