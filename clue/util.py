@@ -11,3 +11,7 @@ def getLogger(filename):
     LOG.addHandler(hn)
     hn.setFormatter(formatter)
     return LOG
+
+def site_url(request):
+    url = 'http://' + request.META['HTTP_HOST']
+    return url

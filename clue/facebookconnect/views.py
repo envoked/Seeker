@@ -112,6 +112,20 @@ def facebook_login(request, redirect_url=None,
         template_dict,
         context_instance=context)
     
+def facebook_redirect(request):
+    params = {
+        'client_id': settings.FACEBOOK_API_KEY,
+        'redirect_uri': util.site_url(request) + reverse(facebook_login),
+        'display': 'touch'
+    }
+    print request
+    print params
+    import urllib
+    query_str = urllib.urlencode(params)
+    api_base = 'https://graph.facebook.com/oauth/authorize?'
+    
+    print api_base + query_str
+    return HttpResponseRedirect(api_base + query_str)
     
 def facebook_logout(request, redirect_url=None):
     """

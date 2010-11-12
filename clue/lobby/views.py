@@ -128,6 +128,7 @@ def register(request):
 @login_required
 @render_to('profile.html')
 def profile(request):
+    print request
     return {}
 
 def login(request):
