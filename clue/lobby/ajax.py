@@ -8,6 +8,7 @@ from django.contrib.auth.models import *
 from lobby import *
 from lobby.models import *
 from lb.util import *
+from seeker.distributor import *
 
 @login_required
 def send_message(request):
@@ -76,28 +77,10 @@ def invite_member(request):
     import util
     lobby_link = util.site_url(request) + '/lobby/%d/' % lobby.id
     
-    body = """From: Seekr <%s>\nTo: Player <%s>\nSubject: Clue!\n\n
+    body = """From: %s <%s>\nTo: Player <%s>\nSubject: Clue!\n\n
     You're invited to join the seeker game '%s'.
     
     %s
-    """ % (settings.SMTP_USERNAME, email_address, lobby.name, lobby_link)
+    """ % (CLUE_GENIE, settings.SMTP_USERNAME, email_address, lobby.name, lobby_link)
     
-    print body
-    
-    import smtplib
-    server = smtplib.SMTP()
-    server.connect('smtp.gmail.com')
-    # identify ourselves, prompting server for supported features
-    server.ehlo()
-    # If we can encrypt this session, do it
-    if server.has_extn('STARTTLS'):
-        server.starttls()
-        server.ehlo() # re-identify ourselves over TLS connection
-        
-    server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
-    server.sendmail(settings.SMTP_USERNAME, [email_address], body)
-    server.quit()
-    
-    return HttpResponse("")
-    
-    
+    send_item(email_address, body)
