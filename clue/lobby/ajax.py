@@ -73,16 +73,30 @@ def invite_member(request):
     lobby = Lobby.objects.get(id=request.REQUEST['lobby'])
     email_address = request.REQUEST['email']
     
-    lobby_link = 'http://clue.saverothbury.com/lobby/%d/' % lobby.id
-    body = "You're invited to join the seeker game '%s'. \n\n %s" % (lobby.name, lobby_link)
+    import util
+    lobby_link = util.site_url(request) + '/lobby/%d/' % lobby.id
+    
+    body = """From: Seekr <%s>\nTo: Player <%s>\nSubject: Clue!\n\n
+    You're invited to join the seeker game '%s'.
+    
+    %s
+    """ % (settings.SMTP_USERNAME, email_address, lobby.name, lobby_link)
     
     print body
     
     import smtplib
-    s = smtplib.SMTP()
-    s.connect()
-    s.sendmail('noreply@saverothbury.com', [email_address], body)
-    s.quit()
+    server = smtplib.SMTP()
+    server.connect('smtp.gmail.com')
+    # identify ourselves, prompting server for supported features
+    server.ehlo()
+    # If we can encrypt this session, do it
+    if server.has_extn('STARTTLS'):
+        server.starttls()
+        server.ehlo() # re-identify ourselves over TLS connection
+        
+    server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+    server.sendmail(settings.SMTP_USERNAME, [email_address], body)
+    server.quit()
     
     return HttpResponse("")
     
