@@ -1,4 +1,7 @@
 from models import *
+from distributor import *
+from datetime import datetime, timedelta
+
 
 class BasicRoleGame():
     
@@ -49,8 +52,36 @@ class BasicRoleGame():
         #PlayerRoles already given away
         prs_given = []
         players = self.game.player_set.all()
-        
+        now = datetime.now()
+        print self.game.end
         for i in range(0, self.num_clues):
+            #print "start"
+            #print self.game.start
+            #print "end"
+            #print self.game.end
+            
+            if i == 0:
+                time_to_send = now
+            else:
+                #time_to_send =
+                #print "start"
+                #print self.game.start
+                #print "end"
+                #print self.game.end
+                duration = self.game.end - self.game.start
+                #print "duration:"
+                #print duration
+                #print "num_clues"
+                #print self.num_clues
+                
+                #this needs work
+                interval_to_send = (duration.seconds / 60) / self.num_clues
+                #print "interval:"
+                #print interval_to_send
+                time_to_send = self.game.start + timedelta(minutes=(interval_to_send * i))
+                #print "FINAL TIME TO SEND"
+                #print time_to_send
+                
             for player in players:
                 #select a PlayerRole that does not describe the player getting the clue
                 try:
@@ -59,14 +90,18 @@ class BasicRoleGame():
                     print "error finding fact for " + str(player)
                     print "unused facts", PlayerRole.objects.exclude(id__in=prs_given).all()
                     print RoleFact.objects.all()
-                    break
-                    
+                    break    
+                
                 clue = Clue(
                     player = player,
                     fact = pr,
-                    game = self.game
+                    game = self.game,
+                    sent = 0,
+                    send_time = time_to_send
                 )
                 clue.save()
                 prs_given.append(pr.id)
+                
+        distribute_clues(self.game.id)
         
         return self.game
