@@ -3,8 +3,15 @@
 {% block content %}
 
 <h2> WOOT</h2>
- {% for player in game.player_set.all%}
-     <li>{{ player.name }}</li>
+ {% for player_role in roles %}
+    <li>{{ player_role.role.name}}</li>
  {% endfor %}
+ 
+ {% for player in game.player_set.all%}
+     <li>{{player.user }}</li>
+ 
+ {% endfor %}
+ 
+ 
  </ul>   
 {% endblock %}
