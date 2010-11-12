@@ -66,3 +66,13 @@ def distribute_clues(target_game_id):
     else:
         for clue in game_clues:
             send_clue(clue)
+            
+def send_time_clues():
+    games = Game.objects.filter(is_current=1)
+    
+    for the_game in games:
+        current_clues = Clue.objects.filter(game=the_game, sent=0, send_time__lt=datetime.now()).all()
+        for clue_to_send in current_clues:
+            print clue_to_send
+            send_clue(clue_to_send)
+        
