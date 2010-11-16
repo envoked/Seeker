@@ -102,6 +102,4 @@ class BasicRoleGame():
                 clue.save()
                 prs_given.append(pr.id)
                 
-        distribute_clues(self.game.id)
-        
         return self.game
