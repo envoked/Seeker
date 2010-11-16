@@ -149,9 +149,15 @@ form {
 	width: 100px; 
 }
 
+#players li{
+    padding: 5px;
+    border: 1px solid #333;
+}
+
 .ui-sortable li {
     padding: 5px;
     border: 1px dashed #ccc;
+	cursor: pointer;
 }
 
 
