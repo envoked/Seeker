@@ -14,18 +14,18 @@ $(function() {
 <div class="floatLeft">
     <h2>Person</2>
      <ul>
-         {% for player in other_players %}
-             <li>{{ player.user }}</li>
-         {% endfor %}
+        {% for player in other_players %}
+            <li>{{ player.user }}</li>
+        {% endfor %}
      <ul>
 </div>
 <div class="floatLeft">
     <h2>Role</h2>
-        <ul id="guessable">
-            {% for player_role in roles%}
-                <li>{{ player_role.role.name}}</li>
-            {% endfor %}
-        <ul>
+    <ul id="guessable">
+        {% for player_role in roles%}
+            <li>{{ player_role.role.name}}</li>
+        {% endfor %}
+    <ul>
 </div>
 
  <script type="text/javascript" src="{% media_url %}/js/jquery-1.4.2.min.js"></script>
