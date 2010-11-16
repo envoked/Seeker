@@ -132,3 +132,22 @@ form {
     color: red;
     background-color: #FFBCAF
 }
+
+
+
+/* Guesser styles*/
+.floatLeft {
+	float:left;
+	position:relative;
+}
+
+#guessable { 
+	list-style-type: none; 
+	margin: 0;
+	padding: 0;
+	width: 100px; 
+}
+
+
+
+

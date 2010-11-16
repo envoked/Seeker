@@ -1,17 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
+<script>
+$(function() {
+	$( "#guessable" ).sortable();
+	$( "#guessable" ).disableSelection();
+});
+</script>
 
-<h2> WOOT</h2>
- {% for player_role in roles %}
-    <li>{{ player_role.role.name}}</li>
- {% endfor %}
+<h2> Guess...</h2>
+<div class="floatLeft">
+    <h2> Person
+     <ul>
+         {% for player in game.player_set.all%}
+             <li>{{player.user }}</li>
+
+         {% endfor %}
+     <ul>
+</div>
+<div class="floatLeft">
+    <h2> Role
+     <ul id="guessable">
+         {% for player in game.player_set.all%}
+             <li>{{ player_role.role.name}}</li>
+         {% endfor %}
+     <ul>
+</div>     
  
- {% for player in game.player_set.all%}
-     <li>{{player.user }}</li>
- 
- {% endfor %}
- 
- 
- </ul>   
+ </ul>
+ <script type="text/javascript" src="{% media_url %}/js/jquery-1.4.2.min.js"></script>
+ <script type="text/javascript" src="{% media_url %}/js/jquery-ui-1.8.6.custom.min.js"></script>   
 {% endblock %}
