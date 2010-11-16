@@ -139,9 +139,10 @@ form {
 .floatLeft {
 	float:left;
 	position:relative;
+	padding-left:10px;
 }
 
-#guessable { 
+	#guessable { 
 	list-style-type: none; 
 	margin: 0;
 	padding: 0;
