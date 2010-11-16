@@ -1,0 +1,12 @@
+{% extends "site_base.html" %}
+
+{% block content %}
+
+<h3>Hi, {{ user.username }}</h3>
+
+{% if user.facebook_id %}
+<h4>Facebook</h4>
+{{ user.facebook_profile.first_name }}
+{% endif %}
+
+{% endblock%}

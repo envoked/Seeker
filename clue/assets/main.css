@@ -148,6 +148,11 @@ form {
 	width: 100px; 
 }
 
+.ui-sortable li {
+    padding: 5px;
+    border: 1px dashed #ccc;
+}
+
 
 
 

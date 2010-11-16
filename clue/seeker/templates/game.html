@@ -14,6 +14,7 @@
         <a href="/seeker/game/{{ game.id }}/debug_clues/">Show All Clues</a>
         <a href="/seeker/game/{{ game.id }}/guesser/">Guesser</a>
         <a href="javascript: $('answer').show()">Show Answer</a>
+        <a href="/seeker/game/{{ game.id }}/quit/">Quit Game</a>
         <ul id="answer" style="display: none">
         {% for player in game.player_set.all %}
             <li>{{ player.playerrole }} </li>

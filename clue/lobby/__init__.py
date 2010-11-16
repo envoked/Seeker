@@ -23,6 +23,9 @@ class CreateUserForm(forms.Form):
     password = forms.CharField(max_length=30)
     email = forms.CharField(max_length=255)
     
+class SettingsForm(forms.Form):
+    email = forms.EmailField(max_length=255)
+    
 difficulty_choices = (
     ('0', 'Easy'),
     ('1', 'Medium'),

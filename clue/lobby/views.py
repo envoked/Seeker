@@ -81,7 +81,24 @@ def lobby(request, id):
     lobby_json = json.dumps(expand(lobby))
     user_json = json.dumps(expand(request.user))
     return locals()
-    #return render_to_response(request, 'lobby/lobby.html', locals())
+
+@login_required
+@render_to('accounts/settings.html')
+def settings(request):    
+    original = {
+        'email': request.user.email
+    }
+    
+    if request.method == 'POST':
+        settings_form = SettingsForm(request.POST)
+        if settings_form.is_valid():
+            user = request.user
+            user.email = request.POST['email']
+            user.save()
+    else:
+        settings_form = SettingsForm(original)
+    
+    return locals()
     
 def start_game(request, lobby_id):
     """

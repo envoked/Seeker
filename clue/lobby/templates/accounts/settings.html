@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h3>Email<h3>
+<form action="/lobby/settings/" method="POST">
+    {{ settings_form.as_p }}
+    <input type="submit" value="Update" />
+</form>
+<h3>Password</h3>
+{{ change_password_form.as_p}}
+
+{% endblock %}
