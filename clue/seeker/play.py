@@ -47,7 +47,7 @@ def guesser(request, game_id):
         user = request.user,
         game = game
     )
-    roles = PlayerRole.objects.filter(player__in=game.player_set.all())
+    roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(role=player.playerrole.role)
     other_players = game.player_set.exclude(user=request.user)
     print roles
     context = {
