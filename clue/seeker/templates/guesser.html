@@ -20,14 +20,13 @@ $(function() {
 </div>
 <div class="floatLeft">
     <h2> Role
-     <ul id="guessable">
-         {% for player in game.player_set.all%}
-             <li>{{ player_role.role.name}}</li>
-         {% endfor %}
-     <ul>
-</div>     
- 
- </ul>
+         <ul id="guessable">
+             {% for player_role in roles%}
+                 <li>{{ player_role.role.name}}</li>
+             {% endfor %}
+         <ul>
+</div>
+
  <script type="text/javascript" src="{% media_url %}/js/jquery-1.4.2.min.js"></script>
  <script type="text/javascript" src="{% media_url %}/js/jquery-ui-1.8.6.custom.min.js"></script>   
 {% endblock %}
