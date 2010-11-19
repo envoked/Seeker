@@ -21,7 +21,7 @@ class BasicRoleGame():
         players = self.game.player_set.all()
         for player in players:
             role = roles[0]
-            roles = roles[:1]
+            roles = roles[1]
             player_roles_used = []
  
             pr = PlayerRole(

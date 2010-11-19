@@ -59,6 +59,25 @@ def guesser(request, game_id):
     }
     return context
 
+def guess(request):
+    game = request.REQUEST['game']
+    player = Player.objects.get(
+        user = request.user,
+        game = game
+    )
+    other_player = Player.objects.get(Player,
+        user = request.user,
+        game = game
+    )
+    guess = RoleGuess(
+        player = player,
+        other_player = request.POST['']
+    )
+    guess.save()
+    winner = game.check_for_winner()
+    return json.dumps(winner)
+    
+    
 def quit(request, game_id):
     game = get_object_or_404(Game, id=game_id)
     player = get_object_or_404(Player,

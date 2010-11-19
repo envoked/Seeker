@@ -5,9 +5,25 @@
 <script type="text/javascript" src="{% media_url %}/js/jquery-ui-1.8.6.custom.min.js"></script>   
 <script>
 $(function() {
-	$( "#guessable" ).sortable();
-	$( "#guessable" ).disableSelection();
+	$( "#roles" ).sortable();
+	$( "#roles" ).disableSelection();
 });
+
+
+submitGuess = function()
+{
+    users = $('#players li')
+    roles = $('#roles li')
+    user_roles = {}
+    
+    users.each(function(user, i)
+    {
+        role = roles[i]
+        user_roles[user] = role 
+    })
+    
+}
+
 </script>
 
 <h2> Guess...</h2>
@@ -15,19 +31,20 @@ $(function() {
     <h2>Person</2>
      <ul id="players">
         {% for player in other_players %}
-            <li>{{ player.user }}</li>
+            <li id="{{ player.user.id }}">{{ player.user }}</li>
         {% endfor %}
      <ul>
 </div>
 <div class="floatLeft">
     <h2>Role</h2>
-    <ul id="guessable">
+    <ul class="roles">
         {% for player_role in roles%}
-            <li>{{ player_role.role.name}}</li>
+            <li id="{{ player_role.role.id }}">{{ player_role.role.name}}</li>
         {% endfor %}
     <ul>
 </div>
+<a href="javascript: submitGuess()">Submit</a>
 
- <script type="text/javascript" src="{% media_url %}/js/jquery-1.4.2.min.js"></script>
- <script type="text/javascript" src="{% media_url %}/js/jquery-ui-1.8.6.custom.min.js"></script>   
+<script type="text/javascript" src="{% media_url %}/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="{% media_url %}/js/jquery-ui-1.8.6.custom.min.js"></script>   
 {% endblock %}

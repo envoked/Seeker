@@ -7,6 +7,19 @@ class Game(models.Model):
     creator = models.ForeignKey(User)
     is_current = models.BooleanField(default=True)
     
+    def check_for_winner(self):
+        guesses = RoleGuess.objects.filter(player__in=self.player_set)
+        if guesses.count() > 0:
+            winner = guesses[0].other_player
+            winner_ranking = Ranking(
+                player = winner,
+                rank = 1
+            )
+            winner_ranking.save()
+            return winnder_ranking
+        
+        return None
+            
 
 class Player(models.Model):
     user = models.ForeignKey(User)
@@ -37,11 +50,9 @@ class PlayerRole(models.Model):
     player = models.OneToOneField(Player)
     role = models.ForeignKey(Role)
     
-    
     def __str__(self):
         return str(self.player.user) + " as " + str(self.role)
     
-
 #Specific to "Role" game
 class RoleFact(Fact):
     role = models.ForeignKey(Role)  
@@ -52,6 +63,21 @@ class RoleFact(Fact):
             return str(self.player.user) + " is not the " + str(self.role)
         else:
             return str(self.player.user) + " is the " + str(self.role)
+    
+class Guess(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    player = models.ForeignKey(Player)
+    
+    class Meta:
+        abstract = True
+        
+class RoleGuess(models.Model):
+    other_player = models.ForeignKey(Player)
+    role = models.ForeignKey(Role)
+    
+class Ranking(models.Model):
+    rank = models.IntegerField()
+    created = models.DateTimeField(auto_now_add=True)
     
 #Nonspefic, could be used to deliver any sort of Fact to a player
 class Clue(models.Model):
