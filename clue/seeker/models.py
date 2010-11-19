@@ -8,7 +8,7 @@ class Game(models.Model):
     is_current = models.BooleanField(default=True)
     
     def check_for_winner(self):
-        guesses = RoleGuess.objects.filter(player__in=self.player_set)
+        guesses = RoleGuess.objects.filter(player__in=self.player_set.values('id')).all()
         if guesses.count() > 0:
             winner = guesses[0].other_player
             winner_ranking = Ranking(
@@ -16,7 +16,7 @@ class Game(models.Model):
                 rank = 1
             )
             winner_ranking.save()
-            return winnder_ranking
+            return winner_ranking
         
         return None
             
@@ -71,12 +71,13 @@ class Guess(models.Model):
     class Meta:
         abstract = True
         
-class RoleGuess(models.Model):
-    other_player = models.ForeignKey(Player)
+class RoleGuess(Guess):
+    other_player = models.ForeignKey(Player, related_name='other_player_set')
     role = models.ForeignKey(Role)
     
 class Ranking(models.Model):
     rank = models.IntegerField()
+    player = models.ForeignKey(Player)
     created = models.DateTimeField(auto_now_add=True)
     
 #Nonspefic, could be used to deliver any sort of Fact to a player

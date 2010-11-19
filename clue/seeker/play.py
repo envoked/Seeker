@@ -8,6 +8,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from lobby.models import *
 from lobby import *
 from games import *
+from lb.util import expand
 
 NUM_PLAYERS = 4
 
@@ -47,7 +48,7 @@ def guesser(request, game_id):
         user = request.user,
         game = game
     )
-    roles = PlayerRole.objects.filter(player__in=game.player_set.all())
+    roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(role=player.playerrole.role)
     other_players = game.player_set.exclude(user=request.user)
     print roles
     context = {
@@ -59,23 +60,35 @@ def guesser(request, game_id):
     }
     return context
 
-def guess(request):
-    game = request.REQUEST['game']
+def guess(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    guesses_str = request.REQUEST['guess']
+    guesses = guesses_str.split(',')
+    print guesses
+
     player = Player.objects.get(
         user = request.user,
         game = game
     )
-    other_player = Player.objects.get(Player,
-        user = request.user,
-        game = game
-    )
-    guess = RoleGuess(
-        player = player,
-        other_player = request.POST['']
-    )
-    guess.save()
+
+    for guess in guesses:
+        (other_player_id, role_id) = guess.split('=')
+        other_player = Player.objects.get(id=other_player_id)
+        role = Role.objects.get(id=role_id)
+        
+        try:
+            guess = RoleGuess.get(player=player, other_player=other_player)
+        except:
+            guess = RoleGuess(
+                player = player,
+                other_player = other_player    
+            )
+        
+        guess.role = role
+        guess.save()
+        
     winner = game.check_for_winner()
-    return json.dumps(winner)
+    return HttpResponse(json.dumps(expand(winner)))
     
     
 def quit(request, game_id):
