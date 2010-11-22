@@ -47,6 +47,7 @@ Clue: %s
 Intended Email: %s
     """ % (clue.player.user.username, str(clue.fact), email)
     
+    self.stdout.write(msg)
     
     send_item(email, msg)
     
@@ -67,12 +68,18 @@ def distribute_clues(target_game_id):
         for clue in game_clues:
             send_clue(clue)
             
+#sends a round of clues for all current games to all players in each game.
 def send_time_clues():
     games = Game.objects.filter(is_current=1)
-    
+    print games
     for the_game in games:
         current_clues = Clue.objects.filter(game=the_game, sent=0, send_time__lt=datetime.now()).all()
         for clue_to_send in current_clues:
             print clue_to_send
             send_clue(clue_to_send)
+          
+#send the next clue for the given player, to that player
+#will be used for non-global clue distribution
+def send_clue_to_player(player):
+    return
         
