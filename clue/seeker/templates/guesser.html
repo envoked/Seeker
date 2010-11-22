@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load extras %}
 {% block content %}
+{% if game.is_current %}
 <script type="text/javascript" src="{% media_url %}/js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="{% media_url %}/js/jquery-ui-1.8.6.custom.min.js"></script>   
 <script>
@@ -33,9 +34,15 @@ submitGuess = function()
     
 }
 
+guessForCpu = function()
+{
+    $.post('/seeker/game/' + game_id + '/guess_for_cpus/', {
+    })
+}
+
 </script>
 
-<h2> Guess...</h2>
+<h2>Guess...</h2>
 <div class="floatLeft">
     <h2>Person</2>
      <ul id="players">
@@ -53,10 +60,15 @@ submitGuess = function()
     <ul>
 </div>
 <a href="javascript: submitGuess()">Submit</a>
+<hr />
+<a href="javascript: guessForCpu()">Guess for CPU Players</a>
 
 <script type="text/javascript" src="{% media_url %}/js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="{% media_url %}/js/jquery-ui-1.8.6.custom.min.js"></script>
 <script>
 
 </script>
+{% else %}
+<b>This game is over</b>
+{% endif %}
 {% endblock %}

@@ -104,6 +104,46 @@ def guess(request, game_id):
     brg.check_submission(submission)
     return HttpResponse("")
     
+def guess_for_cpus(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    cpu_players = game.player_set.filter(user__is_active=False).all()
+    
+    from seeker.games import BasicRoleGame
+    brg = BasicRoleGame(game)
+    
+    for player in cpu_players:
+        other_players = game.player_set.exclude(user=player.user).all()
+        roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(role=player.playerrole.role)
+        
+        try:
+            submission = Submission.objects.get(player=player)
+        except:
+            submission = Submission(
+                player = player,
+                game = game
+            )
+            submission.save()
+                
+        try:
+            #lb - for debugging, in reality you shouldn't get to guess more than once
+            submission.roleguess_set.all().delete()
+        except:
+            pass
+        
+        for other_player in other_players:
+            role = roles[0]
+            roles = roles[:1]
+            guess = RoleGuess(
+                other_player = other_player,
+                role = role.role,
+                submission = submission
+            )
+            guess.save()
+    
+        brg.check_submission(submission)
+            
+    return HttpResponse("")
+            
     
 def quit(request, game_id):
     game = get_object_or_404(Game, id=game_id)

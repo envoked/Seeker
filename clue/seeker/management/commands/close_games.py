@@ -5,7 +5,7 @@ from datetime import datetime
 
 class Command(BaseCommand):
     args = '<poll_id poll_id ...>'
-    help = 'Closes the specified poll for voting'
+    help = 'Closes games that if now is greater then thier end time'
 
     def handle(self, *args, **options):
         games = Game.objects.filter(end__lt=datetime.now(), is_current=True)
