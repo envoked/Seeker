@@ -3,6 +3,7 @@
 {% block content %}
 
     <div>
+    {% if game.is_current %}
         <h3>Clues for {{ user.username }}</h3>
         <ul>
     
@@ -20,7 +21,26 @@
             <li>{{ player.playerrole }} </li>
         {% endfor %}
         </ul>
-        
+    {% else %}
+        <h3>This game is over</h3>
+        <b>Rankings</b>
+        <table>
+            <tr>
+                <th>Place</th>
+                <th>User</th>
+                <th>Score</th>
+                <th>Submitted</th>
+            </tr>
+        {% for ranking in game.ranking_set.all %}
+            <tr>
+                <td>{{ ranking.rank }}</td>
+                <td>{{ ranking.player.user.username }}</td>
+                <td>{{ ranking.submission.score }}</td>
+                <td>{{ ranking.submission.created }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% endif %}
     </div>
     
 

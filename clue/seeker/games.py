@@ -84,26 +84,36 @@ class BasicRoleGame():
         return self.game
     
     def check_submission(self, submission):
-        for guess in submission.guess.all():
-            rf = RoleFact.objects.get(player = guess.other_player)
-            
-            if rf.role != guess.role:
+        number_correct = 0
+
+        for guess in submission.roleguess_set.all():
+            pr = PlayerRole.objects.get(player = guess.other_player)            
+            if pr.role != guess.role:
+                guess.correct = False
+            else:
                 guess.correct = True
-                guess.save()
-            guess.correct = False
-            
+                number_correct+=1
+                
+            guess.save()
+        
+        submission.checked = True
+        submission.score = number_correct
         submission.save()
         
         
     def create_rankings(self):
-        if submissions.count() > 0:
-        winner = submissions[0].p
-        winner_ranking = Ranking(
-            rank = 1,
-            submission = submissions[0],
-            game = 
-        )
-        winner_ranking.save()
-        
-        return winner_ranking
+        rank = 0
+        submissions = self.game.submission_set.order_by('-score').all()
+        for submission in submissions:
+            ranking = Ranking(
+                rank = rank,
+                submission = submission,
+                player = submission.player,
+                game = self.game
+            )
+            ranking.save()
+            rank+=1
+            
+        self.game.is_current = False
+        self.game.save()
         

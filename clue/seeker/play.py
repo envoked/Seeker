@@ -70,11 +70,20 @@ def guess(request, game_id):
         user = request.user,
         game = game
     )
+    try:
+        submission = Submission.objects.get(player=player)
+    except:
+        submission = Submission(
+            player = player,
+            game = game
+        )
+        submission.save()
     
-    submission = Submission(
-        player = player
-    )
-    submission.save()
+    try:
+        #lb - for debugging, in reality you shouldn't get to guess more than once
+        submission.roleguess_set.all().delete()
+    except:
+        pass
 
     for guess in guesses:
         (other_player_id, role_id) = guess.split('=')
@@ -93,15 +102,17 @@ def guess(request, game_id):
     from seeker.games import BasicRoleGame
     brg = BasicRoleGame(game)
     brg.check_submission(submission)
-    return HttpResponse(json.dumps(expand(winner)))
+    return HttpResponse("")
     
     
 def quit(request, game_id):
     game = get_object_or_404(Game, id=game_id)
-    player = get_object_or_404(Player,
+    player = Player.objects.get(
         user = request.user,
-        game = game
+        game = game,
+        is_current = True,
     )
-    player.delete()
+    player.is_current = False
+    player.save()
     return HttpResponseRedirect('/lobby/home/')
 
