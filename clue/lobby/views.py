@@ -26,7 +26,8 @@ def index(request):
 @render_to('lobby/home.html')
 def home(request):
     try:
-        player = Player.objects.filter(user=request.user).get(game__is_current=True, is_current=True)
+        player = Player.objects.get(user=request.user, game__is_current=True, is_current=True)
+        print player
     except:
         traceback.print_exc()
         player = None
@@ -131,6 +132,7 @@ def start_game(request, lobby_id):
     
     from seeker.games import BasicRoleGame
     gameplay = BasicRoleGame(game)
+    gameplay.process_players()
     game = gameplay.play()
         
     return HttpResponseRedirect('/seeker/game/%d/' % game.id)

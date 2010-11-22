@@ -20,25 +20,25 @@ class BasicRoleGame():
         players = self.game.player_set.all()
         for player in players:
             role = roles[0]
-            roles = roles[1:]
+            roles = roles[:1]
             player_roles_used = []
  
             pr = PlayerRole(
                 player = player,
                 role = role
             )
+            pr.save()
             
             # Create clues
-            for i in range(0, self.num_clues):
-                pr.save()
+            for i in range(0, self.num_clues):    
                 is_not_role = Role.objects.exclude(id=player.playerrole.id).exclude(id__in=player_roles_used)[0]
-                pr = RoleFact(
+                rf = RoleFact(
                     player = player,
                     role = is_not_role,
                     neg = True
                 )
                 player_roles_used.append(is_not_role.id)
-                pr.save()
+                rf.save()
         
     def play(self):
         """
@@ -66,9 +66,9 @@ class BasicRoleGame():
                 try:
                     pr = RoleFact.objects.exclude(player=player).exclude(id__in=prs_given).order_by('?')[0]
                 except:
-                    print "error finding fact for " + str(player)
-                    print "unused facts", PlayerRole.objects.exclude(id__in=prs_given).all()
-                    print RoleFact.objects.all()
+                    #print "error finding fact for " + str(player)
+                    #print "unused facts", PlayerRole.objects.exclude(id__in=prs_given).all()
+                    #print RoleFact.objects.all()
                     break    
                 
                 clue = Clue(

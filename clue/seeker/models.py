@@ -19,8 +19,8 @@ class Player(models.Model):
     def current_game(self):
         self.game_set.all[0]
 
-    def name(self):
-        return "self.user.name"
+    def __str__(self):
+        return '%s (active: %s) in %s' % (self.user.username, self.is_current, str(self.game))
 
     
 class Fact(models.Model):
