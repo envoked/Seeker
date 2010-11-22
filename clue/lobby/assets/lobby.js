@@ -55,9 +55,13 @@ Lobby = {
         
         Lobby.members.each(function(member)
         {
-            if (member.user.id == User.id) return false;
+            
             h = "<li><b>" + member.user.username + "</b>"
-            h += " at " + member.created + "</li>"
+            h += " at " + member.created;
+            if (member.user.id != User.id) {
+                h += " <a href='javascript: Lobby.removeUser("+ member.id +")'>x</a></li>";
+            }
+            
             $('members').innerHTML += h
             
             //$('id_to').innerHTML += '<option value="' + member.user.id + '">' + member.user.username + '</option>'
@@ -68,6 +72,17 @@ Lobby = {
     {
         new Ajax.Request('/lobby/members/add_cpu_user/', {
             parameters: {'lobby': Lobby.id},
+            onSuccess: function(resp)
+            {
+                
+            }
+        })
+    },
+    
+    removeUser: function(member_id)
+    {
+        new Ajax.Request('/lobby/members/remove_member/', {
+            parameters: {'member_to_remove': member_id},
             onSuccess: function(resp)
             {
                 

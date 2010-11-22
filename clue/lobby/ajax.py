@@ -70,6 +70,14 @@ def add_cpu_user(request):
     return HttpResponse("")
     
 @login_required
+def remove_member(request):
+    member_id_to_remove = request.REQUEST['member_to_remove']
+    member_to_remove = Member.objects.get(id=member_id_to_remove)
+    member_to_remove.delete()
+    
+    return HttpResponse("")
+    
+@login_required
 def invite_member(request):
     lobby = Lobby.objects.get(id=request.REQUEST['lobby'])
     email_address = request.REQUEST['email']
