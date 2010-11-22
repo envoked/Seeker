@@ -18,4 +18,4 @@ class Command(BaseCommand):
                 player.is_current = False
                 player.save()
         
-        self.stdout.write(str(games))
+        #self.stdout.write(str(games))
