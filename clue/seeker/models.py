@@ -6,13 +6,16 @@ class Game(models.Model):
     end = models.DateTimeField()
     creator = models.ForeignKey(User)
     is_current = models.BooleanField(default=True)
-    
+            
+    def __str__(self):
+        return "%s-%s current: %s" % (self.start, self.end, self.is_current)
 
 class Player(models.Model):
     user = models.ForeignKey(User)
     game = models.ForeignKey(Game)
+    is_current = models.BooleanField(default=True)
     joined = models.DateTimeField(auto_now_add=True)
-
+    
     def current_game(self):
         self.game_set.all[0]
 
@@ -37,11 +40,9 @@ class PlayerRole(models.Model):
     player = models.OneToOneField(Player)
     role = models.ForeignKey(Role)
     
-    
     def __str__(self):
         return str(self.player.user) + " as " + str(self.role)
     
-
 #Specific to "Role" game
 class RoleFact(Fact):
     role = models.ForeignKey(Role)  
@@ -52,6 +53,31 @@ class RoleFact(Fact):
             return str(self.player.user) + " is not the " + str(self.role)
         else:
             return str(self.player.user) + " is the " + str(self.role)
+    
+class Submission(models.Model):
+    player = models.ForeignKey(Player)
+    checked = models.BooleanField(default=False)
+    score = models.IntegerField(null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    game = models.ForeignKey(Game)
+    
+class Guess(models.Model):
+    submission = models.ForeignKey(Submission)
+    correct = models.NullBooleanField()
+    
+    class Meta:
+        abstract = True
+        
+class RoleGuess(Guess):
+    other_player = models.ForeignKey(Player, related_name='other_player_set')
+    role = models.ForeignKey(Role)
+    
+class Ranking(models.Model):
+    rank = models.IntegerField()
+    submission = models.ForeignKey(Submission)
+    player = models.ForeignKey(Player)
+    game = models.ForeignKey(Game)
+    created = models.DateTimeField(auto_now_add=True)
     
 #Nonspefic, could be used to deliver any sort of Fact to a player
 class Clue(models.Model):

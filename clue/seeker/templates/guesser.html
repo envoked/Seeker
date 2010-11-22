@@ -4,10 +4,35 @@
 <script type="text/javascript" src="{% media_url %}/js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="{% media_url %}/js/jquery-ui-1.8.6.custom.min.js"></script>   
 <script>
+game_id = {{ game.id }};
+
 $(function() {
-	$( "#guessable" ).sortable();
-	$( "#guessable" ).disableSelection();
+	$( "#roles" ).sortable();
+	$( "#roles" ).disableSelection();
 });
+
+
+submitGuess = function()
+{
+    users = $('#players li')
+    roles = $('#roles li')
+    user_roles = []
+    
+    users.each(function(i, li)
+    {
+        user = li.id
+        role = roles[i].id
+        user_roles.push(user + '=' + role)
+    })
+    
+    user_role_str = user_roles.join(',')
+    
+    $.post('/seeker/game/' + game_id + '/guess/', {
+        'guess': user_role_str
+    })
+    
+}
+
 </script>
 
 <h2> Guess...</h2>
@@ -15,19 +40,23 @@ $(function() {
     <h2>Person</2>
      <ul id="players">
         {% for player in other_players %}
-            <li>{{ player.user }}</li>
+            <li id="{{ player.id }}">{{ player.user }}</li>
         {% endfor %}
      <ul>
 </div>
 <div class="floatLeft">
     <h2>Role</h2>
-    <ul id="guessable">
+    <ul class="softable" id="roles">
         {% for player_role in roles%}
-            <li>{{ player_role.role.name}}</li>
+            <li id="{{ player_role.role.id }}">{{ player_role.role.name}}</li>
         {% endfor %}
     <ul>
 </div>
+<a href="javascript: submitGuess()">Submit</a>
 
- <script type="text/javascript" src="{% media_url %}/js/jquery-1.4.2.min.js"></script>
- <script type="text/javascript" src="{% media_url %}/js/jquery-ui-1.8.6.custom.min.js"></script>   
+<script type="text/javascript" src="{% media_url %}/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="{% media_url %}/js/jquery-ui-1.8.6.custom.min.js"></script>
+<script>
+
+</script>
 {% endblock %}

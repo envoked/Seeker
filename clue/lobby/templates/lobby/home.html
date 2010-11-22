@@ -9,6 +9,10 @@
         <li><a href="/lobby/create/">New game</a></li>
     {% endif %}
     <li><a href="/lobby/profile/">Profile</a></li>
-    <li><a href="/lobby/settings/">Settings</a></li>            
+    <li><a href="/lobby/settings/">Settings</a></li>
 </ul>
+<h3>Past Games</h3>
+{% for game in history.all %}
+    <li><a href="/seeker/game/{{ game.id}}/">{{ game.end_time }}</a></li>
+{% endfor %}
 {% endblock %}

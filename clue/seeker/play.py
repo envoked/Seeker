@@ -8,6 +8,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from lobby.models import *
 from lobby import *
 from games import *
+from lb.util import expand
 
 NUM_PLAYERS = 4
 
@@ -59,12 +60,59 @@ def guesser(request, game_id):
     }
     return context
 
-def quit(request, game_id):
+def guess(request, game_id):
     game = get_object_or_404(Game, id=game_id)
-    player = get_object_or_404(Player,
+    guesses_str = request.REQUEST['guess']
+    guesses = guesses_str.split(',')
+    print guesses
+
+    player = Player.objects.get(
         user = request.user,
         game = game
     )
-    player.delete()
+    try:
+        submission = Submission.objects.get(player=player)
+    except:
+        submission = Submission(
+            player = player,
+            game = game
+        )
+        submission.save()
+    
+    try:
+        #lb - for debugging, in reality you shouldn't get to guess more than once
+        submission.roleguess_set.all().delete()
+    except:
+        pass
+
+    for guess in guesses:
+        (other_player_id, role_id) = guess.split('=')
+        other_player = Player.objects.get(id=other_player_id)
+        role = Role.objects.get(id=role_id)
+        
+        guess = RoleGuess(
+            other_player = other_player,
+            role = role,
+            submission = submission
+        )
+        
+        guess.role = role
+        guess.save()
+    
+    from seeker.games import BasicRoleGame
+    brg = BasicRoleGame(game)
+    brg.check_submission(submission)
+    return HttpResponse("")
+    
+    
+def quit(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    player = Player.objects.get(
+        user = request.user,
+        game = game,
+        is_current = True,
+    )
+    player.is_current = False
+    player.save()
     return HttpResponseRedirect('/lobby/home/')
 

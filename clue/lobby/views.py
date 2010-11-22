@@ -26,7 +26,7 @@ def index(request):
 @render_to('lobby/home.html')
 def home(request):
     try:
-        player = Player.objects.filter(user=request.user).get(game__is_current=True)
+        player = Player.objects.filter(user=request.user).get(game__is_current=True, is_current=True)
     except:
         traceback.print_exc()
         player = None
