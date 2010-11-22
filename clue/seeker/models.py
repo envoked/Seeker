@@ -6,19 +6,6 @@ class Game(models.Model):
     end = models.DateTimeField()
     creator = models.ForeignKey(User)
     is_current = models.BooleanField(default=True)
-    
-    def check_for_winner(self):
-        guesses = RoleGuess.objects.filter(player__in=self.player_set.values('id')).all()
-        if guesses.count() > 0:
-            winner = guesses[0].other_player
-            winner_ranking = Ranking(
-                player = winner,
-                rank = 1
-            )
-            winner_ranking.save()
-            return winner_ranking
-        
-        return None
             
 
 class Player(models.Model):
@@ -64,9 +51,13 @@ class RoleFact(Fact):
         else:
             return str(self.player.user) + " is the " + str(self.role)
     
-class Guess(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
+class Submission(models.Model):
     player = models.ForeignKey(Player)
+    checked = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    
+class Guess(models.Model):
+    submission = models.ForeignKey(Submission)
     
     class Meta:
         abstract = True
@@ -77,6 +68,7 @@ class RoleGuess(Guess):
     
 class Ranking(models.Model):
     rank = models.IntegerField()
+    submission = models.ForeignKey(Submission)
     player = models.ForeignKey(Player)
     created = models.DateTimeField(auto_now_add=True)
     

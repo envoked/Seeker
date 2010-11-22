@@ -9,7 +9,6 @@ class BasicRoleGame():
         self.game = game
         self.num_players = game.player_set.count()
         self.num_clues = self.num_players - 1 # Number of clues per player
-        self.process_players()
             
     def process_players(self):
         """
@@ -31,7 +30,6 @@ class BasicRoleGame():
             
             # Create clues
             for i in range(0, self.num_clues):
- 
                 pr.save()
                 is_not_role = Role.objects.exclude(id=player.playerrole.id).exclude(id__in=player_roles_used)[0]
                 pr = RoleFact(
@@ -48,40 +46,21 @@ class BasicRoleGame():
         -will not give a clue to a player about that player
         -will not give a clue based on a PlayerRole fact already used
         """
-
+        
         #PlayerRoles already given away
         prs_given = []
         players = self.game.player_set.all()
         now = datetime.now()
         print self.game.end
         for i in range(0, self.num_clues):
-            #print "start"
-            #print self.game.start
-            #print "end"
-            #print self.game.end
             
             if i == 0:
                 time_to_send = now
             else:
-                #time_to_send =
-                #print "start"
-                #print self.game.start
-                #print "end"
-                #print self.game.end
                 duration = self.game.end - self.game.start
-                #print "duration:"
-                #print duration
-                #print "num_clues"
-                #print self.num_clues
-                
-                #this needs work
                 interval_to_send = (duration.seconds / 60) / self.num_clues
-                #print "interval:"
-                #print interval_to_send
                 time_to_send = self.game.start + timedelta(minutes=(interval_to_send * i))
-                #print "FINAL TIME TO SEND"
-                #print time_to_send
-                
+
             for player in players:
                 #select a PlayerRole that does not describe the player getting the clue
                 try:
@@ -103,3 +82,28 @@ class BasicRoleGame():
                 prs_given.append(pr.id)
                 
         return self.game
+    
+    def check_submission(self, submission):
+        for guess in submission.guess.all():
+            rf = RoleFact.objects.get(player = guess.other_player)
+            
+            if rf.role != guess.role:
+                guess.correct = True
+                guess.save()
+            guess.correct = False
+            
+        submission.save()
+        
+        
+    def create_rankings(self):
+        if submissions.count() > 0:
+        winner = submissions[0].p
+        winner_ranking = Ranking(
+            rank = 1,
+            submission = submissions[0],
+            game = 
+        )
+        winner_ranking.save()
+        
+        return winner_ranking
+        

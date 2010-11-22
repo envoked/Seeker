@@ -70,24 +70,29 @@ def guess(request, game_id):
         user = request.user,
         game = game
     )
+    
+    submission = Submission(
+        player = player
+    )
+    submission.save()
 
     for guess in guesses:
         (other_player_id, role_id) = guess.split('=')
         other_player = Player.objects.get(id=other_player_id)
         role = Role.objects.get(id=role_id)
         
-        try:
-            guess = RoleGuess.get(player=player, other_player=other_player)
-        except:
-            guess = RoleGuess(
-                player = player,
-                other_player = other_player    
-            )
+        guess = RoleGuess(
+            other_player = other_player,
+            role = role,
+            submission = submission
+        )
         
         guess.role = role
         guess.save()
-        
-    winner = game.check_for_winner()
+    
+    from seeker.games import BasicRoleGame
+    brg = BasicRoleGame(game)
+    brg.check_submission(submission)
     return HttpResponse(json.dumps(expand(winner)))
     
     
