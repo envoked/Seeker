@@ -71,17 +71,23 @@ class BasicRoleGame():
                     #print RoleFact.objects.all()
                     break    
                 
-                clue = Clue(
-                    player = player,
-                    fact = pr,
-                    game = self.game,
-                    sent = 0,
-                    send_time = time_to_send
-                )
+                clue = self.convert_rf_to_clue(pr, player, time_to_send)
                 clue.save()
+                
                 prs_given.append(pr.id)
                 
         return self.game
+    
+    def convert_rf_to_clue(self,rf,player,time_to_send):   
+        clue = Clue(
+            player = player,
+            fact = rf,
+            game = self.game,
+            sent = 0,
+            send_time = time_to_send
+        )
+        
+        return clue
     
     def check_submission(self, submission):
         number_correct = 0
