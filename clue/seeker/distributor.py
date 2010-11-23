@@ -11,6 +11,7 @@ from lobby import *
 from games import *
 import smtplib
 import traceback
+from random import *
 
 CLUE_GENIE = "genie@seekr.us"
 
@@ -81,5 +82,49 @@ def send_time_clues():
 #send the next clue for the given player, to that player
 #will be used for non-global clue distribution
 def send_clue_to_player(player):
-    return
+    #a clue which has not been sent yet
+    clue_to_send = Clue.objects.filter(player=player).exclude(sent=1).order_by('?')[0]
+    send_clue(clue_to_send)
+
+def exchange_clues(player1, player2):
+    player1_clues_already_sent = []
+    player2_clues_already_sent = []
+    
+    player1_facts = []
+    player2_facts = []
+    
+    #get list of clues for each player which have already been sent and does not reference the other given player.
+    player1_clues_already_sent = Clue.objects.filter(player=player1).exclude(sent=0)
+    for clue1 in player1_clues_already_sent:
+        if(clue1.fact.player_id != player2.id):
+            player1_facts.append(clue1.fact)
+    #    else:
+    #        print clue1
+    
+    try:
+        clue_to_send_player2_from_player1 = player1_facts[randint(0, len(player1_facts) - 1)]
+    except ValueError:
+        return
+    
+    
+    player2_clues_already_sent = Clue.objects.filter(player=player2).exclude(sent=0)
+    for clue2 in player2_clues_already_sent:
+        if(clue2.fact.player_id != player1.id):
+            player2_facts.append(clue2.fact)
+    #    else:
+    #        print clue2
+    
+    try:
+        clue_to_send_player1_from_player2 = player2_facts[randint(0, len(player2_facts) - 1)]
+    except ValueError:
+        return
+    
+    print "CLUE FOR %s FROM %s" % (player1, player2)
+    print clue_to_send_player1_from_player2
+    
+    print "CLUE FOR %s FROM %s" % (player2, player1)
+    print clue_to_send_player2_from_player1
+    
+    
+
         
