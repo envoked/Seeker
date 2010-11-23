@@ -12,7 +12,7 @@
     <li><a href="/lobby/settings/">Settings</a></li>
 </ul>
 <h3>Past Games</h3>
-{% for game in history.all %}
-    <li><a href="/seeker/game/{{ game.id}}/">{{ game.end_time }}</a></li>
+{% for player in history.all %}
+    <li><a href="/seeker/game/{{ player.game.id }}/">{{ player.game.end }}</a></li>
 {% endfor %}
 {% endblock %}
