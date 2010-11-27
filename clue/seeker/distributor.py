@@ -48,7 +48,8 @@ Clue: %s
 Intended Email: %s
     """ % (clue.player.user.username, str(clue.fact), email)
     
-    self.stdout.write(msg)
+    #stdout.write(msg)
+    print msg
     
     send_item(email, msg)
     
@@ -86,12 +87,15 @@ def send_clue_to_player(player):
     clue_to_send = Clue.objects.filter(player=player).exclude(sent=1).order_by('?')[0]
     send_clue(clue_to_send)
 
-def exchange_clues(player1, player2):
+def exchange_clues(player1, player2, p1_num_to_give=1, p2_num_to_give=1):
     player1_clues_already_sent = []
     player2_clues_already_sent = []
     
     player1_facts = []
     player2_facts = []
+    
+    facts_to_send_player1_from_player2 = []
+    facts_to_send_player2_from_player1 = []
     
     #get list of clues for each player which have already been sent and does not reference the other given player.
     player1_clues_already_sent = Clue.objects.filter(player=player1).exclude(sent=0)
@@ -102,9 +106,13 @@ def exchange_clues(player1, player2):
     #        print clue1
     
     try:
-        clue_to_send_player2_from_player1 = player1_facts[randint(0, len(player1_facts) - 1)]
+        while(p1_num_to_give >= 1):
+            a_fact = player1_facts[randint(0, len(player1_facts) - 1)]
+            facts_to_send_player2_from_player1.append(a_fact)
+            player1_facts.remove(a_fact)
+            p1_num_to_give = p1_num_to_give - 1
     except ValueError:
-        return
+        facts_to_send_player2_from_player1.append("NOT ENOUGH CLUES TO SEND")
     
     
     player2_clues_already_sent = Clue.objects.filter(player=player2).exclude(sent=0)
@@ -115,16 +123,42 @@ def exchange_clues(player1, player2):
     #        print clue2
     
     try:
-        clue_to_send_player1_from_player2 = player2_facts[randint(0, len(player2_facts) - 1)]
+        while(p2_num_to_give >= 1):
+            a_fact = player2_facts[randint(0, len(player2_facts) - 1)]
+            facts_to_send_player1_from_player2.append(a_fact)
+            player2_facts.remove(a_fact)
+            p2_num_to_give = p2_num_to_give - 1
     except ValueError:
-        return
+        facts_to_send_player1_from_player2.append("NO ENOUGH CLUES TO SEND")
     
     print "CLUE FOR %s FROM %s" % (player1, player2)
-    print clue_to_send_player1_from_player2
+    print "-------"
+    
+    for fact in facts_to_send_player1_from_player2:
+        try:
+            clue = Clue.objects.get(fact=fact)
+            send_clue(clue)
+        except:
+            print "No more clues"
+        print clue
+    
+    
+    
+    print "----------------------"
+    print "----------------------"
     
     print "CLUE FOR %s FROM %s" % (player2, player1)
-    print clue_to_send_player2_from_player1
+    print "-------"
+
+    for fact in facts_to_send_player2_from_player1:
+        try:    
+            clue = Clue.objects.get(fact=fact)
+            send_clue(clue)
+        except:
+            print "No more clues"
+        print clue
     
-    
+    print "----------------------"    
+    print "----------------------"    
 
         
