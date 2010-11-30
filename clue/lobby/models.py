@@ -7,7 +7,11 @@ class Lobby(models.Model):
     creator = models.ForeignKey(User)
     num_players = models.IntegerField()
     hours = models.IntegerField()
+    minutes = models.IntegerField()
+    #created = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
+
+    
     #Once a lobby turns into a game, this will reference it ant the lobby is dead
     game = models.ForeignKey(Game, null=True)
     
