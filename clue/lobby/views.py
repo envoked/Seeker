@@ -58,7 +58,8 @@ def create(request):
                 creator = request.user,
                 name = request.POST['name'],
                 num_players = request.POST['num_players'],
-                hours = request.POST['hours']
+                hours = request.POST['hours'],
+                minutes = request.POST['minutes']
             )
             new_lobby.save()
             return HttpResponseRedirect('/lobby/%d/' % new_lobby.id)
@@ -111,15 +112,18 @@ def start_game(request, lobby_id):
     Can only be called once by the creator
     """
     one_hour = timedelta(hours=1)
+    one_minute = timedelta(minutes=1)
     
     
     lobby = Lobby.objects.get(id=lobby_id)
     num_hours = lobby.hours
     
+    num_minutes = lobby.minutes
+    
     from seeker.models import Game, Player
     game = Game(
         start = datetime.datetime.now(),
-        end = datetime.datetime.now() + (one_hour * num_hours),
+        end = datetime.datetime.now() + (one_hour * num_hours) + (one_minute * num_minutes),
         creator = lobby.creator
     )
     game.save()
