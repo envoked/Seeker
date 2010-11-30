@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
+from django.core.urlresolvers import reverse
 from lobby.models import *
 from lobby import *
 from games import *
@@ -44,18 +45,21 @@ def debug_clues(request, game_id):
 @render_to('guesser.html')
 def guesser(request, game_id):
     game = get_object_or_404(Game, id=game_id)
+    
+    if not game.is_current:
+        return HttpResponseRedirect('/seeker/game/%s/' % game.id)
+    
     player = get_object_or_404(Player,
         user = request.user,
         game = game
     )
     roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(role=player.playerrole.role)
     other_players = game.player_set.exclude(user=request.user)
-    print roles
+
     context = {
         'game'  : game,
         'player': player,
         'roles' : roles,
-        'jquery': True,
         'other_players': other_players
     }
     return context

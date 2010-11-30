@@ -34,6 +34,7 @@ def home(request):
     
     #show past games that have been closed and player has left
     history = Player.objects.filter(user=request.user, game__is_current=False, is_current=False)
+    history = history.order_by('-game__end')[:5]
         
     return locals()
 
@@ -159,7 +160,7 @@ def register(request):
     return render_to_response('lobby/register.html', context)
 
 @login_required
-@render_to('profile.html')
+@render_to('accounts/profile.html')
 def profile(request):
     return {}
 

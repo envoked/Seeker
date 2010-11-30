@@ -75,9 +75,16 @@ class RoleGuess(Guess):
 class Ranking(models.Model):
     rank = models.IntegerField()
     submission = models.ForeignKey(Submission)
-    player = models.ForeignKey(Player)
+    player = models.OneToOneField(Player)
     game = models.ForeignKey(Game)
     created = models.DateTimeField(auto_now_add=True)
+    
+    def human_rank(self):
+        suffixes = {1:'st', 2:'nd', 3:'rd'}
+        if self.rank+1 in suffixes:
+            return str(self.rank+1) + suffixes[self.rank+1]
+        else:
+            return str(self.rank+1) + 'th'
     
 #Nonspefic, could be used to deliver any sort of Fact to a player
 class Clue(models.Model):

@@ -13,6 +13,9 @@
 </ul>
 <h3>Past Games</h3>
 {% for player in history.all %}
-    <li><a href="/seeker/game/{{ player.game.id }}/">{{ player.game.end }}</a></li>
+    <li>
+        <span class="rank">{{ player.ranking.human_rank }}</span>
+        <a href="/seeker/game/{{ player.game.id }}/">{{ player.game.end }}</a>
+    </li>
 {% endfor %}
 {% endblock %}

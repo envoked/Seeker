@@ -3,7 +3,6 @@
 {% block content %}
 
 
-{% if game.is_current %}
     <h3>Clues for {{ user.username }}</h3>
     <ul>
 
@@ -12,9 +11,22 @@
     {% endfor %}
     </ul>
     
+    <ul id="answer" style="display: none">
+    {% for player in game.player_set.all %}
+        <li>{{ player.playerrole }} </li>
+    {% endfor %}
+    </ul>
     
-{% else %}
+    {% block toolbar %}
+    <div id="toolbar">
+        <a href="/seeker/game/{{ game.id }}/guesser/">Guesser</a>
+        <a href="/seeker/game/{{ game.id }}/quit/">Quit Game</a>
+    </div>
+    {% endblock %}
+    
+
     <h3>This game is over</h3>
+    <b>Rankings</b>
     <table>
         <tr>
             <th>Place</th>
@@ -24,34 +36,21 @@
         </tr>
     {% for ranking in game.ranking_set.all %}
         <tr>
-            <td><span class="rank">{{ ranking.human_rank }}</span></td>
+            <td>{{ ranking.rank }}</td>
             <td>{{ ranking.player.user.username }}</td>
             <td>{{ ranking.submission.score }}</td>
             <td>{{ ranking.submission.created }}</td>
         </tr>
     {% endfor %}
     </table>
-    
-    <ul id="answer" style="display: none">
-    {% for player in game.player_set.all %}
-        <li>{{ player.playerrole }} </li>
-    {% endfor %}
-    </ul>
-
-    
-{% endif %}
-
+        
 {% endblock %}
 
 {% block toolbar %}
 <div id="toolbar">
-    {% if game.is_current %}
-        <a href="/seeker/game/{{ game.id }}/guesser/">Guesser</a>
-        <a href="/seeker/game/{{ game.id }}/quit/">Quit Game</a>
-    {% else %}
-        <a href="/seeker/game/{{ game.id }}/debug_clues/">Show All Clues</a>
-        <a href="#" onclick="$('#answer').show()">Show Answer</a>
-    {% endif %}
+    <a href="/seeker/game/{{ game.id }}/debug_clues/">Show All Clues</a>
+    <a href="javascript: $('answer').show()">Show Answer</a>
 </div>
 {% endblock %}
+
 

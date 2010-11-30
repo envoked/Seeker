@@ -1,59 +1,60 @@
 
 Lobby = {
     id: null,
+    update_interval: 2000,  //ms
     
     //Call from view after id is set
     init: function()
     {
         this.updateMembers()
-        this._update_members = new PeriodicalExecuter(Lobby.updateMembers, 2)
     },
     
     updateMembers: function()
     {
-        new Ajax.Request('/lobby/get_lobby/', {
-            parameters: {'lobby': Lobby.id},
-            onSuccess: function(resp)
+        $.post('/lobby/get_lobby/',
+            {'lobby': Lobby.id},
+            function(resp)
             {
-                data = resp.responseText.evalJSON()
+                data = eval('(' + resp + ')')
                 if (data['game']) document.location = '/seeker/game/' + data['game']
                 Lobby.members = data['members']
                 Lobby._drawMembers()
+                setTimeout(Lobby.updateMembers, Lobby.update_interval)
             }
-        })   
+        )
     },
     
     updateMessages: function()
     {
-        new Ajax.Request('/lobby/messages/get/', {
-            parameters: {'lobby': Lobby.id},
-            onSuccess: function(resp)
+        $.post('/lobby/messages/get/',
+            {'lobby': Lobby.id},
+            function(resp)
             {
-                data = resp.responseText.evalJSON()
+                data = eval('(' + resp + ')')
                 Lobby.messages = data
                 Lobby._drawMessages()
             }
-        })
+        )
     },
-    
+    /*
     _drawMessages: function()
     {
-        $("messages").update("")
-        Lobby.messages.each(function(msg)
+        $("messages").html("")
+        Lobby.messages.each(function(i, msg)
         {
             h = "<b>" + msg.sender.username + "</b> at " + msg.created + "<br/>"
             h += "<p>" + msg.content + "</p>"
             $('messages').innerHTML += h
             
         })
-    },
+    },*/
     
     _drawMembers: function()
     {
-        $('members').update("")
+        $('members').html("")
         //$('id_to').update("")
         
-        Lobby.members.each(function(member)
+        $(Lobby.members).each(function(i, member)
         {
             
             h = "<li><b>" + member.user.username + "</b>"
@@ -70,35 +71,35 @@ Lobby = {
     
     addCpuUser: function()
     {
-        new Ajax.Request('/lobby/members/add_cpu_user/', {
-            parameters: {'lobby': Lobby.id},
-            onSuccess: function(resp)
+        $.post('/lobby/members/add_cpu_user/',
+            {'lobby': Lobby.id},
+            function(resp)
             {
                 
             }
-        })
+        )
     },
     
     removeUser: function(member_id)
     {
-        new Ajax.Request('/lobby/members/remove_member/', {
-            parameters: {'member_to_remove': member_id},
-            onSuccess: function(resp)
+        $.post('/lobby/members/remove_member/',
+            {'member_to_remove': member_id},
+            function(resp)
             {
                 
             }
-        })
+        )
     },
     
     inviteMember: function()
     {
-        new Ajax.Request('/lobby/members/invite/', {
-            parameters: {'lobby': Lobby.id, 'email': $('email').value},
-            onSuccess: function(resp)
+        $.post('/lobby/members/invite/',
+            {'lobby': Lobby.id, 'email': $('email').value},
+            function(resp)
             {
                 
             }
-        })  
+        )  
     }
 }
 

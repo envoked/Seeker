@@ -67,7 +67,7 @@ def add_cpu_user(request):
     )
     cpu_member.save()
     
-    return HttpResponse("")
+    return HttpResponse(json.dumps(expand(cpu_member)))
     
 @login_required
 def remove_member(request):
