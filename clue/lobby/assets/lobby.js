@@ -63,7 +63,7 @@ Lobby = {
                 h += " <a href='javascript: Lobby.removeUser("+ member.id +")'>x</a></li>";
             }
             
-            $('members').innerHTML += h
+            $('#members').innerHTML += h
             
             //$('id_to').innerHTML += '<option value="' + member.user.id + '">' + member.user.username + '</option>'
         });
@@ -94,7 +94,7 @@ Lobby = {
     inviteMember: function()
     {
         $.post('/lobby/members/invite/',
-            {'lobby': Lobby.id, 'email': $('email').value},
+            {'lobby': Lobby.id, 'email': $('#email').value},
             function(resp)
             {
                 
