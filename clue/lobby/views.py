@@ -10,7 +10,7 @@ from lobby import *
 from lobby.models import *
 from seeker.models import Player
 from lb.util import expand
-from forms import UserProfileForm
+#from forms import UserProfileForm
 import traceback
 
 context = {
@@ -168,11 +168,15 @@ def register(request):
 @render_to('accounts/profile.html')
 def profile(request):
     try:
+        data = request.FILES['photo'].read()
+        print len(data)
         myprofile = request.user.get_profile()
     except:
+        traceback.print_exc()
         up = UserProfile(user=request.user)
         up.save()
         myprofile = request.user.get_profile()
+        
 
     if request.method == 'POST':
         f = UserProfileForm(request.POST, request.FILES, instance=myprofile)
