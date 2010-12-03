@@ -53,15 +53,16 @@ Lobby = {
     {
         $('#members').html("")
         //$('#id_to').update("")
-        
+        //alert(Lobby.creator);
         $(Lobby.members).each(function(i, member)
         {
             h = "<li><b>" + member.user.username + "</b>"
             h += " at " + member.created;
-            if (member.user.id != User.id) {
-                h += " <a href='javascript: Lobby.removeUser("+ member.id +")'>x</a></li>";
+            if(User.id == Lobby.creator) {
+                if (member.user.id != Lobby.creator) {
+                    h += " <a href='javascript: Lobby.removeUser("+ member.id +")'>x</a></li>";
+                }
             }
-            
             $('#members').append(h)
             
             //$('#id_to').innerHTML += '<option value="' + member.user.id + '">' + member.user.username + '</option>'
