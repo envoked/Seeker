@@ -177,6 +177,27 @@ form {
 	cursor: pointer;
 }
 
+label.username, label.password, label.submit{
+    
+    width: 90px;
+    float: left;
+    margin-left: 20px;
+}
 
+input.submit {
+    width: 130px;
+}
 
+.floatright {
+ float: right;
+}
 
+.centerText {
+    text-align: center;
+}
+
+.center {
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -10,6 +10,7 @@ from lobby import *
 from lobby.models import *
 from seeker.models import Player
 from lb.util import expand
+from forms import UserProfileForm
 import traceback
 
 context = {
@@ -166,7 +167,22 @@ def register(request):
 @login_required
 @render_to('accounts/profile.html')
 def profile(request):
-    return {}
+    try:
+        myprofile = request.user.get_profile()
+    except:
+        up = UserProfile(user=request.user)
+        up.save()
+        myprofile = request.user.get_profile()
+
+    if request.method == 'POST':
+        f = UserProfileForm(request.POST, request.FILES, instance=myprofile)
+        if f.is_valid():
+            f.save()
+    else:
+        f = UserProfileForm(instance=myprofile)
+
+    return {'user_profile_form':f, 'profile':myprofile}
+
 
 def login(request):
     if 'username' in request.POST and 'password' in request.POST:

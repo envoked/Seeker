@@ -2,17 +2,22 @@
 {% load facebook_tags %}
 {% block content %}
 
-<h3>Login</h3>
-
-{% if message %}
-    <p class="error">{{ message }}</p>
-{% endif %}
-
-<form action="/login/?next={{ next }}" method="POST">
-    <label>Username</label> <input name="username" /><br />
-    <label>Password</label> <input name="password" /><br />
-    <input type="submit" />
-</form>
-
-{% show_connect_button %}
+<div class="center">
+    <h3>Login</h3>
+    
+    {% if message %}
+        <p class="error">{{ message }}</p>
+    {% endif %}
+    
+    <form action="/login/?next={{ next }}" method="POST">
+        <label class="username">Username</label> <input type="text" name="username" /><br />
+        <label class="password">Password</label> <input type="text" name="password" /><br />
+        <label class="submit">&nbsp; </label><input class="submit" type="submit" value="Login"/>
+    </form>
+    
+    <div class="centerText">
+            -- or --
+    {% show_connect_button %}
+    </div>
+</div>
 {% endblock %}

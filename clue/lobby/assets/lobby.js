@@ -51,21 +51,20 @@ Lobby = {
     
     _drawMembers: function()
     {
-        $('members').html("")
-        //$('id_to').update("")
+        $('#members').html("")
+        //$('#id_to').update("")
         
         $(Lobby.members).each(function(i, member)
         {
-            
             h = "<li><b>" + member.user.username + "</b>"
             h += " at " + member.created;
             if (member.user.id != User.id) {
                 h += " <a href='javascript: Lobby.removeUser("+ member.id +")'>x</a></li>";
             }
             
-            $('#members').innerHTML += h
+            $('#members').append(h)
             
-            //$('id_to').innerHTML += '<option value="' + member.user.id + '">' + member.user.username + '</option>'
+            //$('#id_to').innerHTML += '<option value="' + member.user.id + '">' + member.user.username + '</option>'
         });
     },
     

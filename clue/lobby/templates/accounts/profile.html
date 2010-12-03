@@ -3,6 +3,10 @@
 {% block content %}
 
 <h3>Hi, {{ user.username }}</h3>
+<form method="post" enctype="multipart/form-data">
+    {{ user_profile_form.as_p }}
+    <input type="submit" valud="Update" />
+</form>
 
 {% if user.facebook_id %}
 <h4>Facebook</h4>
