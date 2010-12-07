@@ -131,4 +131,4 @@ LOGGING_PATH = 'log/'
 SMTP_USERNAME = 'noreply@seekr.us'
 SMTP_PASSWORD = 'secret'
 
-AUTH_PROFILE_MODULE = 'lobby.UserProfile'
+AUTH_PROFILE_MODULE = 'userprofile.UserProfile'
