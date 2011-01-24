@@ -1,27 +1,149 @@
+import traceback
 from django.db import models
+from django.db import IntegrityError
 from django.contrib.auth.models import *
+from django.core.exceptions import MultipleObjectsReturned
 
 class Game(models.Model):
     start = models.DateTimeField()
-    end = models.DateTimeField()
-    creator = models.ForeignKey(User)
     is_current = models.BooleanField(default=True)
+    board_size = models.IntegerField()
             
     def __str__(self):
-        return "%s-%s current: %s" % (self.start, self.end, self.is_current)
+        return " current: %s" % (self.is_current)
+        
+    def get_players_within(self, x, y, distance):
+        """
+        Get players within distance space of x, y
+        Diagnals allowed
+        """
+        players =  self.player_set.filter(
+            x__gte = x-distance,
+            x__lte = x+distance,
+            y__gte = y-distance,
+            y__lte = y+distance,
+            ).exclude(pk=self.id)
+        return players
 
 class Player(models.Model):
     user = models.ForeignKey(User)
     game = models.ForeignKey(Game)
     is_current = models.BooleanField(default=True)
     joined = models.DateTimeField(auto_now_add=True)
+    x = models.IntegerField(null=True,)
+    y = models.IntegerField(null=True)
     
     def current_game(self):
         self.game_set.all[0]
 
-    def __str__(self):
-        return '%s (active: %s) in %s' % (self.user.username, self.is_current, str(self.game))
+    def get_position(self):
+        if self.x and self.y:
+            return (self.x, self.y)
+        else:
+            return None
 
+    def set_random_position(self):
+        import random
+        searching = True
+        
+        players = self.game.player_set.all()
+        tries = 100
+        tried = list()
+        
+        for i in range(0, tries):
+            x = random.randint(0, self.game.board_size-1)
+            y = random.randint(0, self.game.board_size-1)
+            tried.append((x, y))
+            #print "trying %s" % str((x, y))
+            if (x, y) in tried:
+                #print "%s in tried" % str((x, y))
+                #continue
+                pass
+            
+            taken = False
+            for player in players:
+                if x == player.x and y == player.y:
+                    taken = True
+                    
+            if taken: continue        
+            
+            #print "Saving player %s at unoccupied %s" % (str(self), str((x, y)))
+            self.x = x
+            self.y = y
+            self.save()
+            return True
+
+        return False
+                
+    def move(self, direction):
+        x = self.x
+        y = self.y
+        if direction == 'left':
+            x-=1
+        elif direction == 'right':
+            x+=1
+        elif direction == 'up':
+            y-=1
+        elif direction == 'down':
+            y+=1
+        else:
+            raise ValueError("Invalid Direction")
+
+        if x<0 or x > self.game.board_size-1 or y<0 or y>self.game.board_size-1:
+            raise ValueError("Invalid Direction")
+        
+        space_occupied = self.game.player_set.filter(x=x, y=y).all()
+        if len(space_occupied) > 0: raise ValueError("Player %s is already here" % space_occupied)
+          
+        self.x = x
+        self.y = y
+        self.save()
+        return True
+
+    def investigate(self, player):
+        """
+        Move a ClueOwnership from player to self and return it.
+        If player has nothing that self doesn't already know, return False"""
+        to_learn = player.clueownership_set.order_by('?')[0]
+        co = ClueOwnership(
+            clue = to_learn.clue,
+            player = self,
+            source = to_learn
+        )
+        try:
+            self.clueownership_set.add(co)
+            self.save()
+            return co
+        except IntegrityError:
+            return False
+        
+    def explain_clues(self):
+        o = "Positive\n"
+        for clue in self.clueownership_set.select_related('clue').filter(clue__fact__neg=False).all():
+            o += str(clue) + "\n"
+        return o
+    
+    def can_guess_without_deduction(self):
+        """
+        Does this player have a positive fact about every other player?
+        """
+        others = self.game.player_set.exclude(pk=self.id).all()
+        
+        not_found = 0
+        for other in others:
+            co = self.clueownership_set.select_related('clue').filter(clue__fact__neg=False, clue__fact__player = other).all()
+            #print "seeing if %s knows about %s" % (self.playerrole, other.playerrole)
+            if len(co) == 0: not_found += 1
+                
+        #print "There are %d facts that %s does not positively know" % (not_found, self.playerrole)
+        if not_found <= 1: return True
+        else: return False
+
+    def __str__(self):
+        if not self.is_current:
+            return '%s (not current) in %s' % (self.user.username, str(self.game))
+        else:
+            return '%s (current) in %s at %s' % (self.user.username, str(self.game), str(self.get_position()))
     
 class Fact(models.Model):
     player = models.ForeignKey(Player)
@@ -41,7 +163,7 @@ class PlayerRole(models.Model):
     role = models.ForeignKey(Role)
     
     def __str__(self):
-        return str(self.player.user) + " as " + str(self.role)
+        return str(self.role)
     
 #Specific to "Role" game
 class RoleFact(Fact):
@@ -50,9 +172,9 @@ class RoleFact(Fact):
     
     def __str__(self):
         if self.neg:
-            return str(self.player.user) + " is not the " + str(self.role)
+            return "The " + str(self.role) + " is not " + str(self.player.user.username)
         else:
-            return str(self.player.user) + " is the " + str(self.role)
+            return "The " + str(self.role) + " is " + str(self.player.user.username)
     
 class Submission(models.Model):
     player = models.ForeignKey(Player)
@@ -88,12 +210,27 @@ class Ranking(models.Model):
     
 #Nonspefic, could be used to deliver any sort of Fact to a player
 class Clue(models.Model):
-    player = models.ForeignKey(Player)
     #this will change when we have more kinds of facts
     fact = models.ForeignKey(RoleFact)
     game = models.ForeignKey(Game)
-    sent = models.BooleanField()
-    send_time = models.DateTimeField()
+    sent = models.BooleanField(default=False)
+    send_time = models.DateTimeField(null=True)
     
     def __str__(self):
-        return "For %s : %s" % (self.player.user, str(self.fact))
+        return "%s" % str(self.fact)
+        
+class ClueOwnership(models.Model):
+    clue = models.ForeignKey(Clue)
+    player = models.ForeignKey(Player)
+    source = models.ForeignKey('ClueOwnership', null=True, related_name='child_clues')
+    created = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        if self.source:
+            return "%s told %s that that %s" % (self.source.player.playerrole.role.name, self.player.playerrole.role.name, str(self.clue))
+        else:
+            return "%s knows that %s" % (self.player.playerrole.role.name, str(self.clue))
+        
+    class Meta:
+        # One clue can be owned by multiple players, but not by the same player
+        unique_together = ('player', 'clue')

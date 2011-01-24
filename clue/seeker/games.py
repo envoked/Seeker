@@ -1,6 +1,8 @@
+import traceback, exceptions
+from datetime import datetime, timedelta
+from django.core.exceptions import ObjectDoesNotExist
 from models import *
 from distributor import *
-from datetime import datetime, timedelta
 
 
 class BasicRoleGame():
@@ -122,4 +124,91 @@ class BasicRoleGame():
             
         self.game.is_current = False
         self.game.save()
+        
+class BoardGame:
+    
+    def __init__(self, game):
+        self.game = game
+        #we do list() because were going to need to get one item at a time out and we dont want to re-SELECT
+        roles = list(Role.objects.order_by('?').all()[:self.game.player_set.count()])
+        for player in game.player_set.all():
+            player.set_random_position()
+            role = roles[0]
+            roles = roles[1:]
+            player_roles_used = []
+ 
+            pr = PlayerRole(
+                player = player,
+                role = role
+            )
+            pr.save()
+            
+            rf = RoleFact(
+                role = role,
+                neg = False,
+                player = player
+            )
+            rf.save()
+            
+            clue = Clue(
+                fact = rf,
+                game = self.game
+            )
+            clue.save()
+            
+            co = ClueOwnership(
+                clue = clue,
+                player = player
+            )
+            
+            player.clueownership_set.add(co)
+            
+        for player in game.player_set.all():
+            other_players = game.player_set.exclude(pk=player.id).all()
+            
+            #We know that each other player is not our role
+            for other in other_players:
+                rf = RoleFact(role = player.playerrole.role, neg=True, player=other)
+                rf.save()
+                clue = Clue(
+                    fact = rf,
+                    game = self.game)
+                clue.save()
+                player.clueownership_set.add(ClueOwnership(clue=clue))
+            
+        for player in game.player_set.all():
+            other_players = game.player_set.exclude(pk=player.id).all()
+            #We know that each other role is not this player
+            for other in other_players:
+                rf = RoleFact(role = other.playerrole.role, neg=True, player=player)
+                rf.save()
+                clue = Clue(
+                    fact = rf,
+                    game = self.game)
+                clue.save()
+                player.clueownership_set.add(ClueOwnership(clue=clue))
+
+    def console_display(self):
+        o = ""
+        rows = []
+        
+        for y in range(0, self.game.board_size):
+            row = []
+            for x in range(0, self.game.board_size):
+                try:
+                    player_here = self.game.player_set.get(x=x, y=y)
+                    
+                    row.append("[%s]" % str(player_here.playerrole.role.name[0]))
+                except ObjectDoesNotExist:
+                    row.append("[ ]")
+                except:
+                    traceback.print_exc()
+                
+            rows.append(row)
+            
+        for row in rows:
+            o += " ".join(row)
+            o += "\n"
+            
+        return o
         

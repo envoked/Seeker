@@ -1,96 +1,120 @@
+from datetime import datetime
+import random, traceback
 from django.test import TestCase
-from seeker.models import *
 from django.contrib.auth.models import *
-from datetime import *
+from seeker.models import *
+from seeker.games import *
 
 class GameTest(TestCase):
     fixtures = ['auth.json', 'seeker.json']
     num_players = 4
     
-    def _create_game_and_players(self):
-        """
-        Creates a game and players
-        """
-        users = User.objects.all()
+    def test_boardgame(self):
+        from django.db import connections
+        conn = connections.all()[0]
+
+        users = User.objects.filter(is_active=True).all()
         
         game = Game(
-            start = datetime.now(),
-            end = datetime.now(),
-            creator = users[0]
+            start = datetime.datetime.now(),
+            board_size = users.count()-1
         )
         game.save()
-        
-        #we do list() because were going to need to get one item at a time out and we dont want to re-SELECT
-        roles = list(Role.objects.order_by('?').all()[:self.num_players])
-        
-        for user in users[0:self.num_players]:
-            role = roles[0]
-            roles = roles[1:]
-            
+        users = users[1:]
+    
+        for user in users:        
             player = Player(
                 user = user,
-                game = game,
-                role = role
+                game = game
             )
             player.save()
+        
+        bg = BoardGame(game)
+        player = game.player_set.all()[0]
+        cpus = game.player_set.exclude(pk=player.id).all()
+        print "You are playing as: %s" % player.user.username
+        print "You role is: %s (abbreviated as %s)" % (player.playerrole.role.name, player.playerrole.role.name[0])
+        key_codes = {"\x1b[D": 'left', '\x1b[A': 'up', "\x1b[C": 'right', "\x1b[B": 'down'}
+        
+        controls = """Controls:
+        m: move
+        c: show what players know
+        i: investigate player next to you
+        g: guess a player's role
+        s: skip
+        """
+        print controls
+        
+        while True:
+            """
+            Continue from this control stucture if cpus should get a turn
+            """
+            print bg.console_display()
+            action = raw_input(">")
             
-    def _create_player_roles(self):
-        """
-        Gives each player a playerRole
-        """
-        players = Player.objects.all()
-        for player in players:
-            player_roles_used = []
-            for i in range(0, self.num_players):
-                is_not_role = Role.objects.exclude(id=player.role.id).exclude(id__in=player_roles_used)[0]
-                pr = PlayerRole(
-                    player = player,
-                    role = is_not_role,
-                    neg = True
-                )
-                player_roles_used.append(is_not_role.id)
-                pr.save()
-        
-    def test_one_round(self):
-        """
-        Gives a clue to each player
-        -will not give a clue to a player about that player
-        -will not give a clue based on a PlayerRole fact already used
-        """
-        self._create_game_and_players()
-        self._create_player_roles()
-        
-        players = Player.objects.all()
-        print "\nPlayers:"
-        print players
-        
-        print PlayerRole.objects.all().count()
-        
-        #PlayerRoles already given away
-        prs_given = []
-        
-        for i in range(0, self.num_players):
-            for player in players:
-                #select a PlayerRole that does not describe the player getting the clue
+            if action == 'm':
+                move = raw_input("Move:")
                 try:
-                    pr = PlayerRole.objects.exclude(player=player).exclude(id__in=prs_given).order_by('?')[0]
+                    player.move(key_codes[move])
                 except:
-                    print "error finding fact for " + str(player)
-                    print "unused facts", PlayerRole.objects.exclude(id__in=prs_given).all()
-                    print PlayerRole.objects.all()
-                    break
+                    traceback.print_exc()
+                    continue
+            elif action == 'c':
+                print '-'*20
+                print "Your clues"
+                print '-'*20
+                print player.explain_clues()
+                
+                for p in cpus:
+                    print '-'*20
+                    print p.explain_clues()
+                    continue
                     
-                clue = Clue(
-                    player = player,
-                    subject_role = pr
-                )
-                clue.save()
-                prs_given.append(pr.id)
-        
-        clues = Clue.objects.all()
-        
-        print "\nClues:"
-        for clue in clues:
-            print clue
-        
+            elif action == 'i':
+                neighbors = game.get_players_within(player.x, player.y, 1).all()
+                if len(neighbors) == 0:
+                    print "You have no neighbors"
+                    continue
+                
+                for p in neighbors:
+                    print p.playerrole.role.name + ": %d" % p.id
+                    
+                _investigated = raw_input("Who would you like to investigate:")
+                try:
+                    player_investigated = game.player_set.get(id=_investigated)
+                    new_clue = player.investigate(player_investigated)
+                    if new_clue:
+                        print "You learned:"
+                        print new_clue
+                    else:
+                        print "%s knows nothing that you don't" % player_investigated.playerrole.role.name
+                        
+                    print "Everything you know:"
+                    print player.explain_clues()    
+                except:
+                    traceback.print_exc()
+                    continue
+            elif action == 's':
+                pass
+            else:
+                print controls
+                continue
             
+            """
+            Very basic AI
+            """
+            for cpu in cpus:
+                if cpu.can_guess_without_deduction():
+                    print "%s knows everything!" % cpu.playerrole
+                #cpus cannot move yet, so let them see 5 spaces
+                to_investigate = game.get_players_within(cpu.x, cpu.y, 5).exclude(pk=cpu.id).order_by('?')
+                if len(to_investigate) > 0:
+                    to_investigate = to_investigate[0]
+                    cpu.investigate(to_investigate)
+                    
+                    if to_investigate == player:
+                        print "%s investigated you!" % (cpu.playerrole.role)
+                    else:
+                        print "%s investigated %s" % (cpu.playerrole.role, to_investigate.playerrole.role)
+                
+                

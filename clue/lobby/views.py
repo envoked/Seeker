@@ -115,17 +115,8 @@ def start_game(request, lobby_id):
     one_hour = timedelta(hours=1)
     one_minute = timedelta(minutes=1)
     
-    
-    lobby = Lobby.objects.get(id=lobby_id)
-    num_hours = lobby.hours
-    
-    num_minutes = lobby.minutes
-    
-    from seeker.models import Game, Player
     game = Game(
         start = datetime.datetime.now(),
-        end = datetime.datetime.now() + (one_hour * num_hours) + (one_minute * num_minutes),
-        creator = lobby.creator
     )
     game.save()
 
@@ -139,8 +130,8 @@ def start_game(request, lobby_id):
     lobby.game = game
     lobby.save()
     
-    from seeker.games import BasicRoleGame
-    gameplay = BasicRoleGame(game)
+    from seeker.games import BoardGame
+    gameplay = BoardGame(game)
     gameplay.process_players()
     game = gameplay.play()
         
