@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import *
 from lobby import *
 from lobby.models import *
-from seeker.models import Player
+from seeker.models import Player, Game
 from lb.util import expand
 #from forms import UserProfileForm
 import traceback
@@ -59,8 +59,6 @@ def create(request):
                 creator = request.user,
                 name = request.POST['name'],
                 num_players = request.POST['num_players'],
-                hours = request.POST['hours'],
-                minutes = request.POST['minutes']
             )
             new_lobby.save()
             return HttpResponseRedirect('/lobby/%d/' % new_lobby.id)
@@ -115,8 +113,10 @@ def start_game(request, lobby_id):
     one_hour = timedelta(hours=1)
     one_minute = timedelta(minutes=1)
     
+    lobby = Lobby.objects.get(id=lobby_id)
     game = Game(
         start = datetime.datetime.now(),
+        board_size = lobby.members.count()+1
     )
     game.save()
 
@@ -132,9 +132,8 @@ def start_game(request, lobby_id):
     
     from seeker.games import BoardGame
     gameplay = BoardGame(game)
-    gameplay.process_players()
-    game = gameplay.play()
-        
+    gameplay.play()
+
     return HttpResponseRedirect('/seeker/game/%d/' % game.id)
     
 def register(request):

@@ -129,9 +129,11 @@ class BoardGame:
     
     def __init__(self, game):
         self.game = game
+        
+    def play(self):
         #we do list() because were going to need to get one item at a time out and we dont want to re-SELECT
         roles = list(Role.objects.order_by('?').all()[:self.game.player_set.count()])
-        for player in game.player_set.all():
+        for player in self.game.player_set.all():
             player.set_random_position()
             role = roles[0]
             roles = roles[1:]
@@ -163,8 +165,8 @@ class BoardGame:
             
             player.clueownership_set.add(co)
             
-        for player in game.player_set.all():
-            other_players = game.player_set.exclude(pk=player.id).all()
+        for player in self.game.player_set.all():
+            other_players = self.game.player_set.exclude(pk=player.id).all()
             
             #We know that each other player is not our role
             for other in other_players:
@@ -176,8 +178,8 @@ class BoardGame:
                 clue.save()
                 player.clueownership_set.add(ClueOwnership(clue=clue))
             
-        for player in game.player_set.all():
-            other_players = game.player_set.exclude(pk=player.id).all()
+        for player in self.game.player_set.all():
+            other_players = self.game.player_set.exclude(pk=player.id).all()
             #We know that each other role is not this player
             for other in other_players:
                 rf = RoleFact(role = other.playerrole.role, neg=True, player=player)
@@ -187,7 +189,33 @@ class BoardGame:
                     game = self.game)
                 clue.save()
                 player.clueownership_set.add(ClueOwnership(clue=clue))
-
+    
+    def guess(self, user, other_user, role):
+        this_player = user.player_set.get(is_current=True, game=self.game)
+        other_player = other_user.player_set.get(is_current=True, game=self.game)
+        
+        if other_player.playerrole.role == role:
+            rf = RoleFact(player=other_player, neg=False, role=role)
+            rf.save()
+            new_clue = Clue(
+                fact = rf,
+                game=self.game
+            )
+            new_clue.save()
+            new_co = ClueOwnership(clue=new_clue)
+            this_player.clueownership_set.add(new_co)
+        else:
+            rf = RoleFact(player=other_player, neg=True, role=role)
+            rf.save()
+            new_clue  = Clue(
+                fact = rf,
+                game=self.game
+            )
+            new_clue.save()
+            new_co = ClueOwnership(clue=new_clue)
+            this_player.clueownership_set.add(new_co)
+        return new_co
+        
     def console_display(self):
         o = ""
         rows = []
@@ -211,4 +239,26 @@ class BoardGame:
             o += "\n"
             
         return o
+    
+    def html(self, request):
+        o = ""
+        rows = []
+        
+        for y in range(0, self.game.board_size):
+            row = []
+            for x in range(0, self.game.board_size):
+                extra_class = ""
+                try:
+                    player_here = self.game.player_set.get(x=x, y=y)
+                    if request.user  == player_here.user:
+                        extra_class = "you"
+                    row.append('<td class="occupied %s">%s</td>' % (extra_class, str(player_here.user.username[:4])))
+                except ObjectDoesNotExist:
+                    row.append("<td></td>")
+                except:
+                    traceback.print_exc()
+                
+            rows.append('<tr>' + '\n'.join(row) + '</tr>')
+            
+        return '<table class="board" cellspacing="0" cellpadding="0" width="' + str(64*self.game.board_size) + '">' + '\n'.join(rows) + '</table>'   
         

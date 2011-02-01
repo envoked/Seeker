@@ -1,72 +1,46 @@
-{% extends "base.html" %}
+
 {% load extras %}
 {% block content %}
-{% if game.is_current %}
-
-<script>
-game_id = {{ game.id }};
-
-$(function() {
-	$( "#roles" ).sortable();
-	$( "#roles" ).disableSelection();
-});
-
-
-submitGuess = function()
-{
-    users = $('#players li')
-    roles = $('#roles li')
-    user_roles = []
+    {% if game.is_current %}
+    {% if other_players.count > 0 %}
     
-    users.each(function(i, li)
-    {
-        user = li.id
-        role = roles[i].id
-        user_roles.push(user + '=' + role)
-    })
+    <h2>Guess...</h2>
+    <div class="floatLeft">
+        <h2>Person</h2>
+        <select id="player">
+            {% for player in other_players %}
+            <option value="{{ player.user.id }}">{{ player.user }}</option>
+            {% endfor %}
+        </select>
+        <!--
+         <ul id="players">
+            {% for player in other_players %}
+                <li id="{{ player.id }}">{{ player.user }}</li>
+            {% endfor %}
+         <ul>
+        -->
+    </div>
+    <div class="floatLeft">
+        <h2>Role</h2>
+        <select id="role">
+            {% for player_role in roles %}
+            <option value="{{ player_role.role.id }}">{{ player_role.role.name }}</option>
+            {% endfor %}
+        </select>
+        <!--
+        <ul class="softable" id="roles">
+            {% for player_role in roles%}
+                <li id="{{ player_role.role.id }}">{{ player_role.role.name}}</li>
+            {% endfor %}
+        <ul>
+        -->
+    </div>
+    <div class="clear"></div>
+    <a class="button" href="javascript: submitGuess()">Submit</a>
+    {% else %}
+    <b>You know everything!</g>
+    {% endif %}
     
-    user_role_str = user_roles.join(',')
-    
-    $.post('/seeker/game/' + game_id + '/guess/', {
-        'guess': user_role_str
-    })
-    
-}
-
-guessForCpu = function()
-{
-    $.post('/seeker/game/' + game_id + '/guess_for_cpus/', {
-    })
-}
-
-</script>
-
-<h2>Guess...</h2>
-<div class="floatLeft">
-    <h2>Person</2>
-     <ul id="players">
-        {% for player in other_players %}
-            <li id="{{ player.id }}">{{ player.user }}</li>
-        {% endfor %}
-     <ul>
-</div>
-<div class="floatLeft">
-    <h2>Role</h2>
-    <ul class="softable" id="roles">
-        {% for player_role in roles%}
-            <li id="{{ player_role.role.id }}">{{ player_role.role.name}}</li>
-        {% endfor %}
-    <ul>
-</div>
-<a href="javascript: submitGuess()">Submit</a>
-<hr />
-<a href="javascript: guessForCpu()">Guess for CPU Players</a>
-
-<script type="text/javascript" src="{% media_url %}/js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript" src="{% media_url %}/js/jquery-ui-1.8.6.custom.min.js"></script>
-<script>
-
-</script>
 {% else %}
 <b>This game is over</b>
 {% endif %}

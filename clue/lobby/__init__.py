@@ -68,8 +68,6 @@ min_choices = (
 class CreateLobbyForm(forms.Form):
     name = forms.CharField(max_length=255)
     num_players = forms.ChoiceField(choices=num_players_choices)
-    hours = forms.ChoiceField(choices=hour_choices)
-    minutes = forms.ChoiceField(choices=min_choices)
     difficuly = forms.ChoiceField(choices=difficulty_choices)
     
 class SendMessageForm(forms.Form):

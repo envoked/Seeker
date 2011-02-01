@@ -1,57 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="board">Loading...</div>
+<script type="text/javascript">
+Game.init({{ game.id }}, $('.board'))
 
+submitGuess = function()
+{
+    var user = $('#player')[0].value
+    var role = $('#role')[0].value
+    Game.submitGuess(user, role)
+}
 
-{% if game.is_current %}
-    <h3>Clues for {{ user.username }}</h3>
-    <ul>
+</script>
 
-    {% for clue in player.clue_set.all %}
-        <li>{{ clue.fact }}</li>
-    {% endfor %}
-    </ul>
-    
-    
-{% else %}
-    <h3>This game is over</h3>
-    <table>
-        <tr>
-            <th>Place</th>
-            <th>User</th>
-            <th>Score</th>
-            <th>Submitted</th>
-        </tr>
-    {% for ranking in game.ranking_set.all %}
-        <tr>
-            <td><span class="rank">{{ ranking.human_rank }}</span></td>
-            <td>{{ ranking.player.user.username }}</td>
-            <td>{{ ranking.submission.score }}</td>
-            <td>{{ ranking.submission.created }}</td>
-        </tr>
-    {% endfor %}
-    </table>
-    
-    <ul id="answer" style="display: none">
-    {% for player in game.player_set.all %}
-        <li>{{ player.playerrole }} </li>
-    {% endfor %}
-    </ul>
-
-    
-{% endif %}
-
+<div id="guesser" class="modal" style="display: none"></div>
+<div id="clues" class="modal" style="display: none"></div>
 {% endblock %}
+
 
 {% block toolbar %}
 <div id="toolbar">
-    {% if game.is_current %}
-        <a href="/seeker/game/{{ game.id }}/guesser/">Guesser</a>
-        <a href="/seeker/game/{{ game.id }}/quit/">Quit Game</a>
-    {% else %}
-        <a href="/seeker/game/{{ game.id }}/debug_clues/">Show All Clues</a>
-        <a href="#" onclick="$('#answer').show()">Show Answer</a>
-    {% endif %}
+    <a href="#" onclick="Game.showBoard()">Board</a>
+    <a href="#" onclick="Game.showClues()">Show Clues</a>
+    <a href="#" onclick="Game.showGuesser()">Guesser</a>
 </div>
 {% endblock %}
-

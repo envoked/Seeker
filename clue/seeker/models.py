@@ -24,6 +24,9 @@ class Game(models.Model):
             y__lte = y+distance,
             ).exclude(pk=self.id)
         return players
+    
+    def other_players(self, player):
+        return self.player_set.exclude(id=player.pk)
 
 class Player(models.Model):
     user = models.ForeignKey(User)
@@ -74,6 +77,15 @@ class Player(models.Model):
             return True
 
         return False
+    
+    def move_to(self, x, y):
+        space_occupied = self.game.player_set.filter(x=x, y=y).all()
+        if len(space_occupied) > 0: raise ValueError("Player %s is already here" % space_occupied)
+        
+        self.x = x
+        self.y = y
+        self.save()
+        return True
                 
     def move(self, direction):
         x = self.x
@@ -118,8 +130,8 @@ class Player(models.Model):
             return False
         
     def explain_clues(self):
-        o = "Positive\n"
-        for clue in self.clueownership_set.select_related('clue').filter(clue__fact__neg=False).all():
+        o = ""
+        for clue in self.clueownership_set.select_related('clue').order_by('clue__fact__neg').all():
             o += str(clue) + "\n"
         return o
     
@@ -227,10 +239,16 @@ class ClueOwnership(models.Model):
     
     def __str__(self):
         if self.source:
-            return "%s told %s that that %s" % (self.source.player.playerrole.role.name, self.player.playerrole.role.name, str(self.clue))
+            return "%s told %s that that %s" % (self.source.player.user.username, self.player.user.username, str(self.clue))
         else:
-            return "%s knows that %s" % (self.player.playerrole.role.name, str(self.clue))
+            return "%s knows that %s" % (self.player.user.username, str(self.clue))
         
     class Meta:
         # One clue can be owned by multiple players, but not by the same player
         unique_together = ('player', 'clue')
+        
+class Turn(models.Model):
+    action = models.CharField(max_length=100)
+    params = models.CharField(max_length=100)
+    player = models.ForeignKey(Player)
+    created = models.DateTimeField(auto_now_add=True)

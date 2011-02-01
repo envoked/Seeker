@@ -6,10 +6,12 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.core.urlresolvers import reverse
+from django.utils.safestring import SafeString
+from django.utils import simplejson
 from lobby.models import *
 from lobby import *
 from games import *
-from lb.util import expand
+from lb.util import expand, serialize_qs
 
 NUM_PLAYERS = 4
 
@@ -18,24 +20,105 @@ NUM_PLAYERS = 4
 def game(request, game_id):
     #404 for invalid game
     game = get_object_or_404(Game, id=game_id)
+    bg = BoardGame(game)
     #404 if user is not a player in game
     player = get_object_or_404(Player,
         user = request.user,
         game = game
     )
+    turn = Turn(
+        player = player
+    )
 
+    if request.is_ajax():
+        game_dict = expand(game)
+        if 'move' in request.POST:
+            move_coords = request.POST['move']
+            x, y = move_coords.split(',')
+            player.move_to(x, y)
+            turn.action = 'move'
+            turn.params = move_coords
+   
+        if 'investigate' in request.POST:
+            investigating_player_id = request.POST['investigate']
+            investigating_player = Player.objects.get(id=investigating_player_id, game=game)
+            new_co = player.investigate(investigating_player)
+        
+            game_dict['new_co'] = expand(new_co)
+            game_dict['new_co']['clue'] = expand(new_co.clue)
+            game_dict['new_co']['clue']['str'] = str(new_co)
+            
+            turn.action = 'investidate'
+            turn.params = investigating_player_id
+            
+        if 'guess' in request.POST:
+            user_id, role_id = request.POST['guess'].split('=')
+            user = User.objects.get(id=user_id)
+            role = Role.objects.get(id=role_id)
+            new_co = bg.guess(request.user, user, role)
+            game_dict['new_co'] = expand(new_co)
+            game_dict['new_co']['clue'] = expand(new_co.clue)
+            game_dict['new_co']['clue']['str'] = str(new_co)
+        
+            turn.action = 'guess'
+            turn.params = request.POST['guess']
+            
+            if player.can_guess_without_deduction():
+                game.is_current = False
+                gave.save()
+                game_dict = expand(game)
+                
+        
+        if turn.action:
+            turn.save()
+        
+        for cpu in game.player_set.filter(user__is_active=False).all():
+            if player.turn_set.count() > cpu.turn_set.count():
+                try:
+                    cpu.move('left')
+                    cpu_turn = Turn(player=cpu, action='move', params='left')
+                    cpu_turn.save()
+                except:
+                    try:
+                        cpu.move('down')
+                        cpu_turn = Turn(player=cpu, action='move', params='down')
+                        cpu_turn.save()
+                    except:
+                        try:
+                            cpu.move('right')
+                            cpu_turn = Turn(player=cpu, action='move', params='right')
+                            cpu_turn.save()
+                        except:
+                            try:
+                                cpu.move('up')
+                                cpu_turn = Turn(player=cpu, action='move', params='up')
+                                cpu_turn.save()
+                            except:
+                                pass
+            
+        game_dict['player'] = expand(player)
+        game_dict['players'] = serialize_qs(game.player_set.all(), ['user'])
+        game_dict['clues'] = serialize_qs(player.clueownership_set.all())
+        print game_dict
+        return HttpResponse('(' + simplejson.dumps(game_dict) + ')')
+        
     context = {
         'game': game,
-        'player': player
+        'player': player,
+        'board_html': SafeString(bg.html(request))
     }
 
     return context
 
 @render_to('play.html')
-def debug_clues(request, game_id):
+def clues(request, game_id):
     game = Game.objects.get(id=game_id)
-
+    player = get_object_or_404(Player,
+        user = request.user,
+        game = game
+    )
     context = {
+        'player': player,
         'game': game
     }
 
@@ -53,8 +136,9 @@ def guesser(request, game_id):
         user = request.user,
         game = game
     )
-    roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(role=player.playerrole.role)
-    other_players = game.player_set.exclude(user=request.user)
+    known_facts = player.clueownership_set.filter(clue__fact__neg=False).values('clue__fact__player')
+    roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(player__in=known_facts)
+    other_players = game.player_set.exclude(id__in=known_facts)
 
     context = {
         'game'  : game,

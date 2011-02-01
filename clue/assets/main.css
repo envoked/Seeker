@@ -79,7 +79,7 @@ body {
 }
 
 #content {
-	height:404px;
+	height:380px;
     overflow-y: auto;
     position: relative;
     padding: 10px;
@@ -201,3 +201,36 @@ input.submit {
   margin-left: auto;
   margin-right: auto;
 }
+
+div.board {
+    margin: 10px;
+    empty-cells: show
+}
+
+div.board div.cell {
+    background-color: #eee;
+    width: 64px;
+    height: 64px;
+    border: 1px solid white;
+    float: left;
+}
+
+div.board div.row {
+    display: block
+}
+
+div.board div.can-move {
+    background: #DF720A;
+    cursor: pointer
+}
+
+div.board div.occupied {
+    color: #eee;
+    background-color: #333
+}
+
+div.board div.you {
+    color: yellow;
+    font-weight: bold
+}
+
