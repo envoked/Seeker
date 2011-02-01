@@ -69,8 +69,13 @@ def serialize_qs(qs, related=[]):
     for i in qs:
         row = expand(i)
         for r in related:
-            print r
-            row[r] = expand(getattr(i, r))
+            if len(r.split('.')) == 2:
+                a, b = r.split('.')
+                first = getattr(i, a)
+                row[a] = expand(first)
+                row[a][b] = expand(getattr(first, b))
+            else:
+                row[r] = expand(getattr(i, r))
         seq.append(row)
     return seq
     

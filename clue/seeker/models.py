@@ -5,7 +5,8 @@ from django.contrib.auth.models import *
 from django.core.exceptions import MultipleObjectsReturned
 
 class Game(models.Model):
-    start = models.DateTimeField()
+    start = models.DateTimeField(null=True)
+    end = models.DateTimeField(null=True)
     is_current = models.BooleanField(default=True)
     board_size = models.IntegerField()
             
@@ -252,3 +253,6 @@ class Turn(models.Model):
     params = models.CharField(max_length=100)
     player = models.ForeignKey(Player)
     created = models.DateTimeField(auto_now_add=True)
+    
+    def __str___(self):
+        return '%s %s' % (action, str(player))

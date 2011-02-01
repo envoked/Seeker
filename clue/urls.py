@@ -9,7 +9,7 @@ urlpatterns = patterns('',
     # Example:
     (r'^$', 'lobby.views.index'),
     (r'^lobby/', include('clue.lobby.urls')),
-    (r'^up/', include('clue.userprofile.urls.en')),
+    (r'^userprofile/', include('clue.userprofile.urls.en')),
     (r'^facebook/', include('facebookconnect.urls')),
     (r'^seeker/', include('clue.seeker.urls')),
     (r'^login/$', 'lobby.views.login'),

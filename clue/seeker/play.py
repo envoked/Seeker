@@ -13,8 +13,6 @@ from lobby import *
 from games import *
 from lb.util import expand, serialize_qs
 
-NUM_PLAYERS = 4
-
 @login_required
 @render_to('game.html')
 def game(request, game_id):
@@ -65,41 +63,36 @@ def game(request, game_id):
             
             if player.can_guess_without_deduction():
                 game.is_current = False
-                gave.save()
+                game.end = datetime.now()
+                game.save()
                 game_dict = expand(game)
                 
-        
         if turn.action:
             turn.save()
         
         for cpu in game.player_set.filter(user__is_active=False).all():
             if player.turn_set.count() > cpu.turn_set.count():
-                try:
-                    cpu.move('left')
-                    cpu_turn = Turn(player=cpu, action='move', params='left')
-                    cpu_turn.save()
-                except:
-                    try:
-                        cpu.move('down')
-                        cpu_turn = Turn(player=cpu, action='move', params='down')
-                        cpu_turn.save()
-                    except:
-                        try:
-                            cpu.move('right')
-                            cpu_turn = Turn(player=cpu, action='move', params='right')
-                            cpu_turn.save()
-                        except:
-                            try:
-                                cpu.move('up')
-                                cpu_turn = Turn(player=cpu, action='move', params='up')
-                                cpu_turn.save()
-                            except:
-                                pass
+                ai = AI(cpu)
+                turn = ai.go()
+                print turn
             
         game_dict['player'] = expand(player)
-        game_dict['players'] = serialize_qs(game.player_set.all(), ['user'])
+        game_dict['player']['user'] = expand(player.user)
+        try: game_dict['player']['user']['profile'] = expand(player.user.get_profile())
+        except: pass
+            
+        game_dict['players'] = [] 
+        _players = game.player_set.all()
+        
+        for i in _players:
+            _player = expand(i)
+            _player['user'] = expand(i.user)
+            try: _player['user']['profile'] = expand(i.user.get_profile())
+            except: pass
+            game_dict['players'].append(_player)
+        
         game_dict['clues'] = serialize_qs(player.clueownership_set.all())
-        print game_dict
+
         return HttpResponse('(' + simplejson.dumps(game_dict) + ')')
         
     context = {

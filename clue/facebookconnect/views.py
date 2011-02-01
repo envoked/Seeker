@@ -115,7 +115,8 @@ def facebook_login(request, redirect_url=None,
 def facebook_redirect(request):
     params = {
         'client_id': settings.FACEBOOK_API_KEY,
-        'redirect_uri': util.site_url(request) + reverse(facebook_login),
+        #'redirect_uri': util.site_url(request) + reverse(facebook_login),
+        'redirect_uri': 'http://seeker.us/',
         'display': 'touch'
     }
     print request

@@ -11,13 +11,16 @@ submitForm = function(_form)
     })
 }
 
+UPDATE_INTERVAL = 5000;
+
 Game = {
     
     init: function(id, el)
     {
         this.id = id;
         this.el = el;
-        this.update_interval = 10000;
+        this.updating = true;
+        this.update_interval = UPDATE_INTERVAL;
         this.reload();
     },
     
@@ -38,7 +41,7 @@ Game = {
                     alert(Game._game.new_co.clue.str)
                 }
                 
-                Game.redraw();
+                Game.redraw();             
                 setTimeout(Game.reload, Game.update_interval)
             });  
     },
@@ -47,7 +50,8 @@ Game = {
     {
         this.rows = []
         this.el.html("");
-        this.el.css('width', this._game.board_size*68)
+        //this.el.css('width', this._game.board_size*68)
+        
         for (row=0; row<this._game.board_size; row++)
         {
             var column = []
@@ -56,13 +60,15 @@ Game = {
             for (col=0; col<this._game.board_size; col++)
             {
                 var td = $('<div class="cell">').attr('x', row).attr('y', col)
+                var player = this.playerAt(row, col)
                 
-                if (player = this.playerAt(row, col))
+                if (player)
                 {
                     td.addClass('occupied').attr('player', player.id)
-                    td.html(player.user.username.substring(0, 4))
+                    td.html(player.user.username)
                 }
-                else if (this._game.player.x == row && this._game.player.y == col)
+                
+                if (this._game.player.x == row && this._game.player.y == col)
                 {
                     td.addClass('you')
                 }
@@ -72,33 +78,15 @@ Game = {
                     td.addClass('can-move')  
                 }
 
-                td.click(Game.cellClick)
+                td.css('width', 300.0/this._game.board_size-5)
+                td.css('height', 300.0/this._game.board_size-5)
+                td.click(GameCell.cellClick)
                 column.push(td)
                 tr.append(td)
             }
             
             this.el.append(tr)
             this.rows.push(column)
-        }
-    },
-    
-    cellClick: function(evt)
-    {
-        var target = $(this)
-        
-        if (target.hasClass('occupied') && target.hasClass('can-move'))
-        {
-            Game.reload({'investigate': target.attr('player')})
-        }
-        
-        else if (target.hasClass('can-move'))
-        {
-            Game.reload({'move': target.attr('x') + ',' + target.attr('y')})
-        }
-        
-        else if (target.hasClass('occupied'))
-        {
-            alert("You must be adjacent to a player to investigate.")
         }
     },
     
@@ -140,5 +128,43 @@ Game = {
         }
         
         return null;
+    },
+    
+    pause: function()
+    {
+        if (this.updating)
+        {
+            this.update_interval = 1000000
+            this.updating = false
+            if ($('#pause')) $('#pause').html('Go')
+        }
+        else
+        {
+            this.update_interval = UPDATE_INTERVAL
+            if ($('#pause')) $('#pause').html('Pause')
+        }
     }
+}
+
+GameCell = {
+  
+    cellClick: function(evt)
+    {
+        var target = $(this)
+        
+        if (target.hasClass('occupied') && target.hasClass('can-move'))
+        {
+            Game.reload({'investigate': target.attr('player')})
+        }
+        
+        else if (target.hasClass('can-move'))
+        {
+            Game.reload({'move': target.attr('x') + ',' + target.attr('y')})
+        }
+        
+        else if (target.hasClass('occupied'))
+        {
+            alert("You must be adjacent to a player to investigate.")
+        }
+    },
 }

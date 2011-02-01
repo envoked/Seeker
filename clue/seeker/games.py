@@ -1,9 +1,9 @@
-import traceback, exceptions
+import traceback, exceptions, random
 from datetime import datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from models import *
 from distributor import *
-
+from lb.util import get_logger
 
 class BasicRoleGame():
     
@@ -262,3 +262,53 @@ class BoardGame:
             
         return '<table class="board" cellspacing="0" cellpadding="0" width="' + str(64*self.game.board_size) + '">' + '\n'.join(rows) + '</table>'   
         
+class AI(object):
+    actions = ('move', 'investigate', 'guess')
+    log = get_logger('ai')
+    
+    def __init__(self, player):
+        self.player = player
+        self.game = player.game
+        
+    def go(self):
+        import random
+        _action = random.randint(0, 0)
+        action = self.actions[_action]
+
+        try:
+            action_function = getattr(self, action)
+            turn = action_function()
+            if not turn:
+                self.log.info('%s failed to %s, so moving instead.')
+                return self.move()
+            else:
+                self.log.info(turn)
+                return turn
+        except:
+            raise ValueError("Invalid action: %s" % action)
+        
+    def move(self):
+        ideas = ('left', 'right', 'down', 'up')
+        
+        for idea in ideas:
+            try:
+                self.player.move(idea)
+                cpu_turn = Turn(player=self.player, action='move', params=idea)
+                cpu_turn.save()
+                return cpu_turn
+            except:
+                traceback.print_exc()
+                pass
+        
+    def guess(self):
+        to_investigate = game.get_players_within(self.player.x, self.player.y, 1).exclude(pk=self.player.id).order_by('?')
+        if to_investigate:
+            new_clue = self.player.investigate(to_investigate)
+            print new_clue
+            
+        else:
+            print "no one to investigate"
+        pass
+    
+    def investigate(self):
+        pass    

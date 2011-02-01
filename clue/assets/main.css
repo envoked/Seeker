@@ -203,16 +203,14 @@ input.submit {
 }
 
 div.board {
-    margin: 10px;
     empty-cells: show
 }
 
 div.board div.cell {
     background-color: #eee;
-    width: 64px;
-    height: 64px;
     border: 1px solid white;
     float: left;
+    font-size: 11px;
 }
 
 div.board div.row {
