@@ -29,22 +29,31 @@ def game(request, game_id):
     )
 
     if request.is_ajax():
-        game_dict = expand(game)
+        bg.move_for_cpus()
+        game_dict = bg.serialize(player)
+        
         if 'move' in request.POST:
             move_coords = request.POST['move']
             x, y = move_coords.split(',')
+            
             player.move_to(x, y)
+            cells = game.get_player_cells_within(int(x), int(y), 0)
+            if cells:
+                cubicle = cells[0]
+                cubicle_owner = cubicle.player
+                new_clue = player.investigate_cell(cubicle)
+                if new_clue:
+                    game_dict['new_clue'] = new_clue.serialize()
+                
             turn.action = 'move'
             turn.params = move_coords
    
         if 'investigate' in request.POST:
             investigating_player_id = request.POST['investigate']
             investigating_player = Player.objects.get(id=investigating_player_id, game=game)
-            new_co = player.investigate(investigating_player)
-        
-            game_dict['new_co'] = expand(new_co)
-            game_dict['new_co']['clue'] = expand(new_co.clue)
-            game_dict['new_co']['clue']['str'] = str(new_co)
+            new_clue = player.investigate(investigating_player)
+            if new_clue:
+                game_dict['new_clue'] = new_clue.serialize()
             
             turn.action = 'investidate'
             turn.params = investigating_player_id
@@ -53,10 +62,8 @@ def game(request, game_id):
             user_id, role_id = request.POST['guess'].split('=')
             user = User.objects.get(id=user_id)
             role = Role.objects.get(id=role_id)
-            new_co = bg.guess(request.user, user, role)
-            game_dict['new_co'] = expand(new_co)
-            game_dict['new_co']['clue'] = expand(new_co.clue)
-            game_dict['new_co']['clue']['str'] = str(new_co)
+            new_clue = bg.guess(request.user, user, role)
+            game_dict['new_clue'] = new_clue.serialize()
         
             turn.action = 'guess'
             turn.params = request.POST['guess']
@@ -70,30 +77,7 @@ def game(request, game_id):
         if turn.action:
             turn.save()
         
-        for cpu in game.player_set.filter(user__is_active=False).all():
-            if player.turn_set.count() > cpu.turn_set.count():
-                ai = AI(cpu)
-                turn = ai.go()
-                print turn
-            
-        game_dict['player'] = expand(player)
-        game_dict['player']['user'] = expand(player.user)
-        try: game_dict['player']['user']['profile'] = expand(player.user.get_profile())
-        except: pass
-            
-        game_dict['players'] = [] 
-        _players = game.player_set.all()
-        
-        for i in _players:
-            _player = expand(i)
-            _player['user'] = expand(i.user)
-            try: _player['user']['profile'] = expand(i.user.get_profile())
-            except: pass
-            game_dict['players'].append(_player)
-        
-        game_dict['clues'] = serialize_qs(player.clueownership_set.all())
-
-        return HttpResponse('(' + simplejson.dumps(game_dict) + ')')
+        return HttpResponse(simplejson.dumps(game_dict), content_type='application/json')
         
     context = {
         'game': game,

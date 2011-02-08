@@ -11,7 +11,7 @@ submitForm = function(_form)
     })
 }
 
-UPDATE_INTERVAL = 5000;
+UPDATE_INTERVAL = 10000;
 
 Game = {
     
@@ -28,22 +28,22 @@ Game = {
     {
         if (!params) params = {}
         $.post('/seeker/game/' + Game.id + '/', params,
-            function(data) {
-                Game._game = eval(data)
+            function(data, status, req) {
+                Game._game = data
                 
                 if (!Game._game.is_current)
                 {
                     alert("The game is over!")
                     document.location.href = '/lobby/home/';
                 }
-                if (Game._game.new_co)
+                if (Game._game.new_clue)
                 {
-                    alert(Game._game.new_co.clue.str)
+                    alert(Game._game.new_clue.str)
                 }
                 
                 Game.redraw();             
                 setTimeout(Game.reload, Game.update_interval)
-            });  
+            }, 'json');  
     },
     
     redraw: function()
@@ -76,6 +76,17 @@ Game = {
                 if (Math.abs(this._game.player.x - row) <= 1 && Math.abs(this._game.player.y - col) <= 1)
                 {
                     td.addClass('can-move')  
+                }
+                
+                cubicle = this.cubicleAt(row, col)
+                if (cubicle)
+                {
+                    td.addClass('a-cubicle')
+                }
+                
+                if (this._game.player.cell.x == row && this._game.player.cell.y == col)
+                {
+                    td.addClass('your-cubicle')
                 }
 
                 td.css('width', 300.0/this._game.board_size-5)
@@ -123,8 +134,19 @@ Game = {
     {
         for (var id in this._game.players)
         {
-            player = this._game.players[id]
+            var player = this._game.players[id]
             if (player.x == x && player.y == y) return player;
+        }
+        
+        return null;
+    },
+    
+    cubicleAt: function(x, y)
+    {
+        for (var id in this._game.players)
+        {
+            var cell = this._game.players[id].cell
+            if (cell.x == x && cell.y == y) return cell;
         }
         
         return null;

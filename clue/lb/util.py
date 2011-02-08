@@ -38,6 +38,8 @@ def expand(row):
     """
     expanded = {}
     for field in row.__class__._meta.fields:
+        if type(field).__name__ == 'OneToOneField':
+            continue
         
         if type(field).__name__ != 'ForeignKey':
             field_value = getattr(row, field.name)

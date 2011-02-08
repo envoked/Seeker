@@ -3,6 +3,7 @@ from django.db import models
 from django.db import IntegrityError
 from django.contrib.auth.models import *
 from django.core.exceptions import MultipleObjectsReturned
+from lb.util import expand
 
 class Game(models.Model):
     start = models.DateTimeField(null=True)
@@ -25,6 +26,15 @@ class Game(models.Model):
             y__lte = y+distance,
             ).exclude(pk=self.id)
         return players
+    
+    def get_player_cells_within(self, x, y, distance):
+        cells =  PlayerCell.objects.filter(player__in=self.player_set.all()).filter(
+            x__gte = x-distance,
+            x__lte = x+distance,
+            y__gte = y-distance,
+            y__lte = y+distance,
+            )
+        return cells
     
     def other_players(self, player):
         return self.player_set.exclude(id=player.pk)
@@ -117,16 +127,29 @@ class Player(models.Model):
         """
         Move a ClueOwnership from player to self and return it.
         If player has nothing that self doesn't already know, return False"""
-        to_learn = player.clueownership_set.order_by('?')[0]
-        co = ClueOwnership(
-            clue = to_learn.clue,
+        to_learn = player.clue_set.order_by('?')[0]
+        c = Clue(
+            fact = to_learn.fact,
             player = self,
-            source = to_learn
+            source = to_learn,
+            game = self.game
         )
         try:
-            self.clueownership_set.add(co)
-            self.save()
-            return co
+            c.save()
+            return c
+        except IntegrityError:
+            return False
+        
+    def investigate_cell(self, cell):
+        to_learn = cell.cellfact_set.order_by('?')[0]
+        c = Clue(
+            fact = to_learn,
+            game = self.game,
+            player = self
+        )
+        try:
+            c.save()
+            return c
         except IntegrityError:
             return False
         
@@ -157,37 +180,92 @@ class Player(models.Model):
             return '%s (not current) in %s' % (self.user.username, str(self.game))
         else:
             return '%s (current) in %s at %s' % (self.user.username, str(self.game), str(self.get_position()))
-    
-class Fact(models.Model):
-    player = models.ForeignKey(Player)
-    
-    class Meta:
-        abstract = True
-    
+
+class Cell(models.Model):
+    x = models.IntegerField(null=True)
+    y = models.IntegerField(null=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+class PlayerCell(Cell):
+    player = models.OneToOneField(Player)
+   
+    def set_random_position(self):
+        import random
+        searching = True
+        
+        game = self.player.game
+        cells = PlayerCell.objects.filter(player__in=game.player_set.all())
+        tries = 100
+        tried = list()
+        
+        for i in range(0, tries):
+            x = random.randint(0, game.board_size-1)
+            y = random.randint(0, game.board_size-1)
+            tried.append((x, y))
+            if (x, y) in tried:
+                pass
+            
+            taken = False
+            for cell in cells:
+                if x == cell.x and y == cell.y:
+                    taken = True
+                    
+            if taken: continue        
+            
+            print "Saving player %s at unoccupied %s" % (str(self), str((x, y)))
+            self.x = x
+            self.y = y
+            self.save()
+            return True
+
+        return False
+   
 #Specific to "Role" game
 class Role(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
-    
+   
 class PlayerRole(models.Model):
     player = models.OneToOneField(Player)
     role = models.ForeignKey(Role)
     
     def __str__(self):
         return str(self.role)
+   
+class Fact(models.Model):
+    player = models.ForeignKey(Player)
+    neg = models.BooleanField()
+    game = models.ForeignKey(Game)
+    
+    def __str__(self):
+        try:
+            return str(self.rolefact)
+        except:
+            return str(self.cellfact)
     
 #Specific to "Role" game
 class RoleFact(Fact):
+    fact = models.OneToOneField(Fact)
     role = models.ForeignKey(Role)  
-    neg = models.BooleanField()
     
     def __str__(self):
         if self.neg:
-            return "The " + str(self.role) + " is not " + str(self.player.user.username)
+            return "The %s is not %s" % (str(self.player.user.username), str(self.role))
         else:
-            return "The " + str(self.role) + " is " + str(self.player.user.username)
+            return "The %s is %s" % (str(self.player.user.username), str(self.role))
+            
+#Specific to "Role" game
+class CellFact(Fact):
+    fact = models.OneToOneField(Fact)
+    cell = models.ForeignKey(Cell)  
+    
+    def __str__(self):
+        if self.neg:
+            return "The %s's cell is not %d, %d" % (str(self.player.playerrole.role), self.cell.x, self.cell.y)
+        else:
+            return "The %s's cell is %d, %d" % (str(self.player.playerrole.role), self.cell.x, self.cell.y)
     
 class Submission(models.Model):
     player = models.ForeignKey(Player)
@@ -224,29 +302,26 @@ class Ranking(models.Model):
 #Nonspefic, could be used to deliver any sort of Fact to a player
 class Clue(models.Model):
     #this will change when we have more kinds of facts
-    fact = models.ForeignKey(RoleFact)
-    game = models.ForeignKey(Game)
-    sent = models.BooleanField(default=False)
-    send_time = models.DateTimeField(null=True)
-    
-    def __str__(self):
-        return "%s" % str(self.fact)
-        
-class ClueOwnership(models.Model):
-    clue = models.ForeignKey(Clue)
+    fact = models.ForeignKey(Fact)
     player = models.ForeignKey(Player)
-    source = models.ForeignKey('ClueOwnership', null=True, related_name='child_clues')
+    game = models.ForeignKey(Game, null=True) # todo: remove
+    source = models.ForeignKey('Clue', null=True, related_name='child_clues')
     created = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         if self.source:
-            return "%s told %s that that %s" % (self.source.player.user.username, self.player.user.username, str(self.clue))
+            return "%s told %s that %s" % (self.source.player.user.username, self.player.user.username, str(self.fact))
         else:
-            return "%s knows that %s" % (self.player.user.username, str(self.clue))
+            return "%s knows that %s" % (self.player.user.username, str(self.fact))
+        
+    def serialize(self):
+        ex = expand(self)
+        ex['str'] = str(self)
+        return ex
         
     class Meta:
         # One clue can be owned by multiple players, but not by the same player
-        unique_together = ('player', 'clue')
+        unique_together = ('player', 'fact')
         
 class Turn(models.Model):
     action = models.CharField(max_length=100)

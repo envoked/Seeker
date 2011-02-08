@@ -232,3 +232,12 @@ div.board div.you {
     font-weight: bold
 }
 
+div.board div.your-cubicle {
+    background: #009966;
+}
+
+div.board div.a-cubicle {
+    background: #ee66bb;
+}
+
+

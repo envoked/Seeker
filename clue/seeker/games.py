@@ -1,9 +1,10 @@
 import traceback, exceptions, random
 from datetime import datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count, Max
 from models import *
 from distributor import *
-from lb.util import get_logger
+from lb.util import get_logger, expand, serialize_qs
 
 class BasicRoleGame():
     
@@ -135,6 +136,20 @@ class BoardGame:
         roles = list(Role.objects.order_by('?').all()[:self.game.player_set.count()])
         for player in self.game.player_set.all():
             player.set_random_position()
+            
+            pc = PlayerCell(
+                player = player
+            )
+            pc.save()
+            pc.set_random_position()
+            pc_clue = CellFact(
+                cell = pc,
+                player = player,
+                neg = False,
+                game = self.game
+            )
+            pc_clue.save()
+            
             role = roles[0]
             roles = roles[1:]
             player_roles_used = []
@@ -148,47 +163,50 @@ class BoardGame:
             rf = RoleFact(
                 role = role,
                 neg = False,
-                player = player
+                player = player,
+                game = self.game
             )
             rf.save()
             
             clue = Clue(
                 fact = rf,
-                game = self.game
+                game = self.game,
+                player = player
             )
             clue.save()
             
-            co = ClueOwnership(
-                clue = clue,
-                player = player
-            )
-            
-            player.clueownership_set.add(co)
-            
         for player in self.game.player_set.all():
-            other_players = self.game.player_set.exclude(pk=player.id).all()
+            other_players = self.game.player_set.exclude(pk=player.id).order_by('?')
             
             #We know that each other player is not our role
             for other in other_players:
-                rf = RoleFact(role = player.playerrole.role, neg=True, player=other)
+                rf = RoleFact(role = player.playerrole.role, neg=True, player=other, game=self.game)
                 rf.save()
                 clue = Clue(
                     fact = rf,
+                    player = player,
                     game = self.game)
                 clue.save()
-                player.clueownership_set.add(ClueOwnership(clue=clue))
+                
+            pc_clue = CellFact(
+                cell = player.playercell,
+                player = other_players[0],
+                neg = True,
+                game = self.game
+            )
+            pc_clue.save()
             
         for player in self.game.player_set.all():
             other_players = self.game.player_set.exclude(pk=player.id).all()
             #We know that each other role is not this player
             for other in other_players:
-                rf = RoleFact(role = other.playerrole.role, neg=True, player=player)
+                rf = RoleFact(role = other.playerrole.role, neg=True, player=player, game=self.game)
                 rf.save()
                 clue = Clue(
                     fact = rf,
+                    player = player,
                     game = self.game)
                 clue.save()
-                player.clueownership_set.add(ClueOwnership(clue=clue))
     
     def guess(self, user, other_user, role):
         this_player = user.player_set.get(is_current=True, game=self.game)
@@ -199,21 +217,19 @@ class BoardGame:
             rf.save()
             new_clue = Clue(
                 fact = rf,
-                game=self.game
+                game = self.game,
+                player = this_player
             )
             new_clue.save()
-            new_co = ClueOwnership(clue=new_clue)
-            this_player.clueownership_set.add(new_co)
         else:
             rf = RoleFact(player=other_player, neg=True, role=role)
             rf.save()
             new_clue  = Clue(
                 fact = rf,
-                game=self.game
+                game = self.game,
+                player = this_player
             )
             new_clue.save()
-            new_co = ClueOwnership(clue=new_clue)
-            this_player.clueownership_set.add(new_co)
         return new_co
         
     def console_display(self):
@@ -239,6 +255,37 @@ class BoardGame:
             o += "\n"
             
         return o
+    
+    def move_for_cpus(self):
+        max_turns = self.game.player_set.filter(user__is_active=True).select_related('turn').annotate(turns=Count('turn')).aggregate(Max('turns'))
+        
+        for cpu in self.game.player_set.filter(user__is_active=False).all():
+            print max_turns, cpu.turn_set.count()
+            if max_turns['turns__max'] > cpu.turn_set.count():
+                ai = AI(cpu)
+                turn = ai.go()
+    
+    def serialize(self, player):
+        game_dict = expand(self.game)
+        game_dict['player'] = expand(player)
+        game_dict['player']['cell'] = expand(player.playercell)
+        game_dict['player']['user'] = expand(player.user)
+        try: game_dict['player']['user']['profile'] = expand(player.user.get_profile())
+        except: pass
+            
+        game_dict['players'] = [] 
+        _players = self.game.player_set.all()
+        
+        for i in _players:
+            _player = expand(i)
+            _player['user'] = expand(i.user)
+            _player['cell'] = expand(i.playercell)
+            try: _player['user']['profile'] = expand(i.user.get_profile())
+            except: pass
+            game_dict['players'].append(_player)
+        
+        game_dict['clues'] = serialize_qs(player.clue_set.all())
+        return game_dict
     
     def html(self, request):
         o = ""
