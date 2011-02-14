@@ -203,7 +203,10 @@ input.submit {
 }
 
 div.board {
-    empty-cells: show
+    empty-cells: show;
+    background-color: #eeeeee;
+    background-position: center center;
+    background-repeat: no-repeat;
 }
 
 div.board div.cell {
@@ -229,7 +232,9 @@ div.board div.occupied {
 
 div.board div.you {
     color: yellow;
-    font-weight: bold
+    font-weight: bold;
+    background-color: transparent;
+    background-image: url("img/char1.png");
 }
 
 div.board div.your-cubicle {
@@ -238,6 +243,7 @@ div.board div.your-cubicle {
 
 div.board div.a-cubicle {
     background: #ee66bb;
+    background-image: url("img/cubicle1.png");
 }
 
 
