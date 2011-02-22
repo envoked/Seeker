@@ -1,7 +1,8 @@
-import traceback, exceptions, random
+import traceback, exceptions, random, time
 from datetime import datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count, Max
+from django.core.cache import cache
 from models import *
 from distributor import *
 from lb.util import get_logger, expand, serialize_qs
@@ -259,12 +260,30 @@ class BoardGame:
     def move_for_cpus(self):
         max_turns = self.game.player_set.filter(user__is_active=True).select_related('turn').annotate(turns=Count('turn')).aggregate(Max('turns'))
         
+        cached = self.get_cached('max_turns')
+        print cached
+        
+        self.set_cached('max_turns', max_turns['turns__max'])
+        
         for cpu in self.game.player_set.filter(user__is_active=False).all():
-            print max_turns, cpu.turn_set.count()
             if max_turns['turns__max'] > cpu.turn_set.count():
                 ai = AI(cpu)
                 turn = ai.go()
+                
+    def get_cached(self, field, timeout=60):
+        cached = cache.get('game_%d_%s' % (self.game.id, field))
+        print cached
+        if cached is None:
+            return None
+        if 'value' in cached:
+            return cached['value']
+        else:
+            return cached
     
+    def set_cached(self, field, value):
+        import time
+        return cache.set('game_%d_%s' % (self.game.id, field), {'t': int(time.time()),'value': value})
+        
     def serialize(self, player):
         game_dict = expand(self.game)
         game_dict['player'] = expand(player)
