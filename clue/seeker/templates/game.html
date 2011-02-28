@@ -1,12 +1,13 @@
 {% extends "base.html" %}
+{% load extras %}
 
 {% block content %}
 
 <div class="board">Loading...</div>
-<script src="{{ MEDIA_URL }}/js/game.js"></script>
+<script src="{% media_url %}/js/game.js"></script>
 <script type="text/javascript">
 
-Game.init({{ game.id }}, $('.board'), '{{ MEDIA_URL }}')
+Game.init({{ game.id }}, $('.board'), '{% media_url %}')
 
 </script>
 
