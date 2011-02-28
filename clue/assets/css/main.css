@@ -37,7 +37,7 @@ p {margin: 0;}
 
 /*not visible in the phone */
 html {
-    background-color: #333;
+    background-color: #aaa;
 }
 
 #header {
@@ -150,9 +150,3 @@ form {
     list-style-type: square;
     list-style-position: inside;
 }
-
-
-
-
-
-

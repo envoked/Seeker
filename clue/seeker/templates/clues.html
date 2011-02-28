@@ -2,11 +2,11 @@
 
 {% block content %}
 
-<ul>
+<div data-role="controlgroup">
 {% for co in player.clue_set.all %}
-    <li>{{ co }}</li>
+    <a data-role="button">{{ co }}</a>
 {% endfor %}
-</ul>
+</div>
 
     
 

@@ -257,31 +257,34 @@ class BoardGame:
             
         return o
     
-    def move_for_cpus(self):
-        max_turns = self.game.player_set.filter(user__is_active=True).select_related('turn').annotate(turns=Count('turn')).aggregate(Max('turns'))
+    def move_for_cpus(self):    
+        max_turns = self.get_cached('max_turns')
         
-        cached = self.get_cached('max_turns')
-        print cached
-        
-        self.set_cached('max_turns', max_turns['turns__max'])
+        if not max_turns:
+            max_turns = self.game.player_set.filter(user__is_active=True).select_related('turn').annotate(turns=Count('turn')).aggregate(Max('turns'))['turns__max']
+            self.set_cached('max_turns', max_turns)
         
         for cpu in self.game.player_set.filter(user__is_active=False).all():
-            if max_turns['turns__max'] > cpu.turn_set.count():
+            if max_turns > cpu.turn_set.count():
                 ai = AI(cpu)
                 turn = ai.go()
                 
     def get_cached(self, field, timeout=60):
         cached = cache.get('game_%d_%s' % (self.game.id, field))
-        print cached
+        try:
+            print time.time() - int(cached['t'])
+        except:
+            pass
         if cached is None:
             return None
-        if 'value' in cached:
-            return cached['value']
+        if 'v' in cached and timeout > (time.time() - int(cached['t'])):
+            return cached['v']
         else:
-            return cached
+            print "timeout"
+            return None
     
     def set_cached(self, field, value):
-        import time
+        print "set: %s=%s" % (field, value)
         return cache.set('game_%d_%s' % (self.game.id, field), {'t': int(time.time()),'value': value})
         
     def serialize(self, player):

@@ -2,20 +2,23 @@
 
 {% block content %}
 <h1>Home</h1>
-<ul class="big">
+<div data-role="controlgroup">
     {% if player %}
-        <li><a href="/seeker/game/{{ player.game.id}}/">You're in a game</a></li>
+        <a href="/seeker/game/{{ player.game.id}}/" data-role="button">You're in a game</a>
     {% else %}
-        <li><a href="/lobby/create/">New game</a></li>
+        <a href="/lobby/create/" data-role="button">New game</a>
     {% endif %}
-    <li><a href="/lobby/profile/">Profile</a></li>
-    <li><a href="/lobby/settings/">Settings</a></li>
-</ul>
+    <a href="/lobby/profile/" data-role="button">Profile</a>
+    <a href="/lobby/settings/" data-role="button">Settings</a>
+</div>
+
 <h3>Past Games</h3>
-{% for player in history.all %}
+<div data-role="controlgroup">
+    {% for player in history.all %}
     <li>
         <span class="rank">{{ player.ranking.human_rank }}</span>
         <a href="/seeker/game/{{ player.game.id }}/">{{ player.game.end }}</a>
     </li>
-{% endfor %}
+    {% endfor %}
+</div>
 {% endblock %}

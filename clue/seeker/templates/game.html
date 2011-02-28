@@ -1,30 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="board">Loading...</div>
-<script type="text/javascript">
-Game.init({{ game.id }}, $('.board'))
 
-submitGuess = function()
-{
-    var user = $('#player')[0].value
-    var role = $('#role')[0].value
-    Game.submitGuess(user, role)
-}
+<div class="board">Loading...</div>
+<script src="{{ MEDIA_URL }}/js/game.js"></script>
+<script type="text/javascript">
+
+Game.init({{ game.id }}, $('.board'), '{{ MEDIA_URL }}')
 
 </script>
 
-<div id="guesser" class="modal" style="display: none"></div>
-<div id="clues" class="modal" style="display: none"></div>
 {% endblock %}
 
 
 {% block toolbar %}
-<div id="toolbar">
     <a href="#" onclick="Game.showBoard()">Board</a>
-    <a href="#" onclick="Game.showClues()">Show Clues</a>
+    <a href="/seeker/game/{{ game.id }}/clues/">Show Clues</a>
     <a href="#" onclick="Game.showGuesser()">Guesser</a>
     <a href="#" onclick="Game.pause()" id="pause">Pause</a>
     <a href="/seeker/{{ game.id }}/quit/">Quit</a>
-</div>
 {% endblock %}

@@ -3,11 +3,15 @@
 <html>
     <head>
         <title>Seeker - {% block title %}{% endblock %}</title>
-        <script type="text/javascript" src="{% media_url %}/js/jquery-1.4.2.min.js"></script>
-        <script type="text/javascript" src="{% media_url %}/js/jquery-ui-1.8.6.custom.min.js"></script>   
-        <script src="{% media_url %}/main.js"></script>
+        <script src="http://code.jquery.com/jquery-1.5.min.js"></script>
+        <script src="{% media_url %}/js/main.js"></script>
         <script src="{% media_url %}/lobby/lobby.js"></script>
-        <link rel="stylesheet" href="{% media_url %}/main.css" />
+        <script type="text/javascript" src="{% media_url %}/js/jquery.mobile.js"></script>
+        
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.css" />
+        <link rel="stylesheet" href="{% media_url %}/css/main.css" />
+        <link rel="stylesheet" href="{% media_url %}/css/game.css" />
+        
         <meta name="google-site-verification" content="VN3xxT5Y1gL6rJcEJNtCtsyzymYhgcJIzhZclHil7Z8" />
         {% if facebook %}
         {% initialize_facebook_connect %}
@@ -16,27 +20,46 @@
         
     </head>
     <body>
-        <div id="header">
-            <div id="user_header">
-            {% if user.id %}
-                Hi, {{ user.username }}
-                <br/>
-                <a href="/lobby/home/">Home</a> | <a class="logout" href="/logout/">Logout</a>
-            {% else %}
-                <a class="logout" href="/login/">Login</a>
-            {% endif %}
+        <div id="page" data-role="page">
+            <div id="header" data-role="header">
+                <h1>Seeker</h1>
+                {% if user.id %}
+                    <a href="/lobby/home/" class="ui-btn-right">Hi, {{ user.username }}</a>
+                {% else %}
+                    <a href="/login/" class="ui-btn-right">Login</a>
+                {% endif %}
             </div>
+            <div id="content" data-role="content">
+            {% block content %}
+            
+            {% endblock %}
+            </div>
+            
+            <div id="toolbar" data-role="footer">
+            {% block toolbar %}
+                <a href="/lobby/home/">Home</a>
+            {% endblock %}
+            </div>
+            
         </div>
-        <div id="content">
-        {% block content %}
-        
-        {% endblock %}
-        </div>
-        {% block toolbar %}
-        <div id="toolbar">
-            <a href="/lobby/home/">Home</a>
-        </div>
-        {% endblock %}
-
     </body>
+    <script>
+    $(window).resize( function(){
+        var height = $(window).height();
+        var width = $(window).width(); 
+        var ob = $('html');
+        if( width > height ) {
+            if( ob.hasClass('portrait') ) {
+                ob.removeClass('portrait').addClass('landscape');
+            }
+        }else{
+            if( ob.hasClass('landscape') ) {
+                ob.removeClass('landscape').addClass('portrait');
+            }
+        }
+    });
+    $(document).bind("mobileinit", function(){
+      console.log(this);
+    });
+    </script>
 </html>

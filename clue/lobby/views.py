@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import *
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from lobby import *
 from lobby.models import *
 from seeker.models import Player, Game
@@ -28,10 +29,15 @@ def index(request):
 def home(request):
     try:
         player = Player.objects.get(user=request.user, game__is_current=True, is_current=True)
-        print player
-    except:
-        traceback.print_exc()
+    except MultipleObjectsReturned:
+        #If there is more than one stale player, remove them
+        player = Player.objects.filter(user=request.user, game__is_current=True, is_current=True).order_by('-game__start')[0]
+        stale_players = Player.objects.filter(user=request.user, game__is_current=True, is_current=True).exclude(pk=player.id).order_by('-game__start')
+        stale_players.update(is_current=False)
+    except ObjectDoesNotExist:
         player = None
+    finally:
+        traceback.print_exc()
     
     #show past games that have been closed and player has left
     history = Player.objects.filter(user=request.user, game__is_current=False, is_current=False)

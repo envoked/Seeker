@@ -28,7 +28,7 @@ def game(request, game_id):
         player = player
     )
 
-    if request.is_ajax():
+    if request.method == 'POST':
         bg.move_for_cpus()
         game_dict = bg.serialize(player)
         
@@ -87,7 +87,7 @@ def game(request, game_id):
 
     return context
 
-@render_to('play.html')
+@render_to('clues.html')
 def clues(request, game_id):
     game = Game.objects.get(id=game_id)
     player = get_object_or_404(Player,
