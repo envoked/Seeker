@@ -28,7 +28,7 @@ class RequestDebugMiddleware:
         
 
 #Log queryies longer than this
-SLOW_QUERY_TIME = 0.5
+SLOW_QUERY_TIME = 0.0
 LOG_NAME = 'sql'
 DEBUG = getattr(settings, 'DEBUG', True)
 
@@ -47,13 +47,15 @@ class SlowQueryLogMiddleware(object):
             print "-"*80, "\n", request.method + " - " + request.get_full_path(), "\n", "-"*80
         
         for query in connection.queries:
-            if DEBUG: print query['sql'], query['time'], '\n\n'
+            #if DEBUG: print query['sql'], query['time'], '\n\n'
             total_time += float(query['time'])
             
             if float(query['time']) >= SLOW_QUERY_TIME: 
-                _log = "[%s] %s" % (query['sql'], query['time'])
+                _log = "[%s] %s\n\n" % (query['sql'], query['time'])
                 self.log.info(_log)
                     
-        self.log.info("[Queries: %d, Time: %s seconds]" % (len(connection.queries), total_time))
+        summary = "[Queries: %d, Time: %s seconds]" % (len(connection.queries), total_time)
+        if DEBUG: print summary
+        self.log.info(summary)
         return response
 

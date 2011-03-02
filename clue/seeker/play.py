@@ -20,10 +20,7 @@ def game(request, game_id):
     game = get_object_or_404(Game, id=game_id)
     bg = BoardGame(game)
     #404 if user is not a player in game
-    player = get_object_or_404(Player,
-        user = request.user,
-        game = game
-    )
+    player = Player.objects.select_related('user', 'cell').get(user=request.user, game=game)
     turn = Turn(
         player = player
     )
@@ -35,8 +32,13 @@ def game(request, game_id):
         if 'move' in request.POST:
             move_coords = request.POST['move']
             x, y = move_coords.split(',')
+            try:
+                player.move_to(x, y)
+            except ValueError:
+                print "Too late move: %s" % (move_coords)
+                
+            game_dict = bg.serialize(player)
             
-            player.move_to(x, y)
             cells = game.get_player_cells_within(int(x), int(y), 0)
             if cells:
                 cubicle = cells[0]
@@ -113,7 +115,7 @@ def guesser(request, game_id):
         user = request.user,
         game = game
     )
-    known_facts = player.clueownership_set.filter(clue__fact__neg=False).values('clue__fact__player')
+    known_facts = player.clue_set.filter(fact__neg=False).values('fact__player')
     roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(player__in=known_facts)
     other_players = game.player_set.exclude(id__in=known_facts)
 
