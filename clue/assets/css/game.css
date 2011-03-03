@@ -34,7 +34,7 @@ div.board div.row {
 div.board div.cell div.text-overlay {
     position: absolute;
     left: 10%;
-    bottom: 10%;
+    top: 0%;
     background: #333;
     color: white;
     padding: 0.2em;
