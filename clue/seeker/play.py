@@ -35,16 +35,29 @@ def game(request, game_id):
         if 'move' in request.POST:
             move_coords = request.POST['move']
             x, y = move_coords.split(',')
+
+            print "NEW LOCATION %s , %s" % (x, y)
+            print "PLAYER LOCATION %s , %s" % (player.x, player.y)
+
             
-            player.move_to(x, y)
             cells = game.get_player_cells_within(int(x), int(y), 0)
             if cells:
-                cubicle = cells[0]
-                cubicle_owner = cubicle.player
-                new_clue = player.investigate_cell(cubicle)
-                if new_clue:
-                    game_dict['new_clue'] = new_clue.serialize()
-                
+               
+                direction = player.get_direction_of_movement(x, y)
+                print "DIRECTION: %s" % direction
+                if (direction == "up" or direction == "right"):
+                    print "VALID"
+                    cubicle = cells[0]
+                    cubicle_owner = cubicle.player
+                    new_clue = player.investigate_cell(cubicle)
+                    if new_clue:
+                        game_dict['new_clue'] = new_clue.serialize()
+                else:
+                    print "INVALID"
+                    x = player.x
+                    y = player.y
+                    
+            player.move_to(x, y)    
             turn.action = 'move'
             turn.params = move_coords
    
