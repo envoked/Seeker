@@ -33,12 +33,13 @@ div.board div.row {
 
 div.board div.cell div.text-overlay {
     position: absolute;
-    left: 10%;
-    top: 0%;
+    left: 0.1em;
+    top: 0.1em;
     background: #333;
     color: white;
-    padding: 0.2em;
-    z-index: 10
+    padding: 0.1em;
+    z-index: 10;
+    font-size: 1em;
 }
 
 div.board div.can-move {
@@ -51,16 +52,36 @@ div.board div.selectable div.inner {
     cursor: pointer
 }
 
-div.board div.selectable:hover {
+
+div.board div.selectable:hover div.inner {
     opacity: 1.0;
 }
 
 div.board div.occupied {
-    /*
-    color: #eee;
     background-color: #333
-    */
 }
+
+div.board div.a-cubicle div.inner {
+    border: 2px dotted #ccc;
+    opacity: 0.7;
+    cursor: pointer
+}
+
+div.board div.your-cubicle div.inner {
+    background: #DF720A;
+    border: 2px dotted yellow;
+    opacity: 0.7;
+    cursor: pointer
+}
+
+div.board div.you {
+    background: transparent;
+}
+
+div.board div.you div.inner {
+    background-color: red;
+}
+
 
 div.board div.you div.text-overlay {
     color: yellow;

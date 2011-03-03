@@ -21,55 +21,23 @@ DATABASES = {
     }
 }
 
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# On Unix systems, a value of None will cause Django to use the same
-# timezone as the operating system.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
+
+CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
 TIME_ZONE = 'America/New_York'
-
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
-
 SITE_ID = 1
-
-# If you set this to False, Django will make some optimizations so as not
-# to load the internationalization machinery.
 USE_I18N = True
-
-# If you set this to False, Django will not format dates, numbers and
-# calendars according to the current locale
 USE_L10N = True
-
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = '/www/media/clue/'
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = 'http://localhost/media/clue'
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '@6vv2ju2fkp-(@$07-8gko5hg1a6zyqgdm1oi5*w!&0__-fl45'
-
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
-)
-
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.request',
+    'django.core.context_processors.media',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -79,7 +47,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'facebook.djangofb.FacebookMiddleware',
-    'facebookconnect.middleware.FacebookConnectMiddleware'
+    'facebookconnect.middleware.FacebookConnectMiddleware',
+    'lb.util.AJAXSimpleExceptionResponse',
+    'lb.middleware.SlowQueryLogMiddleware'
     
 )
 
@@ -98,10 +68,13 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
+    'django_memcached',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
+    'userprofile',
     'lobby',
     'seeker',
+    'lb',
     'facebookconnect'
 )
 
@@ -110,19 +83,10 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-DUMMY_FACEBOOK_INFO = {
-    'uid':0,
-    'name':'(Private)',
-    'first_name':'(Private)',
-    'pic_square_with_logo':'http://www.facebook.com/pics/t_silhouette.gif',
-    'affiliations':None,
-    'status':None,
-    'proxied_email':None,
-}
-
 LOGIN_URL = '/login/'
 LOGOUT_URL = '/logout/'
 
+AVATAR_WEBSEARCH = False
 FACEBOOK_API_KEY = 'baa973193a1795271a02548dbc26d511'
 FACEBOOK_SECRET_KEY = '099e81627dc77c30ab2888e4565524b7'
 FACEBOOK_INTERNAL = True
@@ -132,3 +96,10 @@ SMTP_USERNAME = 'noreply@seekr.us'
 SMTP_PASSWORD = 'secret'
 
 AUTH_PROFILE_MODULE = 'userprofile.UserProfile'
+I18N_URLS = True
+DEFAULT_AVATAR = os.path.join(MEDIA_ROOT, 'avatars', 'generic.png')
+DEFAULT_AVATAR_WIDTH = 96
+AVATAR_WEBSEARCH = True   
+GOOGLE_MAPS_API_KEY = "ABQIAAAA06IJoYHDPFMx4u3hTtaghxTpH3CbXHjuCVmaTc5MkkU4wO1RRhST5bKY_U7dUG1ZGu1S-n-ukXGNjQ"
+REQUIRE_EMAIL_CONFIRMATION = True
+USERPROFILE_CSS_CLASSES = 'blueprint'

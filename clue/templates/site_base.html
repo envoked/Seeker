@@ -3,14 +3,15 @@
 <html>
     <head>
         <title>Seeker - {% block title %}{% endblock %}</title>
-        <script src="http://code.jquery.com/jquery-1.5.min.js"></script>
-        <script src="{% media_url %}/js/main.js"></script>
-        <script src="{% media_url %}/lobby/lobby.js"></script>
-        <script type="text/javascript" src="{% media_url %}/js/jquery.mobile.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+        <script src="{{ MEDIA_URL }}/js/main.js"></script>
+        <script src="{{ MEDIA_URL }}/lobby/lobby.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery.mobile.js"></script>
         
         <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.css" />
-        <link rel="stylesheet" href="{% media_url %}/css/main.css" />
-        <link rel="stylesheet" href="{% media_url %}/css/game.css" />
+        <link rel="stylesheet" href="{{ MEDIA_URL }}/css/main.css" />
+        <link rel="stylesheet" href="{{ MEDIA_URL }}/css/game.css" />
+        <script src="{{ MEDIA_URL }}/js/game.js"></script>
         
         <meta name="google-site-verification" content="VN3xxT5Y1gL6rJcEJNtCtsyzymYhgcJIzhZclHil7Z8" />
         {% if facebook %}
@@ -36,9 +37,13 @@
             </div>
             
             <div id="toolbar" data-role="footer">
-            {% block toolbar %}
-                <a href="/lobby/home/">Home</a>
-            {% endblock %}
+                <div data-role="navbar">
+                    <ul>
+                    {% block toolbar %}
+                        <a href="/lobby/home/">Home</a>
+                    {% endblock %}
+                    </ul>
+                </div>
             </div>
             
         </div>

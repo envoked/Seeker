@@ -1,8 +1,10 @@
 
 Game = {
     last_update: null,
-    update_interval: 3000, //ms between updates
+    last_activity: null,
+    update_interval: 1000*5, //ms between updates
     busy_interval: 300,
+    activity_timeout: 1000*60*60,
     updateing: false,
     paused: false,
     
@@ -10,7 +12,6 @@ Game = {
     {
         this.id = id;
         this.el = el;
-        this.updating = true;
         this.media_url = media_url;
         Game.interval_id = setInterval(Game.busyLoop, Game.busy_interval)
     },
@@ -21,12 +22,20 @@ Game = {
         if (!Game.last_update)
         {
             Game.last_update = new Date()
+            Game.last_activity = new Date()
             Game.reload()
         }
 
-        if (new Date().valueOf() > (Game.update_interval + Game.last_update.valueOf()) && !Game.updating)
+        if (new Date().valueOf() > (Game.update_interval + Game.last_update.valueOf()))
         {
+            console.log('Updating')
             Game.reload()
+        }
+        
+        if (new Date().valueOf() > (Game.activity_timeout + Game.last_activity.valueOf()) && !Game.paused)
+        {
+            console.log("Going to sleep...")
+            Game.pause()
         }
     },
     
@@ -38,16 +47,21 @@ Game = {
     */
     reload: function(params)
     {
-        console.log("Updating ")
-        if (params) console.log(params)
-        Game.updating = true
+        if (params) {
+            Game.last_activity = new Date()
+            Game.last_update = new Date()
+            Game.updating = true
+            console.log("Action:")
+            console.log(params)
+        }
+        else params = {}
         
-        if (!params) params = {}
-        $.post('/seeker/game/' + Game.id + '/', params,
+        $.post('/seeker/game/' + Game.id + '/?' + jQuery.param(params), params,
             function(data, status, req) {
                 Game._game = data
                 Game.updating = false
                 Game.last_update = new Date()
+                console.log(data)
                 
                 if (!Game._game.is_current)
                 {
@@ -65,6 +79,7 @@ Game = {
     
     redraw: function()
     {
+        console.log('redraw()')
         this.rows = []
         this.el.html("");
         this.el.css('height', $(window).height()*0.75)
@@ -82,22 +97,7 @@ Game = {
                 var td_inner = $(td.children()[0])
                 var player = this.playerAt(row, col)
                 
-                //If there is a player here
-                if (player)
-                {
-                    td.addClass('occupied').attr('player', player.id)
-                    td_inner.append($('<div class="text-overlay">').html(player.user.username))
-                }
-                //If the player is you
-                if (this._game.player.x == row && this._game.player.y == col)
-                {
-                    td.addClass('you')
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/char1.png">'))
-                }
-                else if (player)
-                {
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/char2.png">'))   
-                }
+
                 //If square is in moveable range
                 if (Math.abs(this._game.player.x - row) <= 1 && Math.abs(this._game.player.y - col) <= 1)
                 {
@@ -113,12 +113,30 @@ Game = {
                 //If the cubicle is yours
                 if (this._game.player.cell.x == row && this._game.player.cell.y == col)
                 {
-                    td.addClass('your-cubicle')
+                    td.addClass('your-cubicle selectable')
+                    td_inner.append($('<div class="text-overlay">').html("Your Cubicle"))
                     td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubicle2.png">'))
                 }
                 else if (cubicle)
                 {
                     td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubicle1.png">'))
+                }
+                
+                //If there is a player here
+                if (player)
+                {
+                    td.addClass('occupied').attr('player', player.id)
+                    td_inner.append($('<div class="text-overlay">').html(player.user.username))
+                }
+                //If the player is you
+                if (this._game.player.x == row && this._game.player.y == col)
+                {
+                    td.addClass('you')
+                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/char1.png">'))
+                }
+                else if (player)
+                {
+                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/char2.png">'))   
                 }
 
                 td.css('width', Math.floor(this.el.width()/this._game.board_size))
@@ -188,15 +206,15 @@ Game = {
     {
         if (!Game.paused)
         {
-            if ($('#pause')) $('#pause').text('Go')
-            this.paused = true
+            if ($('#pause')) $('#pause span span').text('Go')
+            Game.paused = true
             clearInterval(Game.interval_id)
         }
         else
         {
-            if ($('#pause')) $('#pause').text('Pause')
-            this.paused = false
-            this.interval_id = setInterval(Game.interval_id, Game.update_interval)
+            if ($('#pause')) $('#pause span span').text('Pause')
+            Game.paused = false
+            Game.interval_id = setInterval(Game.busyLoop, Game.update_interval)
         }
     }
 }
@@ -205,7 +223,14 @@ GameCell = {
   
     cellClick: function(evt)
     {
+        if (!Game.active)
+        {
+            console.log("Waking up...")
+            Game.active = true
+            if (Game.paused) Game.pause()
+        }
         var target = $(this)
+        console.log(target)
         
         if (target.hasClass('occupied') && target.hasClass('can-move'))
         {
@@ -214,6 +239,9 @@ GameCell = {
         
         else if (target.hasClass('can-move'))
         {
+            Game._game.player.x = parseInt(target.attr('x'))
+            Game._game.player.y = parseInt(target.attr('y'))
+            Game.redraw()
             Game.reload({'move': target.attr('x') + ',' + target.attr('y')})
         }
         

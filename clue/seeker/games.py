@@ -1,7 +1,7 @@
 import traceback, exceptions, random, time
 from datetime import datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Min
 from django.core.cache import cache
 from models import *
 from distributor import *
@@ -257,15 +257,27 @@ class BoardGame:
             
         return o
     
-    def move_for_cpus(self):    
-        max_turns = self.get_cached('max_turns')
+    def move_for_cpus(self):
+        max_turn_id = Turn.objects.filter(player__id__in=self.game.player_set.all()).aggregate(Max('id'))['id__max']
         
+        if not self.get_cached('max_turn_id'): self.set_cached('max_turn_id', max_turn_id)
+        elif max_turn_id < self.get_cached('max_turn_id')+4:
+            print "not updating, still on turn: %d" % (max_turn_id)
+            return
+        
+        max_turns = self.get_cached('max_turns')
+        min_turns = self.get_cached('min_turns')
+
         if not max_turns:
             max_turns = self.game.player_set.filter(user__is_active=True).select_related('turn').annotate(turns=Count('turn')).aggregate(Max('turns'))['turns__max']
             self.set_cached('max_turns', max_turns)
         
+        if not min_turns:
+            min_turns = self.game.player_set.filter(user__is_active=True).select_related('turn').annotate(turns=Count('turn')).aggregate(Min('turns'))['turns__min']
+            self.set_cached('min_turns', min_turns)
+        
         for cpu in self.game.player_set.filter(user__is_active=False).all():
-            if max_turns > cpu.turn_set.count():
+            if cpu.turn_set.count() < max_turns:
                 ai = AI(cpu)
                 turn = ai.go()
                 
@@ -278,35 +290,46 @@ class BoardGame:
         if cached is None:
             return None
         if 'v' in cached and timeout > (time.time() - int(cached['t'])):
+            print "memcached hit: %s=%s" % (field, cached['v'])
             return cached['v']
         else:
             print "timeout"
             return None
     
     def set_cached(self, field, value):
-        print "set: %s=%s" % (field, value)
-        return cache.set('game_%d_%s' % (self.game.id, field), {'t': int(time.time()),'value': value})
+        print "memcached set: %s=%s" % (field, value)
+        return cache.set('game_%d_%s' % (self.game.id, field), {'t': int(time.time()),'v': value})
         
     def serialize(self, player):
         game_dict = expand(self.game)
         game_dict['player'] = expand(player)
         game_dict['player']['cell'] = expand(player.playercell)
         game_dict['player']['user'] = expand(player.user)
-        try: game_dict['player']['user']['profile'] = expand(player.user.get_profile())
-        except: pass
-            
+        """
+        try:
+            game_dict['player']['user']['profile'] = expand(player.user.get_profile())
+        except:
+            pass
+        """
+        
         game_dict['players'] = [] 
-        _players = self.game.player_set.all()
+        _players = self.game.player_set.select_related('user', 'cell').all()
         
         for i in _players:
             _player = expand(i)
             _player['user'] = expand(i.user)
             _player['cell'] = expand(i.playercell)
+            """
             try: _player['user']['profile'] = expand(i.user.get_profile())
             except: pass
+            """
             game_dict['players'].append(_player)
         
         game_dict['clues'] = serialize_qs(player.clue_set.all())
+        game_dict['turns'] = {
+            'min': self.get_cached('min_turns'),
+            'max': self.get_cached('max_turns'),
+            'max_turn_id': self.get_cached('max_turn_id')}
         return game_dict
     
     def html(self, request):

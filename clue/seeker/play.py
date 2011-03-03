@@ -20,10 +20,7 @@ def game(request, game_id):
     game = get_object_or_404(Game, id=game_id)
     bg = BoardGame(game)
     #404 if user is not a player in game
-    player = get_object_or_404(Player,
-        user = request.user,
-        game = game
-    )
+    player = Player.objects.select_related('user', 'cell').get(user=request.user, game=game)
     turn = Turn(
         player = player
     )
@@ -38,7 +35,8 @@ def game(request, game_id):
 
             print "NEW LOCATION %s , %s" % (x, y)
             print "PLAYER LOCATION %s , %s" % (player.x, player.y)
-
+                
+            game_dict = bg.serialize(player)
             
             cells = game.get_player_cells_within(int(x), int(y), 0)
             if cells:
@@ -57,10 +55,13 @@ def game(request, game_id):
                     x = player.x
                     y = player.y
                     
-            player.move_to(x, y)    
-            turn.action = 'move'
-            turn.params = move_coords
-   
+            try:
+                player.move_to(x, y)
+                turn.action = 'move'
+                turn.params = move_coords   
+            except ValueError:
+                print "Too late move: %s" % (move_coords)
+            
         if 'investigate' in request.POST:
             investigating_player_id = request.POST['investigate']
             investigating_player = Player.objects.get(id=investigating_player_id, game=game)
@@ -126,7 +127,7 @@ def guesser(request, game_id):
         user = request.user,
         game = game
     )
-    known_facts = player.clueownership_set.filter(clue__fact__neg=False).values('clue__fact__player')
+    known_facts = player.clue_set.filter(fact__neg=False).values('fact__player')
     roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(player__in=known_facts)
     other_players = game.player_set.exclude(id__in=known_facts)
 
