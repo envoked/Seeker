@@ -1,6 +1,7 @@
 {% extends "site_base.html" %}
 
 {% block content %}
+{% block picker %}
 {% if char_images %}
     <form action="/lobby/pick_character_for_player/{{ lobby_id }}/" method="POST">
     <div id="avatar_picker">
@@ -14,5 +15,5 @@
     
     <input type="submit" value="Pick Character" />
 {% endif %}
-
+{% endblock %}
 {% endblock %}
