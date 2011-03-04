@@ -150,3 +150,31 @@ form {
     list-style-type: square;
     list-style-position: inside;
 }
+
+#avatar_picker {
+    height: 20%;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    width: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.picker_img {
+    float: left;
+    width: 10%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+}
+
+.small_avatar {
+    width: 4%;
+}
+
+.selected {
+    border: 1px solid red !important;
+}
+.taken {
+    opacity: .3;
+    cursor: default;
+}
