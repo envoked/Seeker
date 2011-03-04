@@ -65,11 +65,14 @@ def create(request):
                 creator = request.user,
                 name = request.POST['name'],
                 num_players = request.POST['num_players'],
+                creator_image = request.POST['creator_image']
             )
             new_lobby.save()
+
             return HttpResponseRedirect('/lobby/%d/' % new_lobby.id)
     else:
         create_lobby_form = CreateLobbyForm()
+        char_images = Lobby.getCharImages()
         
     return locals()
     
@@ -81,7 +84,8 @@ def lobby(request, id):
     if request.user.is_authenticated():
         member = Member(
             lobby = lobby,
-            user = request.user
+            user = request.user,
+            image = lobby.creator_image
         )
         try:
             member.save()
@@ -126,9 +130,11 @@ def start_game(request, lobby_id):
     )
     game.save()
 
-    for member in lobby.members.all():        
+    for member in lobby.members.all():
+        print member.image
         player = Player(
             user = member.user,
+            image = member.image,
             game = game
         )
         player.save()
@@ -206,4 +212,16 @@ def login(request):
 def logout(request):
     auth.logout(request)
     return HttpResponseRedirect('/')
+
+def pick_character_for_player(request, lobby_id):
+    if request.method == 'POST':
+        u = request.user
+        image = request.POST['creator_image']
+        member = Member.objects.filter(user=u, lobby=lobby_id)[0]
+        member.image = image
+        member.save()
+        
+        return HttpResponseRedirect('/lobby/%s/' % lobby_id)
+    
+    return locals()
     
