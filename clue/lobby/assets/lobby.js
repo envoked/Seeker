@@ -56,13 +56,17 @@ Lobby = {
         //alert(Lobby.creator);
         $(Lobby.members).each(function(i, member)
         {
-            h = "<li><b>" + member.user.username + "</b>"
+            h = "<li><img class='small_avatar' src='" + member.image + "' /><b>" + member.user.username + "</b>"
             h += " at " + member.created;
             if(User.id == Lobby.creator) {
                 if (member.user.id != Lobby.creator) {
-                    h += " <a href='javascript: Lobby.removeUser("+ member.id +")'>x</a></li>";
+                    h += " <a href='javascript: Lobby.removeUser("+ member.id +")'>x</a>";
                 }
             }
+            if(User.id == member.user.id) {
+                h += " <a data-rel='dialog' href='/lobby/show_character_picker/"+Lobby.id+"/'>Pick Character</a></li>";
+            }
+
             $('#members').append(h)
             
             //$('#id_to').innerHTML += '<option value="' + member.user.id + '">' + member.user.username + '</option>'
@@ -100,7 +104,23 @@ Lobby = {
                 
             }
         )  
+    },
+
+    pickCharacter: function(element)
+    {
+        $(".picker_img").removeClass("selected");
+        $(element).addClass("selected");
+
+        $("#creator_image").val(element.src);
+
+        /*$.post('/lobby/members/pick_character/',
+            {'lobby': Lobby.id, "character": element.id},        
+            function(resp)
+            {
+            }
+        )*/
     }
 }
+
 
 //update_messages = new PeriodicalExecuter(Lobby.updateMessages, 2)
