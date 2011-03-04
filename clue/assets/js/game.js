@@ -132,11 +132,12 @@ Game = {
                 if (this._game.player.x == row && this._game.player.y == col)
                 {
                     td.addClass('you')
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/char1.png">'))
+                    assign_player_avatar(td_inner, this._game.player)
                 }
                 else if (player)
                 {
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/char2.png">'))   
+                    assign_player_avatar(td_inner, player)
+                    //td_inner.append($('<img class="tile" src="' + this.media_url + 'img/char2.png">'))   
                 }
 
                 td.css('width', Math.floor(this.el.width()/this._game.board_size))
@@ -250,6 +251,12 @@ GameCell = {
             alert("You must be adjacent to a player to investigate.")
         }
     },
+}
+
+function assign_player_avatar(element, player) {
+    //element.append($('<img class="tile" src="' + Game.media_url + 'img/char1.png">'))
+    //alert(player.user.username)
+    element.append($('<img class="tile" src="' + player.image + '" />'));
 }
 
 submitGuess = function()
