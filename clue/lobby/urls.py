@@ -17,6 +17,8 @@ urlpatterns = patterns('',
     (r'^members/get/$', 'lobby.ajax.get_members'),
     (r'^get_lobby/$', 'lobby.ajax.get_lobby'),
     (r'^members/invite/$', 'lobby.ajax.invite_member'),
+    (r'^show_character_picker/(?P<lobby_id>[0-9]+)/$', 'lobby.ajax.show_character_picker'),
+    (r'^pick_character_for_player/(?P<lobby_id>[0-9]+)/$', 'lobby.views.pick_character_for_player'),
     #for testing
     (r'^members/add_cpu_user/$', 'lobby.ajax.add_cpu_user'),
     (r'^members/remove_member/$', 'lobby.ajax.remove_member')
