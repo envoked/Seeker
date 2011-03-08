@@ -57,6 +57,10 @@ html {
 
 #header a { color: white }
 
+#content {
+    padding: 15px 15px 30px 15px
+}
+
 #toolbar {
     background: #333333;
     color: white;
@@ -71,6 +75,14 @@ h1{
 	padding:0px 18px 0px 0px;		
 }
 
+h1, h2, h3 {
+    margin-bottom: 1em;
+}
+
+h1 { font-size: 2em }
+h2 { font-size: 1.8em }
+h3 { font-size: 1.6em }
+
 a {
 	/*text-decoration:none;*/
 	color:#262626;
@@ -80,6 +92,9 @@ a {
 a:hover {
 	color:#B9B9B9;
 }
+
+label { float: left; min-width: 30% }
+input { clear: both }
 
 form {
 	padding:9px 18px 9px 0px;	
@@ -151,6 +166,18 @@ form {
     list-style-position: inside;
 }
 
+#members {
+    margin: 1em 0;
+}
+
+#members li {
+    line-height: 2em
+}
+
+#members li .text {
+    margin-left: 32px;
+}
+
 #avatar_picker {
     height: 20%;
     display: block;
@@ -168,7 +195,7 @@ form {
 }
 
 .small_avatar {
-    width: 4%;
+
 }
 
 .selected {

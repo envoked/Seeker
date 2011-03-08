@@ -93,7 +93,9 @@ def lobby(request, id):
             pass
         
     send_message_form = SendMessageForm({'lobby': lobby.id, 'content':" "})
-    lobby_json = json.dumps(expand(lobby))
+    lobby_dict = expand(lobby)
+    lobby_dict['media_url'] = settings.MEDIA_URL
+    lobby_json = json.dumps(lobby_dict)
     user_json = json.dumps(expand(request.user))
     return locals()
 

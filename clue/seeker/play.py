@@ -36,7 +36,6 @@ def game(request, game_id):
             print "NEW LOCATION %s , %s" % (x, y)
             print "PLAYER LOCATION %s , %s" % (player.x, player.y)
                 
-            game_dict = bg.serialize(player)
             
             cells = game.get_player_cells_within(int(x), int(y), 0)
             if cells:
@@ -58,7 +57,8 @@ def game(request, game_id):
             try:
                 player.move_to(x, y)
                 turn.action = 'move'
-                turn.params = move_coords   
+                turn.params = move_coords
+                game_dict = bg.serialize(player)
             except ValueError:
                 print "Too late move: %s" % (move_coords)
             

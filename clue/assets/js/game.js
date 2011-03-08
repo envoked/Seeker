@@ -47,6 +47,11 @@ Game = {
     */
     reload: function(params)
     {
+        if (Game.updating && typeof params == 'undefined')
+        {
+            console.log('Skipping update')
+            return
+        }
         if (params) {
             Game.last_activity = new Date()
             Game.last_update = new Date()

@@ -1,15 +1,22 @@
 {% extends 'base.html' %}
 
+{% block title %}
+New Game
+{% endblock %}
+
+{% block header %}
+New Game
+{% endblock %}
+
 {% block content %}
 <form action="/lobby/create/" method="POST">
-    <h1>Create New Game</h1>
     {{ create_lobby_form.as_p }}
 
     
     {% if char_images %}
     <div id="avatar_picker">
         {% for img in char_images %}
-            <img class="picker_img" id="{{ img }}" onclick="Lobby.pickCharacter(this)" src='http://localhost/seeker/img/chars/{{ img }}' />
+            <img class="picker_img" id="{{ img }}" onclick="Lobby.pickCharacter(this)" src="{{ MEDIA_URL }}/img/chars/{{ img }}" />
         {% endfor %}
         <div style='clear: both'></div>
     </div>

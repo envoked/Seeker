@@ -2,11 +2,14 @@
 Lobby = {
     id: null,
     update_interval: 2000,  //ms
+    media_url: '/',
     
     //Call from view after id is set
     init: function()
     {
-        this.updateMembers()
+        $('ul').listview()
+        Lobby.updateMembers()
+        Lobby.go()
     },
     
     updateMembers: function()
@@ -19,7 +22,6 @@ Lobby = {
                 if (data['game']) document.location = '/seeker/game/' + data['game']
                 Lobby.members = data['members']
                 Lobby._drawMembers()
-                setTimeout(Lobby.updateMembers, Lobby.update_interval)
             }
         )
     },
@@ -56,7 +58,7 @@ Lobby = {
         //alert(Lobby.creator);
         $(Lobby.members).each(function(i, member)
         {
-            h = "<li><img class='small_avatar' src='" + member.image + "' /><b>" + member.user.username + "</b>"
+            h = "<li><img class='ui-li-icon small_avatar' src='" + Lobby.media_url + member.image + "' /><span class='text'><b>" + member.user.username + "</b>"
             h += " at " + member.created;
             if(User.id == Lobby.creator) {
                 if (member.user.id != Lobby.creator) {
@@ -64,13 +66,15 @@ Lobby = {
                 }
             }
             if(User.id == member.user.id) {
-                h += " <a data-rel='dialog' href='/lobby/show_character_picker/"+Lobby.id+"/'>Pick Character</a></li>";
+                h += " <a data-rel='dialog' href='/lobby/show_character_picker/"+Lobby.id+"/'>Pick Character</a></span></li>";
             }
 
             $('#members').append(h)
             
             //$('#id_to').innerHTML += '<option value="' + member.user.id + '">' + member.user.username + '</option>'
         });
+        
+        $('ul').listview('refresh')
     },
     
     addCpuUser: function()
@@ -119,6 +123,16 @@ Lobby = {
             {
             }
         )*/
+    },
+    
+    go: function()
+    {
+        Lobby.update_timer = setInterval(Lobby.updateMembers, Lobby.update_interval)
+    },
+    
+    pause: function()
+    {
+        clearInterval(Lobby.update_timer)
     }
 }
 

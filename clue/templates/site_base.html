@@ -1,7 +1,7 @@
 {% load extras %}
 {% load facebook_tags %}
 <html>
-    <head>
+    <head>}
         <title>Seeker - {% block title %}{% endblock %}</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
         <script src="{% media_url %}/js/main.js"></script>
@@ -23,7 +23,7 @@
     <body>
         <div id="page" data-role="page">
             <div id="header" data-role="header">
-                <h1>Seeker</h1>
+                <h1>Seeker | {% block header %}{% endblock %}</h1>
                 {% if user.id %}
                     <a href="/lobby/home/" class="ui-btn-right">Hi, {{ user.username }}</a>
                 {% else %}

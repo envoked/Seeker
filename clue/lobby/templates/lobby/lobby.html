@@ -1,24 +1,34 @@
 {% extends 'base.html' %}
 
+{% block title %}
+New Game "{{ lobby.name }}"
+{% endblock %}
+
+{% block header %}
+New Game "{{ lobby.name }}"
+{% endblock %}
+
 {% block content %}
 
-<h1>Lobby: {{ lobby.name }}</h1>
-Created by <b> {{ lobby.creator.username }}</b> at {{ lobby.created }}
-
-<h3>Invite Someone</h3>
-<label>Email</label><input type="text" id="email"><a href="javascript: Lobby.inviteMember()">Send</a>
+{% if user != lobby.creator %}
+    Created by <b> {{ lobby.creator.username }}</b> at {{ lobby.created }}
+{% else %}
+    <h3>Invite Someone</h3>
+    <label>Email</label><input type="text" id="email"><a href="javascript: Lobby.inviteMember()">Send</a>
+{% endif %}
 
 <h3>Members</h3>
-<ul id="members">
-{% for member in lobby.members.all %}
-    <li><img class='small_avatar' src="{{ member.image }}" />{{ member.user.username }} {{ member.created }}</li>
-{% endfor %}
+<ul id="members" data-role="listview" data-inset="true" data-theme="d">
+    <li>Loading...</li>
+    <!-- filled in by Lobby.js -->
 </ul>
 
+<div data-role="controlgroup" data-type="horizontal">
 {% if user.id == lobby.creator.id %}
-<a href="/lobby/start_game/{{ lobby.id }}/">Start Game</a>
-<a href="javascript: Lobby.addCpuUser()">Add CPU User</a>
+<a href="/lobby/start_game/{{ lobby.id }}/" data-role="button">Start Game</a>
+<a href="javascript: Lobby.addCpuUser()" data-role="button">Add CPU User</a>
 {% endif %}
+</div>
 
 <script>
 jQuery.extend(Lobby, {{ lobby_json|safe }})

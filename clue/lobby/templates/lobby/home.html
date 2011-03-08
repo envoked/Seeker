@@ -1,7 +1,14 @@
 {% extends 'base.html' %}
 
+{% block title %}
+Home
+{% endblock %}
+
+{% block header %}
+Home
+{% endblock %}
+
 {% block content %}
-<h1>Home</h1>
 <div data-role="controlgroup">
     {% if player %}
         <a href="/seeker/game/{{ player.game.id}}/" data-role="button">You're in a game</a>

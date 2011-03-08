@@ -1,7 +1,14 @@
 {% extends 'base.html' %}
-{% block content %}
 
-<div class="center">
+{% block title %}
+Login
+{% endblock %}
+
+{% block header %}
+Login
+{% endblock %}
+
+{% block content %}
     <h3>Login</h3>
     
     {% if message %}
@@ -10,12 +17,8 @@
     
     <form action="/login/?next={{ next }}" method="POST">
         <label class="username">Username</label> <input type="text" name="username" /><br />
-        <label class="password">Password</label> <input type="text" name="password" /><br />
-        <label class="submit">&nbsp; </label><input class="submit" type="submit" value="Login"/>
+        <label class="password">Password</label> <input type="password" name="password" /><br />
+        <input class="submit" type="submit" value="Login"/>
     </form>
-    
-    <div class="centerText">
 
-    </div>
-</div>
 {% endblock %}
