@@ -304,6 +304,7 @@ class BoardGame:
         game_dict = expand(self.game)
         game_dict['player'] = expand(player)
         game_dict['player']['cell'] = expand(player.playercell)
+        game_dict['player']['cell']['player_id'] = player.id
         game_dict['player']['user'] = expand(player.user)
         """
         try:

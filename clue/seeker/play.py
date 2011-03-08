@@ -29,6 +29,10 @@ def game(request, game_id):
         bg.move_for_cpus()
         game_dict = bg.serialize(player)
         
+        remaining = player.remaining_guesses()
+        game_dict['remaining_guesses'] = remaining
+        print player, remaining
+        
         if 'move' in request.POST:
             move_coords = request.POST['move']
             x, y = move_coords.split(',')
@@ -141,19 +145,51 @@ def guesser(request, game_id):
         user = request.user,
         game = game
     )
+    other_player = Player.objects.get(id=request.POST['player'])
+
     known_facts = player.clue_set.filter(fact__neg=False).values('fact__player')
-    roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(player__in=known_facts)
+    correct_guesses = player.guess_set.filter(correct=True).values('other_player')
+    roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(player__in=known_facts).exclude(player__in=correct_guesses)
     other_players = game.player_set.exclude(id__in=known_facts)
 
     context = {
         'game'  : game,
         'player': player,
         'roles' : roles,
+        'other_player': other_player,
         'other_players': other_players
     }
     return context
 
 def guess(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    player = Player.objects.get(
+        user = request.user,
+        game = game
+    )
+    other_player = Player.objects.get(id=request.POST['player'])
+    role = Role.objects.get(id=request.POST['role'])
+    cell = PlayerCell.objects.get(id=request.POST['cell'])
+    
+    guess = Guess(
+        player = player,
+        other_player = other_player,
+        role = role,
+        cell = cell,
+    )
+    
+    print "Guessing:", other_player.user.username
+    print guess.other_player.playerrole.role, role
+    print guess.other_player.playercell, cell
+    
+    if guess.other_player.playerrole.role == role and guess.other_player.playercell == cell: guess.correct = True
+    else: guess.correct = False
+    
+    guess.save()
+    
+    return HttpResponse(simplejson.dumps(expand(guess)))
+
+def _guess(request, game_id):
     game = get_object_or_404(Game, id=game_id)
     guesses_str = request.REQUEST['guess']
     guesses = guesses_str.split(',')

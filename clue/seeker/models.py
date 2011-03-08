@@ -184,23 +184,18 @@ class Player(models.Model):
             o += str(clue) + "\n"
         return o
     
-    def can_guess_without_deduction(self):
+    def remaining_guesses(self):
         """
-        Does this player have a positive fact about every other player?
-        """
-        others = self.game.player_set.exclude(pk=self.id).all()
+        How many guesses is the player away from knowing everthing
+        """        
+        known_facts = self.clue_set.filter(fact__neg=False).values('fact__player')
+        correct_guesses = self.guess_set.filter(correct=True).values('other_player')
+        players_left = PlayerRole.objects.filter(player__in=self.game.player_set.all()).exclude(player__in=known_facts).exclude(player__in=correct_guesses)
         
-        not_found = 0
-        for other in others:
-            co = self.clueownership_set.select_related('clue').filter(clue__fact__neg=False, clue__fact__player = other).all()
-            #print "seeing if %s knows about %s" % (self.playerrole, other.playerrole)
-            if len(co) == 0: not_found += 1
-                
-        #print "There are %d facts that %s does not positively know" % (not_found, self.playerrole)
-        if not_found <= 1: return True
-        else: return False
+        return len(players_left)
 
     def __str__(self):
+        return self.user.username
         if not self.is_current:
             return '%s (not current) in %s' % (self.user.username, str(self.game))
         else:
@@ -244,6 +239,9 @@ class PlayerCell(Cell):
             return True
 
         return False
+    
+    def __str__(self):
+        return '%s at %d, %s' % (self.player, self.x, self.y)
    
 #Specific to "Role" game
 class Role(models.Model):
@@ -300,15 +298,12 @@ class Submission(models.Model):
     game = models.ForeignKey(Game)
     
 class Guess(models.Model):
-    submission = models.ForeignKey(Submission)
+    player = models.ForeignKey(Player)
     correct = models.NullBooleanField()
-    
-    class Meta:
-        abstract = True
-        
-class RoleGuess(Guess):
     other_player = models.ForeignKey(Player, related_name='other_player_set')
     role = models.ForeignKey(Role)
+    cell = models.ForeignKey(Cell)
+    created = models.DateTimeField(auto_now_add=True)
     
 class Ranking(models.Model):
     rank = models.IntegerField()
