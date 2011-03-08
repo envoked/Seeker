@@ -3,11 +3,11 @@
 {% block content %}
 {% load extras %}
 
-<h1>Welcome to Seeker.</h1>
-Seeker is a multiplayer mystery game where players compete to figure out eachothers roles.
+<div id="splash"><img class="splashImg" id="splashImg" src="{{ MEDIA_URL }}/img/splashbanner.png" /></div>
+<div id="splashHeadline">Welcome to Seekr, a game where players compete to discover the secret lives of their co-workers in this seedy corporate underworld.</div>
 <br/>
 <b>To begin:</b>
 <p>Please <a href="/login/">Login</a>
-or <a href="/lobby/register/">Register</a> to join a lobby</p>
+or <a href="/lobby/register/">Register</a> to play the game.</p><br>
 
 {% endblock %}

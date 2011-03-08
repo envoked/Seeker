@@ -18,7 +18,9 @@ Login
     <form action="/login/?next={{ next }}" method="POST">
         <label class="username">Username</label> <input type="text" name="username" /><br />
         <label class="password">Password</label> <input type="password" name="password" /><br />
-        <input class="submit" type="submit" value="Login"/>
+        <input class="submit" type="submit" value="Sign In"/>
     </form>
+    
+    <p>Don't have an account?<br><a href="/lobby/register/">Sign Up.</a></p>
 
 {% endblock %}

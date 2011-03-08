@@ -163,7 +163,7 @@ def register(request):
             )
             new_user.backend = 'django.contrib.auth.backends.ModelBackend'
             auth.login(request, new_user)
-            return HttpResponseRedirect('/lobby/')
+            return HttpResponseRedirect('/lobby/home/')
     else:
         context['register_form'] = CreateUserForm()
     
@@ -204,7 +204,7 @@ def login(request):
                 auth.login(request, user)
                 if 'next' in request.POST:
                     return HttpResponseRedirect(request.POST['next'])
-                return HttpResponseRedirect("/lobby/")
+                return HttpResponseRedirect("/lobby/home/")
             else:
                 context['message'] = 'Your account has been disabled'
         else:

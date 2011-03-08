@@ -23,9 +23,10 @@
     <body>
         <div id="page" data-role="page">
             <div id="header" data-role="header">
-                <h1>Seeker | {% block header %}{% endblock %}</h1>
+                <div id="logo"><img src="{{ MEDIA_URL }}/img/logo.png"/></div>
+                <h1>{% block header %}{% endblock %}</h1>
                 {% if user.id %}
-                    <a href="/lobby/home/" class="ui-btn-right">Hi, {{ user.username }}</a>
+                    <a href="/lobby/home/" class="ui-btn-right">Home</a>
                 {% else %}
                     <a href="/login/" class="ui-btn-right">Login</a>
                 {% endif %}
@@ -40,7 +41,7 @@
                 <div data-role="navbar">
                     <ul>
                     {% block toolbar %}
-                        <a href="/lobby/home/">Home</a>
+                        <a href="/lobby/home/">Help</a>
                     {% endblock %}
                     </ul>
                 </div>

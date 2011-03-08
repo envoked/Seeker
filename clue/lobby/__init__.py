@@ -68,7 +68,7 @@ min_choices = (
 class CreateLobbyForm(forms.Form):
     name = forms.CharField(max_length=255)
     num_players = forms.ChoiceField(choices=num_players_choices)
-    difficuly = forms.ChoiceField(choices=difficulty_choices)
+    difficulty = forms.ChoiceField(choices=difficulty_choices)
     
 class SendMessageForm(forms.Form):
     content = forms.CharField(max_length=1000, widget=forms.Textarea)

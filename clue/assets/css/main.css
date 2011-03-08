@@ -4,34 +4,36 @@
 /* Derived from Tantek å?elik's undohtml.css */
 /* http:/tantek.com/ */
 
-:link,:visited 
-{	/*text-decoration: none;*/
-    }
+:link,:visited {
+    text-decoration: none;
+}
 
-ul,ol 
-{	list-style: none;
-    }
+ul,ol {
+    list-style: none;
+ }
 
-h1,h2,h3,h4,h5,h6 
-{	font-size: 1em;
-    }
+h1,h2,h3,h4,h5,h6 {
+    font-size: 1em;
+}
 
-ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form
-{ 	margin: 0; 
+ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form {
+    margin: 0; 
     padding: 0;
-    }
+}
 
-dl, dt, dd
-{	margin: 0;
+dl, dt, dd {
+    margin: 0;
     padding: 0;
-    }
+}
     
-img
-{	padding: 0;
-    border: 0;}
-
+img {
+    padding: 0;
+    border: 0;
+}
     
-p {margin: 0;}
+p {
+    margin: 0;
+}
 	
 /*GENERAL ARCHITECTURE*/
 
@@ -40,11 +42,19 @@ html {
     background-color: #aaa;
 }
 
+#logo {
+    float: left;
+    margin-top: 5px;
+}
+
 #header {
-	border-bottom:1px solid #4D4D4D;
-    background: #2C6097;
-    color: white
-	/*border:1px solid #BABABA;*/
+    border-bottom:1px solid #4D4D4D;
+    color: #E0E0E0;
+    border:1px solid #8C8C8C;
+    padding-left:12px;
+    background-image: url('../img/headerbg.png');
+    background-color: #992632;
+    background-repeat: repeat-x;
 }
 
 #header .left-button {
@@ -58,14 +68,14 @@ html {
 #header a { color: white }
 
 #content {
-    padding: 15px 15px 30px 15px
+    padding: 15px 15px 30px 15px;
 }
 
 #toolbar {
-    background: #333333;
+    background: #222;
     color: white;
     position: absolute;
-    bottom: 0;
+    bottom: 0px;
 }
 
 #toolbar a { color: white }
@@ -204,4 +214,20 @@ form {
 .taken {
     opacity: .3;
     cursor: default;
+}
+
+/* Splash Screen */
+#splash {
+    margin-left: -15px;
+    margin-top: -15px;
+}
+
+#splashHeadline {
+    margin-left: -15px;
+    padding:12px 12px 13px 15px;
+    border-bottom:1px solid #4D4D4D;
+    font-size:18px;
+    line-height:120%;
+    font-weight:100;
+    color:#232323;
 }
