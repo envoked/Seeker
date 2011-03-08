@@ -351,7 +351,7 @@ function assign_player_avatar(element, player) {
 
 function show_alert(text) {
     text = text.replace(/ /g, "_");
-    $("#content").append("<a id='open_dialog' data-rel='dialog' href='/seeker/game/show_notification/"+text+"'>open</a>");
+    $("#content").append("<a id='open_dialog' style='display: none' data-rel='dialog' href='/seeker/game/show_notification/"+text+"'>open</a>");
     $("#open_dialog").click();
 }
 
