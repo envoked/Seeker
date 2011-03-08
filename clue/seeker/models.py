@@ -241,7 +241,11 @@ class PlayerCell(Cell):
         return False
     
     def __str__(self):
-        return '%s at %d, %s' % (self.player, self.x, self.y)
+        try:
+            return '%s at %d, %s' % (self.player, self.x, self.y)
+        except TypeError:
+            return '%s at ?' % str(self.player)
+            
    
 #Specific to "Role" game
 class Role(models.Model):
