@@ -115,14 +115,7 @@ Lobby = {
         $(".picker_img").removeClass("selected");
         $(element).addClass("selected");
 
-        $("#creator_image").val(element.src);
-
-        /*$.post('/lobby/members/pick_character/',
-            {'lobby': Lobby.id, "character": element.id},        
-            function(resp)
-            {
-            }
-        )*/
+        $("#creator_image").val(element.id);
     },
     
     go: function()
