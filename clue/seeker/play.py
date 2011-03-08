@@ -43,17 +43,31 @@ def game(request, game_id):
                
                 direction = player.get_direction_of_movement(x, y)
                 print "DIRECTION: %s" % direction
-                if (direction == "up" or direction == "right"):
-                    print "VALID"
-                    cubicle = cells[0]
-                    cubicle_owner = cubicle.player
-                    new_clue = player.investigate_cell(cubicle)
-                    if new_clue:
-                        game_dict['new_clue'] = new_clue.serialize()
+
+                cubicle = cells[0]
+                cubicle_owner = cubicle.player
+                if(cubicle_owner.id == player.id):
+                    if (direction == "down" or direction == "right"):
+                        print "VALID"
+                        
+                        new_clue = player.investigate_cell(cubicle)
+                        if new_clue:
+                            game_dict['new_clue'] = new_clue.serialize()
+                    else:
+                        print "INVALID"
+                        x = player.x
+                        y = player.y
                 else:
-                    print "INVALID"
-                    x = player.x
-                    y = player.y
+                    if (direction == "up" or direction == "right"):
+                        print "VALID"
+                        
+                        new_clue = player.investigate_cell(cubicle)
+                        if new_clue:
+                            game_dict['new_clue'] = new_clue.serialize()
+                    else:
+                        print "INVALID"
+                        x = player.x
+                        y = player.y
                     
             try:
                 player.move_to(x, y)
@@ -235,3 +249,8 @@ def quit(request, game_id):
     player.save()
     return HttpResponseRedirect('/lobby/home/')
 
+@render_to('notification.html')
+def show_notification(request, text):
+    text = text.replace("_", " ")
+    return {"text" : text}
+    
