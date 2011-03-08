@@ -7,6 +7,8 @@ Game = {
     activity_timeout: 1000*60*60,
     updateing: false,
     paused: false,
+    state: null,
+    guess: {},
     
     init: function(id, el, media_url)
     {
@@ -61,8 +63,12 @@ Game = {
         }
         else params = {}
         
-        $.post('/seeker/game/' + Game.id + '/?' + jQuery.param(params), params,
-            function(data, status, req) {
+        $.ajax({
+            url: '/seeker/game/' + Game.id + '/?' + jQuery.param(params),
+            data: params,
+            type: 'POST',
+            success: function(data) {
+                console.log('succ')
                 Game._game = data
                 Game.updating = false
                 Game.last_update = new Date()
@@ -70,18 +76,27 @@ Game = {
                 
                 if (!Game._game.is_current)
                 {
-                    show_alert("The game is over!");
+                    alert("The game is over!");
                     document.location.href = '/lobby/home/';
+                }
+                if (Game._game.remaining_guesses == 0)
+                {
+                    if (Game.state != 'complete') alert("You know everything")
+                    Game.state = 'complete'
                 }
                 if (Game._game.new_clue)
                 {
                     //alert(Game._game.new_clue.str)
                     clue = Game._game.new_clue.str;
-                    show_alert(clue);
+                    alert(clue);
                 }
                 
                 Game.redraw();             
-            }, 'json');  
+            },
+            error: function() {
+                Game.last_update = new Date()
+            },
+            dataType: 'json'});  
     },
     
     redraw: function()
@@ -104,7 +119,6 @@ Game = {
                 var td_inner = $(td.children()[0])
                 var player = this.playerAt(row, col)
                 
-
                 //If square is in moveable range
                 if (Math.abs(this._game.player.x - row) <= 1 && Math.abs(this._game.player.y - col) <= 1)
                 {
@@ -115,7 +129,7 @@ Game = {
                 var cubicle = this.cubicleAt(row, col)
                 if (cubicle)
                 {
-                    td.addClass('a-cubicle')
+                    td.addClass('a-cubicle').attr('cell', cubicle.id)
                 }
                 //If the cubicle is yours
                 if (this._game.player.cell.x == row && this._game.player.cell.y == col)
@@ -161,10 +175,28 @@ Game = {
     
     showGuesser: function()
     {
-        $.post('/seeker/game/' + this.id + '/guesser/', {},
+        if (Game.state == 'complete')
+        {
+            alert("Game is over")
+            return false;
+        }
+        if (Game.inCubible())
+        {
+            Game.guess = {}
+            Game.state = 'guessing';
+            alert("Click on a player to guess")
+        }
+        else
+        {
+            alert("You must be in your cubicle to guess.")
+        }
+    },
+    
+    showRoleGuesser: function()
+    {
+        $.post('/seeker/game/' + Game.id + '/guesser/', {player: Game.guess.player},
             function(data) {
-                showView(data)
-                $('#guesser').show()
+                lightbox(data)
             })
     },
     
@@ -177,15 +209,30 @@ Game = {
             })
     },
     
-    submitGuess: function(user, role)
+    submitGuess: function()
     {     
-        this.reload({'guess': user + '=' + role})
+        $.post('/seeker/game/' + Game.id + '/guess/', Game.guess,
+            function(data) {
+                console.log(data)    
+            })
     },
     
     showBoard: function()
     {
         $('#clues').hide()
         $('#guesser').hide()
+    },
+    
+    //is player in thier cubicle?
+    inCubible: function()
+    {
+        //If there is a cubicle here
+        var cubicle = this.cubicleAt(this._game.player.x, this._game.player.y)
+        if (this._game.player.cell.x == this._game.player.x && this._game.player.cell.y == this._game.player.y)
+        {
+            return true
+        }
+        return false
     },
     
     playerAt: function(x, y)
@@ -224,6 +271,14 @@ Game = {
             Game.paused = false
             Game.interval_id = setInterval(Game.busyLoop, Game.update_interval)
         }
+    },
+    
+    guessCubicle: function(role)
+    {
+        hideLightbox()
+        alert('Click a cubicle to guess')
+        Game.state = 'guessing-cell';
+        Game.guess.role = role;
     }
 }
 
@@ -239,6 +294,34 @@ GameCell = {
         }
         var target = $(this)
         console.log(target)
+        
+        if (Game.state == 'complete')
+        {
+            return false;
+        }
+        
+        if (Game.state == 'guessing')
+        {
+            if (target.hasClass('occupied'))
+            {
+                var player_id = target.attr('player')
+                Game.guess.player = player_id;
+                alert("What's thier role?")
+                Game.state = 'guessing-role';
+                Game.showRoleGuesser()
+                
+                return false;
+            }
+        }
+        else if (Game.state == 'guessing-cell')
+        {
+            var cell_id = target.attr('cell')
+            Game.guess.cell = cell_id;
+            console.log(Game.guess)
+            
+            Game.submitGuess()
+            return false;
+        }
         
         if (target.hasClass('occupied') && target.hasClass('can-move'))
         {
@@ -257,7 +340,7 @@ GameCell = {
         {
             show_alert("You must be adjacent to a player to investigate.");
         }
-    },
+    }
 }
 
 function assign_player_avatar(element, player) {
@@ -277,4 +360,21 @@ submitGuess = function()
     var user = $('#player')[0].value
     var role = $('#role')[0].value
     Game.submitGuess(user, role)
+}
+
+lightbox = function(data)
+{
+    hideLightbox()
+    var opaque = $('<div class="opaque">')
+    opaque.click(hideLightbox)
+    $('#content').append(opaque)
+    var el = $('<div class="lightbox">')
+    el.html(data)
+    $('#content').append(el)
+}
+
+hideLightbox = function()
+{
+    $('.lightbox').remove()
+    $('.opaque').remove()
 }

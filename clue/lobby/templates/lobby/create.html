@@ -14,6 +14,7 @@ New Game
 
     
     {% if char_images %}
+    <label>Avatar:</label>
     <div id="avatar_picker">
         {% for img in char_images %}
             <img class="picker_img" id="{{ img }}" alt="img/chars/{{ img }}" onclick="Lobby.pickCharacter(this)" src="{{ MEDIA_URL }}/img/chars/{{ img }}" />

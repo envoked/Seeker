@@ -16,7 +16,7 @@ Game.init({{ game.id }}, $('.board'), '{% media_url %}')
 {% block toolbar %}
     <a href="/seeker/game/{{ game.id }}/">Board</a>
     <a href="/seeker/game/{{ game.id }}/clues/">Show Clues</a>
-    <a href="/seeker/game/{{ game.id }}/guesser/">Guesser</a>
+    <a href="#" onclick="Game.showGuesser()">Guesser</a>
     <a href="#" onclick="Game.pause()" id="pause">Pause</a>
     <a href="/seeker/game/{{ game.id }}/quit/">Quit</a>
 {% endblock %}

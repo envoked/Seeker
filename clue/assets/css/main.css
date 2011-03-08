@@ -170,6 +170,31 @@ form {
 	z-index:1001; 
 }
 
+/*Moddal Window ishhh*/
+.opaque {
+	background:#333;
+	opacity:0.9;
+	filter:alpha(opacity=90);
+	position:absolute;
+	top:0px;
+	left:0px;
+	min-width:100%;
+	min-height:100%;
+	z-index:1000;	
+}   
+
+.lightbox {
+	position:fixed;
+	top:10px;
+	left:50%;
+	margin-left:-100px;
+	width:200px;
+	background:#FFFFFF;
+	padding:10px 15px 10px 15px;
+	border:2px solid #ccc;
+	z-index:1001; 
+}
+
 .clues li
 {
     list-style-type: square;

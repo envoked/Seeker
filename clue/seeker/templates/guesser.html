@@ -1,47 +1,21 @@
-{% extends 'site_base.html' %}
-{% load extras %}
-{% block content %}
-    {% if game.is_current %}
+
+
+{% if game.is_current %}
     {% if other_players.count > 0 %}
-    
-    <h2>Guess...</h2>
-    <div class="floatLeft">
-        <h2>Person</h2>
-        <select id="player">
-            {% for player in other_players %}
-            <option value="{{ player.user.id }}">{{ player.user }}</option>
-            {% endfor %}
-        </select>
-        <!--
-         <ul id="players">
-            {% for player in other_players %}
-                <li id="{{ player.id }}">{{ player.user }}</li>
-            {% endfor %}
-         <ul>
-        -->
-    </div>
-    <div class="floatLeft">
-        <h2>Role</h2>
+
+    {{ other_player.user.username }}
+    <img src="{{ MEDIA_URL }}/{{ other_player.image }}" />
         <select id="role">
             {% for player_role in roles %}
             <option value="{{ player_role.role.id }}">{{ player_role.role.name }}</option>
             {% endfor %}
         </select>
-        <!--
-        <ul class="softable" id="roles">
-            {% for player_role in roles%}
-                <li id="{{ player_role.role.id }}">{{ player_role.role.name}}</li>
-            {% endfor %}
-        <ul>
-        -->
-    </div>
-    <div class="clear"></div>
-    <a class="button" href="javascript: submitGuess()">Submit</a>
+        <a href="#" onclick="Game.guessCubicle($('#role').val())">Ok</a>
+
     {% else %}
-    <b>You know everything!</g>
+    You know everything!
     {% endif %}
-    
 {% else %}
 <b>This game is over</b>
 {% endif %}
-{% endblock %}
+
