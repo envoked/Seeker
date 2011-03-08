@@ -70,12 +70,14 @@ Game = {
                 
                 if (!Game._game.is_current)
                 {
-                    alert("The game is over!")
+                    show_alert("The game is over!");
                     document.location.href = '/lobby/home/';
                 }
                 if (Game._game.new_clue)
                 {
-                    alert(Game._game.new_clue.str)
+                    //alert(Game._game.new_clue.str)
+                    clue = Game._game.new_clue.str;
+                    show_alert(clue);
                 }
                 
                 Game.redraw();             
@@ -90,12 +92,12 @@ Game = {
         this.el.css('height', $(window).height()*0.75)
         this.el.css('width', this.el.height())
         
-        for (row=0; row<this._game.board_size; row++)
+        for (col=0; col<this._game.board_size; col++)
         {
             var column = []
             var tr = $('<div class="row">')
             
-            for (col=0; col<this._game.board_size; col++)
+            for (row=0; row<this._game.board_size; row++)
             {
                 var td = $('<div class="cell">').attr('x', row).attr('y', col)
                 td.append($('<div class="inner">'))
@@ -253,7 +255,7 @@ GameCell = {
         
         else if (target.hasClass('occupied'))
         {
-            alert("You must be adjacent to a player to investigate.")
+            show_alert("You must be adjacent to a player to investigate.");
         }
     },
 }
@@ -262,6 +264,12 @@ function assign_player_avatar(element, player) {
     //element.append($('<img class="tile" src="' + Game.media_url + 'img/char1.png">'))
     //alert(player.user.username)
     element.append($('<img class="tile" src="' + player.image + '" />'));
+}
+
+function show_alert(text) {
+    text = text.replace(/ /g, "_");
+    $("#content").append("<a id='open_dialog' data-rel='dialog' href='/seeker/game/show_notification/"+text+"'>open</a>");
+    $("#open_dialog").click();
 }
 
 submitGuess = function()
