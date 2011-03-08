@@ -63,8 +63,12 @@ Game = {
         }
         else params = {}
         
-        $.post('/seeker/game/' + Game.id + '/?' + jQuery.param(params), params,
-            function(data, status, req) {
+        $.ajax({
+            url: '/seeker/game/' + Game.id + '/?' + jQuery.param(params),
+            data: params,
+            type: 'POST',
+            success: function(data) {
+                console.log('succ')
                 Game._game = data
                 Game.updating = false
                 Game.last_update = new Date()
@@ -88,7 +92,11 @@ Game = {
                 }
                 
                 Game.redraw();             
-            }, 'json');  
+            },
+            error: function() {
+                Game.last_update = new Date()
+            },
+            dataType: 'json'});  
     },
     
     redraw: function()
