@@ -58,7 +58,7 @@ Lobby = {
         //alert(Lobby.creator);
         $(Lobby.members).each(function(i, member)
         {
-            h = "<li><img class='ui-li-icon small_avatar' src='" + member.image + "' /><span class='text'><b>" + member.user.username + "</b>"
+            h = "<li><img class='ui-li-icon small_avatar' src='" + Lobby.media_url + member.image + "' /><span class='text'><b>" + member.user.username + "</b>"
             h += " at " + member.created;
             if(User.id == Lobby.creator) {
                 if (member.user.id != Lobby.creator) {
@@ -115,7 +115,7 @@ Lobby = {
         $(".picker_img").removeClass("selected");
         $(element).addClass("selected");
 
-        $("#creator_image").val(element.id);
+        $("#creator_image").val(element.alt);
     },
     
     go: function()

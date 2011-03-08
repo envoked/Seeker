@@ -16,7 +16,7 @@ New Game
     {% if char_images %}
     <div id="avatar_picker">
         {% for img in char_images %}
-            <img class="picker_img" id="{{ img }}" alt="{{ img }}" onclick="Lobby.pickCharacter(this)" src="{{ MEDIA_URL }}/img/chars/{{ img }}" />
+            <img class="picker_img" id="{{ img }}" alt="/img/chars/{{ img }}" onclick="Lobby.pickCharacter(this)" src="{{ MEDIA_URL }}/img/chars/{{ img }}" />
         {% endfor %}
         <div style='clear: both'></div>
     </div>
