@@ -243,7 +243,7 @@ class PlayerCell(Cell):
     def __str__(self):
         try:
             return '%s at %d, %s' % (self.player, self.x, self.y)
-        except TypeError:
+        except:
             return '%s at ?' % str(self.player)
             
    

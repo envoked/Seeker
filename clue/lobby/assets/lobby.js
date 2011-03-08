@@ -60,7 +60,7 @@ Lobby = {
         {
             h = "<li><img class='ui-li-icon small_avatar' src='" + member.image + "' /><span class='text'><b>" + member.user.username + "</b>"
             h += " at " + member.created;
-            if(User.id == Lobby.creator) {
+            if (User.id == Lobby.creator) {
                 if (member.user.id != Lobby.creator) {
                     h += " <a href='javascript: Lobby.removeUser("+ member.id +")'>x</a>";
                 }

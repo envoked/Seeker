@@ -213,7 +213,9 @@ Game = {
     {     
         $.post('/seeker/game/' + Game.id + '/guess/', Game.guess,
             function(data) {
-                console.log(data)    
+                console.log(data)
+                if (data.correct) alert("Correct!")
+                else alert("Wrong")
             })
     },
     
