@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import *
-from settings import *
+from django.conf import settings
 
 import os, glob
 
@@ -21,7 +21,7 @@ class Lobby(models.Model):
     @staticmethod
     def getCharImages():
         images = []
-        path = '%simg/chars' % MEDIA_ROOT
+        path = '%simg/chars' % settings.MEDIA_ROOT
         print path
         #for infile in glob.glob( os.path.join(path) ):
         for infile in os.listdir(path):
