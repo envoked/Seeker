@@ -89,6 +89,30 @@ class Player(models.Model):
             return True
 
         return False
+
+    def get_direction_of_movement(self, new_x, new_y):
+        direction = ""
+        print "--------------"
+        x = int(self.x)
+        y = int(self.y)
+        new_x = int(new_x)
+        new_y = int(new_y)
+
+        print "OLD LOCATION %s , %s" % (x, y)
+        print "NEW LOCATION %s , %s" % (new_x, new_y)
+        
+        if(new_x > x):
+            direction = "right"
+        elif(new_x < x):
+            direction = "left"
+        elif(new_y > y):
+            direction = "down"
+        elif(new_y < y):
+            direction = "up"
+        else:
+            raise ValueError("Invalid Direction")
+
+        return direction
     
     def move_to(self, x, y):
         space_occupied = self.game.player_set.filter(x=x, y=y).all()
