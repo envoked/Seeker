@@ -19,7 +19,7 @@ def render_to(template_name):
 class CreateUserForm(forms.Form):
     first_name = forms.CharField(max_length=255)
     last_name = forms.CharField(max_length=255)
-    username = forms.CharField(max_length=255)
+    username = forms.CharField(max_length=13)
     password = forms.CharField(max_length=30)
     email = forms.CharField(max_length=255)
     
