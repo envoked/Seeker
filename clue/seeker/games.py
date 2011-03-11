@@ -222,6 +222,10 @@ class BoardGame:
     
     def endgame(self):
         self.game.is_current = False
+        try:
+            self.game.end = datetime.datetime.now()
+        except:
+            pass
         self.game.save()
         
         guesses = Guess.objects.filter(player__in=self.game.player_set.all()).order_by('created')
@@ -245,6 +249,8 @@ class BoardGame:
                 game = self.game
             )
             player.ranking.save()
+            player.is_current = False
+            player.save()
             
         i = 0
         for ranking in self.game.ranking_set.order_by('-total_points').all():
