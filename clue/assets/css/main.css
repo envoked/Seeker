@@ -220,11 +220,12 @@ form {
     text-align: center;
     width: 50%;
     border: 2px solid rgba(255, 255, 255, 0.3);
+    position: relative;
 }
 
 .picker_img {
     float: left;
-    width: 10%;
+    width: 20%;
     border: 2px solid rgba(255, 255, 255, 0.3);
     cursor: pointer;
 }
