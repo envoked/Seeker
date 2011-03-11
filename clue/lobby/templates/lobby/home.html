@@ -9,6 +9,7 @@ Home
 {% endblock %}
 
 {% block content %}
+<div id="splash"><img class="mainImg" id="mainImg" src="{{ MEDIA_URL }}/img/main_banner.png" /></div>
 <div data-role="controlgroup">
     {% if player %}
         <a href="/seeker/game/{{ player.game.id}}/" data-role="button">You're in a game</a>
