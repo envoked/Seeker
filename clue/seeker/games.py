@@ -1,7 +1,7 @@
 import traceback, exceptions, random, time
 from datetime import datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Count, Max, Min
+from django.db.models import Count, Max, Min, Sum
 from django.core.cache import cache
 from models import *
 from distributor import *
@@ -209,6 +209,50 @@ class BoardGame:
                     game = self.game)
                 clue.save()
     
+    def is_over(self):
+        human_players = self.game.player_set.filter(user__is_active=True).all()
+        unkown_facts = 0
+        for human in human_players:
+            unkown_facts += human.unkown_facts()
+            
+        if unkown_facts == 0 and self.game.is_current:
+            self.endgame()
+            
+        return unkown_facts == 0
+    
+    def endgame(self):
+        self.game.is_current = False
+        self.game.save()
+        
+        guesses = Guess.objects.filter(player__in=self.game.player_set.all()).order_by('created')
+        guesses_per_player = {}
+        
+        for guess in guesses.all():
+            if guess.other_player.id not in guesses_per_player:
+                guesses_per_player[guess.other_player.id] = 1
+            else:
+                guesses_per_player[guess.other_player.id] += 1
+            guess.points = self.game.player_set.count() - guesses_per_player[guess.other_player.id]
+            guess.save()
+            
+        self.game.ranking_set.all().delete()
+            
+        for player in self.game.player_set.all():
+            total_points = Guess.objects.filter(player=player).annotate(total_points=Sum('points')).aggregate(Sum('points'))
+            print total_points
+            player.ranking = Ranking(
+                total_points = total_points['points__sum'],
+                game = self.game
+            )
+            player.ranking.save()
+            
+        i = 0
+        for ranking in self.game.ranking_set.order_by('-total_points').all():
+            ranking.rank = i
+            ranking.save()
+            i+=1
+            
+    
     def guess(self, user, other_user, role):
         this_player = user.player_set.get(is_current=True, game=self.game)
         other_player = other_user.player_set.get(is_current=True, game=self.game)
@@ -284,20 +328,19 @@ class BoardGame:
     def get_cached(self, field, timeout=60):
         cached = cache.get('game_%d_%s' % (self.game.id, field))
         try:
-            print time.time() - int(cached['t'])
+            time.time() - int(cached['t'])
         except:
             pass
         if cached is None:
             return None
         if 'v' in cached and timeout > (time.time() - int(cached['t'])):
-            print "memcached hit: %s=%s" % (field, cached['v'])
+            #print "memcached hit: %s=%s" % (field, cached['v'])
             return cached['v']
         else:
-            print "timeout"
             return None
     
     def set_cached(self, field, value):
-        print "memcached set: %s=%s" % (field, value)
+        #print "memcached set: %s=%s" % (field, value)
         return cache.set('game_%d_%s' % (self.game.id, field), {'t': int(time.time()),'v': value})
         
     def serialize(self, player):
@@ -319,7 +362,10 @@ class BoardGame:
         for i in _players:
             _player = expand(i)
             _player['user'] = expand(i.user)
+            _player['role'] = expand(i.playerrole.role)
             _player['cell'] = expand(i.playercell)
+            _player['cell']['player_id'] = i.id
+            _player['unkown_facts'] = i.unkown_facts()
             """
             try: _player['user']['profile'] = expand(i.user.get_profile())
             except: pass
@@ -331,6 +377,7 @@ class BoardGame:
             'min': self.get_cached('min_turns'),
             'max': self.get_cached('max_turns'),
             'max_turn_id': self.get_cached('max_turn_id')}
+        game_dict['correct_guesses'] = serialize_qs(player.guess_set.filter(correct=1))
         return game_dict
     
     def html(self, request):
