@@ -134,5 +134,17 @@ Lobby = {
     }
 }
 
+function verify_submit(form) {
+    if($("#id_username").val().length > 29) {
+        alert("Username must be less than 30 characters in length");
+        return false;
+    }
+    
+    $(form).submit();
+}
+
+function submit_character_pick(form) {
+    $(form.submit());
+}
 
 //update_messages = new PeriodicalExecuter(Lobby.updateMessages, 2)
