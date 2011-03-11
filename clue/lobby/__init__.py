@@ -20,8 +20,8 @@ class CreateUserForm(forms.Form):
     first_name = forms.CharField(max_length=255)
     last_name = forms.CharField(max_length=255)
     username = forms.CharField(max_length=255)
-    password = forms.CharField(max_length=30)
-    email = forms.CharField(max_length=255)
+    password = forms.CharField(widget=forms.PasswordInput, max_length=30)
+    email = forms.EmailField(max_length=255)
     
 class SettingsForm(forms.Form):
     email = forms.EmailField(max_length=255)
@@ -67,8 +67,8 @@ min_choices = (
     
 class CreateLobbyForm(forms.Form):
     name = forms.CharField(max_length=255)
-    num_players = forms.ChoiceField(choices=num_players_choices)
-    difficulty = forms.ChoiceField(choices=difficulty_choices)
+    #num_players = forms.ChoiceField(choices=num_players_choices)
+    #difficulty = forms.ChoiceField(choices=difficulty_choices)
     
 class SendMessageForm(forms.Form):
     content = forms.CharField(max_length=1000, widget=forms.Textarea)
