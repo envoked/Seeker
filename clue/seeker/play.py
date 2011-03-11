@@ -26,7 +26,7 @@ def game(request, game_id):
     player = Player.objects.select_related('user', 'cell').get(user=request.user, game=game)
     
     if player.is_current == False:
-        message = "You quit this game."
+        message = "You are no longer active in this game."
         show_board = False
     
     turn = Turn(
@@ -49,35 +49,11 @@ def game(request, game_id):
             
             cells = game.get_player_cells_within(int(x), int(y), 0)
             if cells:
-               
                 direction = player.get_direction_of_movement(x, y)
                 print "DIRECTION: %s" % direction
 
                 cubicle = cells[0]
                 cubicle_owner = cubicle.player
-                #if(cubicle_owner.id == player.id):
-                #    if (direction == "down" or direction == "right"):
-                #        print "VALID"
-                #        
-                #        new_clue = player.investigate_cell(cubicle)
-                #        if new_clue:
-                #            game_dict['new_clue'] = new_clue.serialize()
-                #    else:
-                #        print "INVALID"
-                #        x = player.x
-                #        y = player.y
-                #else:
-                #    if (direction == "up" or direction == "right"):
-                #        print "VALID"
-                #        
-                #        new_clue = player.investigate_cell(cubicle)
-                #        if new_clue:
-                #            game_dict['new_clue'] = new_clue.serialize()
-                #    else:
-                #        print "INVALID"
-                #        x = player.x
-                #        y = player.y
-
                 new_clue = player.investigate_cell(cubicle)
                 if new_clue:
                     game_dict['new_clue'] = new_clue.serialize()
@@ -86,7 +62,7 @@ def game(request, game_id):
                 player.move_to(x, y)
                 turn.action = 'move'
                 turn.params = move_coords
-                game_dict = bg.serialize(player)
+                game_dict['game'] = bg.serialize(player)
             except ValueError:
                 print "Too late move: %s" % (move_coords)
         else:

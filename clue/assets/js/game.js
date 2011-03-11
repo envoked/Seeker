@@ -52,7 +52,6 @@ Game = {
     {
         if (Game.updating && typeof params == 'undefined')
         {
-            console.log('Skipping update')
             return
         }
         if (params) {
@@ -69,7 +68,6 @@ Game = {
             data: params,
             type: 'POST',
             success: function(data) {
-                console.log('succ')
                 Game._game = data
                 Game.updating = false
                 Game.last_update = new Date()
@@ -87,7 +85,6 @@ Game = {
                 }
                 if (Game._game.new_clue)
                 {
-                    //alert(Game._game.new_clue.str
                     clue = Game._game.new_clue.str;
                     alert(clue);
                 }
@@ -102,7 +99,6 @@ Game = {
     
     redraw: function()
     {
-        console.log('redraw()')
         this.rows = []
         this.el.html("");
         this.el.css('height', $(window).height()*0.75)
@@ -131,10 +127,8 @@ Game = {
                 if (cubicle)
                 {
                     td.addClass('a-cubicle').attr('cell', cubicle.id)
-                    console.log(cubicle)
                     if (this.knowsPlayer(cubicle.player_id))
                     {
-                        console.log('knows')
                         var owner = this.getById('players', cubicle.player_id)
                         td_inner.append($('<div class="text-overlay" style="top:2em">').html(owner.user.username))
                     }
@@ -234,7 +228,6 @@ Game = {
     {     
         $.post('/seeker/game/' + Game.id + '/guess/', Game.guess,
             function(data) {
-                console.log(data)
                 if (data.correct) alert("Correct!")
                 else alert("Wrong")
             }, 'json')
@@ -336,7 +329,6 @@ GameCell = {
             if (Game.paused) Game.pause()
         }
         var target = $(this)
-        console.log(target)
         
         if (Game.state == 'complete')
         {
@@ -360,7 +352,6 @@ GameCell = {
         {
             var cell_id = target.attr('cell')
             Game.guess.cell = cell_id;
-            console.log(Game.guess)
             
             Game.submitGuess()
             return false;
@@ -369,7 +360,6 @@ GameCell = {
         if (target.hasClass('occupied') && target.hasClass('can-move'))
         {
             var player = Game.getById('players', parseInt(target.attr('player')))
-            console.log(player.is_current)
             if (player.is_current)
                 Game.reload({'investigate': target.attr('player')})
             else

@@ -189,14 +189,20 @@ class BoardGame:
                     game = self.game)
                 clue.save()
                 
-            pc_clue = CellFact(
-                cell = player.playercell,
-                player = other_players[0],
-                neg = True,
-                game = self.game
-            )
-            pc_clue.save()
-            
+                pc_fact= CellFact(
+                    cell = player.playercell,
+                    player = other,
+                    neg = True,
+                    game = self.game
+                )
+                pc_fact.save()
+                pc_clue = Clue(
+                    fact = pc_fact,
+                    player = player,
+                    game = self.game
+                )
+                pc_clue.save()
+                
         for player in self.game.player_set.all():
             other_players = self.game.player_set.exclude(pk=player.id).all()
             #We know that each other role is not this player
