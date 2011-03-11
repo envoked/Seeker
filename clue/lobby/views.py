@@ -64,7 +64,7 @@ def create(request):
             new_lobby = Lobby(
                 creator = request.user,
                 name = request.POST['name'],
-                num_players = request.POST['num_players'],
+                #num_players = request.POST['num_players'],
                 creator_image = request.POST['creator_image']
             )
             new_lobby.save()
@@ -210,7 +210,7 @@ def login(request):
         else:
             context['message'] = 'Incorrect login'
     
-    return render_to_response('lobby/login.html', context, RequestContext(context))
+    return render_to_response('lobby/login.html', context, RequestContext(request))
     
 def logout(request):
     auth.logout(request)

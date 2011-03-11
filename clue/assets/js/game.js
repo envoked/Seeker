@@ -1,3 +1,4 @@
+if (typeof console=="undefined"){console={log:function(A){var B=false;if(B){alert(A)}}}}
 
 Game = {
     last_update: null,
@@ -147,7 +148,13 @@ Game = {
                 if (player)
                 {
                     td.addClass('occupied').attr('player', player.id)
-                    td_inner.append($('<div class="text-overlay">').html(player.user.username))
+                    if(player.user.username.length > 10) {
+                        display_name = player.user.username.substring(0, 9) + "...";
+                    }
+                    else {
+                        display_name = player.user.username;       
+                    }
+                    td_inner.append($('<div class="text-overlay">').html(display_name))
                 }
                 //If the player is you
                 if (this._game.player.x == row && this._game.player.y == col)
@@ -171,6 +178,11 @@ Game = {
             this.el.append(tr)
             this.rows.push(column)
         }
+    },
+    
+    showHelp: function()
+    {
+        alert("Coming when Help documentation is written.");
     },
     
     showGuesser: function()
@@ -353,7 +365,7 @@ function assign_player_avatar(element, player) {
 
 function show_alert(text) {
     text = text.replace(/ /g, "_");
-    $("#content").append("<a id='open_dialog' data-rel='dialog' href='/seeker/game/show_notification/"+text+"'>open</a>");
+    $("#content").append("<a id='open_dialog' style='display: none' data-rel='dialog' href='/seeker/game/show_notification/"+text+"'>open</a>");
     $("#open_dialog").click();
 }
 

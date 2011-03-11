@@ -7,7 +7,7 @@ import os, glob
 class Lobby(models.Model):
     name = models.CharField(max_length=255)
     creator = models.ForeignKey(User)
-    num_players = models.IntegerField()
+    #num_players = models.IntegerField()
     created = models.DateTimeField(auto_now_add=True)
     creator_image = models.ImageField(upload_to="/img/chars", blank="char1.png")
     
