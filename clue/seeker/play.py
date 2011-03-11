@@ -49,28 +49,32 @@ def game(request, game_id):
 
                 cubicle = cells[0]
                 cubicle_owner = cubicle.player
-                if(cubicle_owner.id == player.id):
-                    if (direction == "down" or direction == "right"):
-                        print "VALID"
-                        
-                        new_clue = player.investigate_cell(cubicle)
-                        if new_clue:
-                            game_dict['new_clue'] = new_clue.serialize()
-                    else:
-                        print "INVALID"
-                        x = player.x
-                        y = player.y
-                else:
-                    if (direction == "up" or direction == "right"):
-                        print "VALID"
-                        
-                        new_clue = player.investigate_cell(cubicle)
-                        if new_clue:
-                            game_dict['new_clue'] = new_clue.serialize()
-                    else:
-                        print "INVALID"
-                        x = player.x
-                        y = player.y
+                #if(cubicle_owner.id == player.id):
+                #    if (direction == "down" or direction == "right"):
+                #        print "VALID"
+                #        
+                #        new_clue = player.investigate_cell(cubicle)
+                #        if new_clue:
+                #            game_dict['new_clue'] = new_clue.serialize()
+                #    else:
+                #        print "INVALID"
+                #        x = player.x
+                #        y = player.y
+                #else:
+                #    if (direction == "up" or direction == "right"):
+                #        print "VALID"
+                #        
+                #        new_clue = player.investigate_cell(cubicle)
+                #        if new_clue:
+                #            game_dict['new_clue'] = new_clue.serialize()
+                #    else:
+                #        print "INVALID"
+                #        x = player.x
+                #        y = player.y
+
+                new_clue = player.investigate_cell(cubicle)
+                if new_clue:
+                    game_dict['new_clue'] = new_clue.serialize()
                     
             try:
                 player.move_to(x, y)
