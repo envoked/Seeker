@@ -239,7 +239,7 @@ Game = {
         $('#guesser').hide()
     },
     
-    //is player in thier cubicle?
+    //is player in their cubicle?
     inCubible: function()
     {
         //If there is a cubicle here
@@ -341,7 +341,7 @@ GameCell = {
             {
                 var player_id = target.attr('player')
                 Game.guess.player = player_id;
-                alert("What's thier role?")
+                alert("What's their role?")
                 Game.state = 'guessing-role';
                 Game.showRoleGuesser()
                 
