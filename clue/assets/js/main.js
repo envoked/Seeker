@@ -1,5 +1,12 @@
 User = {}
 
+Main = {
+    showHelp: function()
+    {
+        alert("Coming when Help documentation is written.");
+    }
+}
+
 submitForm = function(_form)
 {
     var form = $(_form);

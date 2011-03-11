@@ -180,6 +180,11 @@ Game = {
         }
     },
     
+    showHelp: function()
+    {
+        alert("Coming when Help documentation is written.");
+    },
+    
     showGuesser: function()
     {
         if (Game.state == 'complete')
