@@ -190,7 +190,7 @@ class Player(models.Model):
         """        
         known_facts = self.clue_set.filter(fact__neg=False).values('fact__player')
         correct_guesses = self.guess_set.filter(correct=True).values('other_player')
-        players_left = PlayerRole.objects.filter(player__in=self.game.player_set.all()).exclude(player__in=known_facts).exclude(player__in=correct_guesses)
+        players_left = PlayerRole.objects.filter(player__in=self.game.player_set.all()).exclude(player__in=correct_guesses).exclude(player=self)
         
         return len(players_left)
 

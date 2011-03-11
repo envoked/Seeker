@@ -238,7 +238,7 @@ class BoardGame:
         self.game.ranking_set.all().delete()
             
         for player in self.game.player_set.all():
-            total_points = Guess.objects.filter(player=player).annotate(total_points=Sum('points')).aggregate(Sum('points'))
+            total_points = Guess.objects.filter(player=player, points=None).annotate(total_points=Sum('points')).aggregate(Sum('points'))
             print total_points
             player.ranking = Ranking(
                 total_points = total_points['points__sum'],
@@ -349,6 +349,7 @@ class BoardGame:
         game_dict['player']['cell'] = expand(player.playercell)
         game_dict['player']['cell']['player_id'] = player.id
         game_dict['player']['user'] = expand(player.user)
+        game_dict['player']['unkown_facts'] = player.unkown_facts()
         """
         try:
             game_dict['player']['user']['profile'] = expand(player.user.get_profile())

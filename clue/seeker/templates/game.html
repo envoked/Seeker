@@ -3,12 +3,15 @@
 
 {% block content %}
 
+{% if message %}<p>{{ message }}</p>{% endif %}
+
+{% if show_board %}
 <div class="board">Loading...</div>
+
 <script type="text/javascript">
-
 Game.init({{ game.id }}, $('.board'), '{% media_url %}')
-
 </script>
+{% endif %}
 
 {% endblock %}
 

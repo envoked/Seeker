@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 
+{% block header %}Clues{% endblock %}
+
 {% block content %}
 
-<div data-role="controlgroup">
+<a href="/seeker/game/{{ game.id }}/debug_clues/">See all clues (cheat)</a>
+
+<ul data-role="listview" data-inset="true">
 {% for co in player.clue_set.all %}
-    <a data-role="button">{{ co }}</a>
+    <li>{{ co }}</li>
 {% endfor %}
-</div>
+</ul>
 
     
 

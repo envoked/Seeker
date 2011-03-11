@@ -143,7 +143,7 @@ Game = {
                 if (this._game.game.player.cell.x == row && this._game.game.player.cell.y == col)
                 {
                     td.addClass('your-cubicle selectable')
-                    td_inner.append($('<div class="text-overlay">').html("Your Cubicle"))
+                    td_inner.append($('<div class="text-overlay br">').html("Your Cubicle"))
                     td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubicle2.png">'))
                 }
                 else if (cubicle)
@@ -162,6 +162,7 @@ Game = {
                         display_name = player.user.username;       
                     }
                     if (this.knowsPlayer(player.id)) td_inner.append($('<div class="text-overlay" style="top:2em">').html(player.role.name))
+                    if (!player.is_current) display_name = '<strike>' + display_name + '</strike>'
                     td_inner.append($('<div class="text-overlay">').html(display_name))
                 }
                 //If the player is you
@@ -367,7 +368,12 @@ GameCell = {
         
         if (target.hasClass('occupied') && target.hasClass('can-move'))
         {
-            Game.reload({'investigate': target.attr('player')})
+            var player = Game.getById('players', parseInt(target.attr('player')))
+            console.log(player.is_current)
+            if (player.is_current)
+                Game.reload({'investigate': target.attr('player')})
+            else
+                alert("This player is no longer active")
         }
         
         else if (target.hasClass('can-move'))
@@ -380,7 +386,10 @@ GameCell = {
         
         else if (target.hasClass('occupied'))
         {
-            show_alert("You must be adjacent to a player to investigate.");
+            var player = Game.getById('players', parseInt(target.attr('player')))
+            if (!player.is_current)
+                alert("This player is no longer active")
+            else alert("You must be adjacent to investigate")
         }
     }
 }

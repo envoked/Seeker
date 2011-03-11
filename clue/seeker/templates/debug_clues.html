@@ -5,10 +5,17 @@
 {% block content %}
 
 <ul data-role="listview">
-{% for co in game.clue_set.all %}
+{% for co in clues %}
     <li>{{ co }}</li>
 {% endfor %}
 </ul>
+
+<ul data-role="listview">
+{% for cf in cellfacts %}
+    <li>{{ cf }}</li>
+{% endfor %}
+</ul>
+
 
     
 

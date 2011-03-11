@@ -19,9 +19,16 @@ def game(request, game_id):
     #404 for invalid game
     game = get_object_or_404(Game, id=game_id)
     bg = BoardGame(game)
+    message = ""
+    show_board = True
     
     #404 if user is not a player in game
     player = Player.objects.select_related('user', 'cell').get(user=request.user, game=game)
+    
+    if player.is_current == False:
+        message = "You quit this game."
+        show_board = False
+    
     turn = Turn(
         player = player
     )        
@@ -94,16 +101,6 @@ def game(request, game_id):
             
             turn.action = 'investidate'
             turn.params = investigating_player_id
-            
-        if 'guess' in request.POST:
-            user_id, role_id = request.POST['guess'].split('=')
-            user = User.objects.get(id=user_id)
-            role = Role.objects.get(id=role_id)
-            new_clue = bg.guess(request.user, user, role)
-            game_dict['new_clue'] = new_clue.serialize()
-        
-            turn.action = 'guess'
-            turn.params = request.POST['guess']
                 
         if turn.action:
             turn.save()
@@ -115,7 +112,9 @@ def game(request, game_id):
     context = {
         'game': game,
         'player': player,
-        'board_html': SafeString(bg.html(request))
+        'board_html': SafeString(bg.html(request)),
+        'show_board': show_board,
+        'message': message
     }
 
     return context
@@ -150,7 +149,7 @@ def guesser(request, game_id):
 
     known_facts = player.clue_set.filter(fact__neg=False).values('fact__player')
     correct_guesses = player.guess_set.filter(correct=True).values('other_player')
-    roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(player__in=known_facts).exclude(player__in=correct_guesses)
+    roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(player__in=correct_guesses).exclude(player=player)
     other_players = game.player_set.exclude(id__in=known_facts)
 
     context = {
@@ -195,6 +194,27 @@ def guess(request, game_id):
     )
     turn.save()
     
+    if player.unkown_facts() == 0 and player.is_current:
+        print "Player finished: %s" % str(player)
+        for other in game.player_set.exclude(pk=player.id).all():
+            consolation_guess = other.guess_set.filter(other_player=player, correct=True).all()
+            if len(consolation_guess) == 0:
+                print "Giving consolation guess to %s" % str(other)
+                consolation_guess = Guess(
+                    player = other,
+                    other_player = player,
+                    correct = True,
+                    points = 0,
+                    role = player.playerrole.role,
+                    cell = player.playercell,
+                )
+                consolation_guess.save()
+        
+        player.is_current = False
+        player.x = player.playercell.x
+        player.y = player.playercell.y
+        player.save()
+    
     return HttpResponse(simplejson.dumps(expand(guess)))
     
 @render_to('game-complete.html')
@@ -208,6 +228,8 @@ def game_complete(request, game_id):
 @render_to('debug_clues.html')
 def debug_clues(request, game_id):
     game = get_object_or_404(Game, id=game_id)
+    clues = game.clue_set.filter(fact__neg=False).all()
+    cellfacts = CellFact.objects.filter(neg=False, game=game).all()
     return locals()
 
 #Below Not used 1 think
