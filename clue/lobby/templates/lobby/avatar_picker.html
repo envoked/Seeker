@@ -3,7 +3,7 @@
 {% block content %}
 {% block picker %}
 {% if char_images %}
-    <form action="/lobby/pick_character_for_player/{{ lobby_id }}/" method="POST">
+    <form id="picker_form" action="/lobby/pick_character_for_player/{{ lobby_id }}/" method="POST">
     <div id="avatar_picker">
         {% for img in char_images %}
             <img class="picker_img" id="{{ img }}" alt="img/chars/{{ img }}" onclick="Lobby.pickCharacter(this)" src="{{ MEDIA_URL }}/img/chars/{{ img }}" />
@@ -13,7 +13,8 @@
     <input type='hidden' name="creator_image" id="creator_image" value='' />
     <div style='clear: both'></div>
     
-    <input type="submit" value="Pick Character" />
+    <button type="button" onclick="submit_character_pick(this.form)">Pick Character</button>
+
 {% endif %}
 {% endblock %}
 {% endblock %}
