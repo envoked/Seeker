@@ -42,18 +42,13 @@ html {
     background-color: #aaa;
 }
 
-#logo {
-    float: left;
-    margin-top: 5px;
-}
-
 #header {
     border-bottom:1px solid #4D4D4D;
     color: #E0E0E0;
     border:1px solid #8C8C8C;
-    padding-left:12px;
     background-image: url('../img/headerbg.png');
     background-color: #992632;
+    text-align: center;
     background-repeat: repeat-x;
 }
 
@@ -62,10 +57,15 @@ html {
     float: left;
     margin: 2px;
     background-color: #06335F;
-    color: white
+    color: white;
+    position: relative
 }
 
 #header a { color: white }
+
+#header h1 { }
+
+#header h1 span { display: inline-block; background: url('../img/logo.png') 0px -5px no-repeat ; overflow: visible; padding-left: 90px; height: 22px; line-height: 28px }
 
 #content {
     padding: 15px 15px 30px 15px;

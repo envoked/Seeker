@@ -74,16 +74,16 @@ Game = {
                 Game.updating = false
                 Game.last_update = new Date()
                 
+                if (Game._game.game.player.unkown_facts == 0)
+                {
+                    if (Game.state != 'complete') alert("You know everything")
+                    Game.pause()
+                }
                 if (Game._game.complete && Game.state != 'complete')
                 {
                     alert("The game just ended")
                     Game.state = 'complete'
                     Game.pause()
-                }
-                if (Game._game.game.player.unkown_facts == 0)
-                {
-                    if (Game.state != 'complete') alert("You know everything")
-                    Game.state = 'complete'
                 }
                 if (Game._game.new_clue)
                 {

@@ -188,6 +188,13 @@ def guess(request, game_id):
     
     guess.save()
     
+    turn = Turn(
+        action = "guess",
+        params = guess.id,
+        player = player
+    )
+    turn.save()
+    
     return HttpResponse(simplejson.dumps(expand(guess)))
     
 @render_to('game-complete.html')
@@ -198,11 +205,10 @@ def game_complete(request, game_id):
         game = game
     )
     
-@render_to('game-complete.html')
+@render_to('debug_clues.html')
 def debug_clues(request, game_id):
     game = get_object_or_404(Game, id=game_id)
-    print game.fact_set.all()
-    return {}
+    return locals()
 
 #Below Not used 1 think
 
