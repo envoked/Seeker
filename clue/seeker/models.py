@@ -184,7 +184,7 @@ class Player(models.Model):
             o += str(clue) + "\n"
         return o
     
-    def remaining_guesses(self):
+    def unkown_facts(self):
         """
         How many guesses is the player away from knowing everthing
         """        
@@ -243,7 +243,7 @@ class PlayerCell(Cell):
     def __str__(self):
         try:
             return '%s at %d, %s' % (self.player, self.x, self.y)
-        except TypeError:
+        except:
             return '%s at ?' % str(self.player)
             
    
@@ -307,11 +307,12 @@ class Guess(models.Model):
     other_player = models.ForeignKey(Player, related_name='other_player_set')
     role = models.ForeignKey(Role)
     cell = models.ForeignKey(Cell)
+    points = models.IntegerField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     
 class Ranking(models.Model):
-    rank = models.IntegerField()
-    submission = models.ForeignKey(Submission)
+    rank = models.IntegerField(null=True)
+    total_points = models.IntegerField(null=True)
     player = models.OneToOneField(Player)
     game = models.ForeignKey(Game)
     created = models.DateTimeField(auto_now_add=True)

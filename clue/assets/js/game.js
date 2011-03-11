@@ -1,3 +1,4 @@
+if (typeof console=="undefined"){console={log:function(A){var B=false;if(B){alert(A)}}}}
 
 Game = {
     last_update: null,
@@ -72,21 +73,21 @@ Game = {
                 Game._game = data
                 Game.updating = false
                 Game.last_update = new Date()
-                console.log(data)
                 
-                if (!Game._game.is_current)
+                if (Game._game.complete && Game.state != 'complete')
                 {
-                    alert("The game is over!");
-                    document.location.href = '/lobby/home/';
+                    alert("The game just ended")
+                    Game.state = 'complete'
+                    Game.pause()
                 }
-                if (Game._game.remaining_guesses == 0)
+                if (Game._game.game.player.unkown_facts == 0)
                 {
                     if (Game.state != 'complete') alert("You know everything")
                     Game.state = 'complete'
                 }
                 if (Game._game.new_clue)
                 {
-                    //alert(Game._game.new_clue.str)
+                    //alert(Game._game.new_clue.str
                     clue = Game._game.new_clue.str;
                     alert(clue);
                 }
@@ -107,12 +108,12 @@ Game = {
         this.el.css('height', $(window).height()*0.75)
         this.el.css('width', this.el.height())
         
-        for (col=0; col<this._game.board_size; col++)
+        for (col=0; col<this._game.game.board_size; col++)
         {
             var column = []
             var tr = $('<div class="row">')
             
-            for (row=0; row<this._game.board_size; row++)
+            for (row=0; row<this._game.game.board_size; row++)
             {
                 var td = $('<div class="cell">').attr('x', row).attr('y', col)
                 td.append($('<div class="inner">'))
@@ -120,7 +121,7 @@ Game = {
                 var player = this.playerAt(row, col)
                 
                 //If square is in moveable range
-                if (Math.abs(this._game.player.x - row) <= 1 && Math.abs(this._game.player.y - col) <= 1)
+                if (Math.abs(this._game.game.player.x - row) <= 1 && Math.abs(this._game.game.player.y - col) <= 1)
                 {
                     td.addClass('can-move selectable')
                     
@@ -130,9 +131,16 @@ Game = {
                 if (cubicle)
                 {
                     td.addClass('a-cubicle').attr('cell', cubicle.id)
+                    console.log(cubicle)
+                    if (this.knowsPlayer(cubicle.player_id))
+                    {
+                        console.log('knows')
+                        var owner = this.getById('players', cubicle.player_id)
+                        td_inner.append($('<div class="text-overlay" style="top:2em">').html(owner.user.username))
+                    }
                 }
                 //If the cubicle is yours
-                if (this._game.player.cell.x == row && this._game.player.cell.y == col)
+                if (this._game.game.player.cell.x == row && this._game.game.player.cell.y == col)
                 {
                     td.addClass('your-cubicle selectable')
                     td_inner.append($('<div class="text-overlay">').html("Your Cubicle"))
@@ -147,13 +155,20 @@ Game = {
                 if (player)
                 {
                     td.addClass('occupied').attr('player', player.id)
-                    td_inner.append($('<div class="text-overlay">').html(player.user.username))
+                    if(player.user.username.length > 10) {
+                        display_name = player.user.username.substring(0, 9) + "...";
+                    }
+                    else {
+                        display_name = player.user.username;       
+                    }
+                    if (this.knowsPlayer(player.id)) td_inner.append($('<div class="text-overlay" style="top:2em">').html(player.role.name))
+                    td_inner.append($('<div class="text-overlay">').html(display_name))
                 }
                 //If the player is you
-                if (this._game.player.x == row && this._game.player.y == col)
+                if (this._game.game.player.x == row && this._game.game.player.y == col)
                 {
                     td.addClass('you')
-                    assign_player_avatar(td_inner, this._game.player)
+                    assign_player_avatar(td_inner, this._game.game.player)
                 }
                 else if (player)
                 {
@@ -161,8 +176,8 @@ Game = {
                     //td_inner.append($('<img class="tile" src="' + this.media_url + 'img/char2.png">'))   
                 }
 
-                td.css('width', Math.floor(this.el.width()/this._game.board_size))
-                td.css('height', Math.floor(this.el.height()/this._game.board_size))
+                td.css('width', Math.floor(this.el.width()/this._game.game.board_size))
+                td.css('height', Math.floor(this.el.height()/this._game.game.board_size))
                 td.click(GameCell.cellClick)
                 column.push(td)
                 tr.append(td)
@@ -171,6 +186,11 @@ Game = {
             this.el.append(tr)
             this.rows.push(column)
         }
+    },
+    
+    showHelp: function()
+    {
+        alert("Coming when Help documentation is written.");
     },
     
     showGuesser: function()
@@ -213,8 +233,10 @@ Game = {
     {     
         $.post('/seeker/game/' + Game.id + '/guess/', Game.guess,
             function(data) {
-                console.log(data)    
-            })
+                console.log(data)
+                if (data.correct) alert("Correct!")
+                else alert("Wrong")
+            }, 'json')
     },
     
     showBoard: function()
@@ -227,19 +249,39 @@ Game = {
     inCubible: function()
     {
         //If there is a cubicle here
-        var cubicle = this.cubicleAt(this._game.player.x, this._game.player.y)
-        if (this._game.player.cell.x == this._game.player.x && this._game.player.cell.y == this._game.player.y)
+        var cubicle = this.cubicleAt(this._game.game.player.x, this._game.game.player.y)
+        if (this._game.game.player.cell.x == this._game.game.player.x && this._game.game.player.cell.y == this._game.game.player.y)
         {
             return true
         }
         return false
     },
     
+    knowsPlayer: function(player_id)
+    {
+        for (var i in this._game.game.correct_guesses)
+        {
+            var guess =  this._game.game.correct_guesses[i]
+            if (guess.other_player == player_id) return true
+        }
+        return false;
+    },
+    
+    getById: function(type, id)
+    {
+        for (var i in this._game.game[type])
+        {
+            var obj = this._game.game[type][i]
+            if (obj.id == id) return obj
+        }
+        return null
+    },
+    
     playerAt: function(x, y)
     {
-        for (var id in this._game.players)
+        for (var id in this._game.game.players)
         {
-            var player = this._game.players[id]
+            var player = this._game.game.players[id]
             if (player.x == x && player.y == y) return player;
         }
         
@@ -248,9 +290,9 @@ Game = {
     
     cubicleAt: function(x, y)
     {
-        for (var id in this._game.players)
+        for (var id in this._game.game.players)
         {
-            var cell = this._game.players[id].cell
+            var cell = this._game.game.players[id].cell
             if (cell.x == x && cell.y == y) return cell;
         }
         
@@ -330,8 +372,8 @@ GameCell = {
         
         else if (target.hasClass('can-move'))
         {
-            Game._game.player.x = parseInt(target.attr('x'))
-            Game._game.player.y = parseInt(target.attr('y'))
+            Game._game.game.player.x = parseInt(target.attr('x'))
+            Game._game.game.player.y = parseInt(target.attr('y'))
             Game.redraw()
             Game.reload({'move': target.attr('x') + ',' + target.attr('y')})
         }

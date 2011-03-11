@@ -4,6 +4,6 @@
 <form action="/lobby/register/" method="POST">
     <h1>Register</h1>
     {{ register_form.as_p }}
-    <input type="submit" value="Register" />
+    <button type="button" onclick="verify_submit(this.form)">Register</button>
 </form>
 {% endblock %}

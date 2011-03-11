@@ -19,27 +19,26 @@ def game(request, game_id):
     #404 for invalid game
     game = get_object_or_404(Game, id=game_id)
     bg = BoardGame(game)
+    
     #404 if user is not a player in game
     player = Player.objects.select_related('user', 'cell').get(user=request.user, game=game)
     turn = Turn(
         player = player
-    )
+    )        
 
     if request.method == 'POST':
-        bg.move_for_cpus()
-        game_dict = bg.serialize(player)
+        game_dict = {
+            'complete': False
+        }
         
-        remaining = player.remaining_guesses()
-        game_dict['remaining_guesses'] = remaining
-        print player, remaining
-        
+        if bg.is_over():
+            game_dict["complete"] = True
+
         if 'move' in request.POST:
             move_coords = request.POST['move']
             x, y = move_coords.split(',')
-
             print "NEW LOCATION %s , %s" % (x, y)
-            print "PLAYER LOCATION %s , %s" % (player.x, player.y)
-                
+            print "PLAYER LOCATION %s , %s" % (player.x, player.y)  
             
             cells = game.get_player_cells_within(int(x), int(y), 0)
             if cells:
@@ -49,28 +48,32 @@ def game(request, game_id):
 
                 cubicle = cells[0]
                 cubicle_owner = cubicle.player
-                if(cubicle_owner.id == player.id):
-                    if (direction == "down" or direction == "right"):
-                        print "VALID"
-                        
-                        new_clue = player.investigate_cell(cubicle)
-                        if new_clue:
-                            game_dict['new_clue'] = new_clue.serialize()
-                    else:
-                        print "INVALID"
-                        x = player.x
-                        y = player.y
-                else:
-                    if (direction == "up" or direction == "right"):
-                        print "VALID"
-                        
-                        new_clue = player.investigate_cell(cubicle)
-                        if new_clue:
-                            game_dict['new_clue'] = new_clue.serialize()
-                    else:
-                        print "INVALID"
-                        x = player.x
-                        y = player.y
+                #if(cubicle_owner.id == player.id):
+                #    if (direction == "down" or direction == "right"):
+                #        print "VALID"
+                #        
+                #        new_clue = player.investigate_cell(cubicle)
+                #        if new_clue:
+                #            game_dict['new_clue'] = new_clue.serialize()
+                #    else:
+                #        print "INVALID"
+                #        x = player.x
+                #        y = player.y
+                #else:
+                #    if (direction == "up" or direction == "right"):
+                #        print "VALID"
+                #        
+                #        new_clue = player.investigate_cell(cubicle)
+                #        if new_clue:
+                #            game_dict['new_clue'] = new_clue.serialize()
+                #    else:
+                #        print "INVALID"
+                #        x = player.x
+                #        y = player.y
+
+                new_clue = player.investigate_cell(cubicle)
+                if new_clue:
+                    game_dict['new_clue'] = new_clue.serialize()
                     
             try:
                 player.move_to(x, y)
@@ -79,6 +82,8 @@ def game(request, game_id):
                 game_dict = bg.serialize(player)
             except ValueError:
                 print "Too late move: %s" % (move_coords)
+        else:
+            bg.move_for_cpus()
             
         if 'investigate' in request.POST:
             investigating_player_id = request.POST['investigate']
@@ -99,15 +104,11 @@ def game(request, game_id):
         
             turn.action = 'guess'
             turn.params = request.POST['guess']
-            
-            if player.can_guess_without_deduction():
-                game.is_current = False
-                game.end = datetime.now()
-                game.save()
-                game_dict = expand(game)
                 
         if turn.action:
             turn.save()
+            
+        game_dict['game'] = bg.serialize(player)
         
         return HttpResponse(simplejson.dumps(game_dict), content_type='application/json')
         
@@ -188,6 +189,22 @@ def guess(request, game_id):
     guess.save()
     
     return HttpResponse(simplejson.dumps(expand(guess)))
+    
+@render_to('game-complete.html')
+def game_complete(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    player = Player.objects.get(
+        user = request.user,
+        game = game
+    )
+    
+@render_to('game-complete.html')
+def debug_clues(request, game_id):
+    game = get_object_or_404(Game, id=game_id)
+    print game.fact_set.all()
+    return {}
+
+#Below Not used 1 think
 
 def _guess(request, game_id):
     game = get_object_or_404(Game, id=game_id)
@@ -276,6 +293,9 @@ def guess_for_cpus(request, game_id):
     
 def quit(request, game_id):
     game = get_object_or_404(Game, id=game_id)
+    game.is_current = False
+    game.save()
+    
     player = Player.objects.get(
         user = request.user,
         game = game,

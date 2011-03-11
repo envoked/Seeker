@@ -60,7 +60,7 @@ Lobby = {
         {
             h = "<li><img class='ui-li-icon small_avatar' src='" + member.image + "' /><span class='text'><b>" + member.user.username + "</b>"
             h += " at " + member.created;
-            if(User.id == Lobby.creator) {
+            if (User.id == Lobby.creator) {
                 if (member.user.id != Lobby.creator) {
                     h += " <a href='javascript: Lobby.removeUser("+ member.id +")'>x</a>";
                 }
@@ -134,5 +134,17 @@ Lobby = {
     }
 }
 
+function verify_submit(form) {
+    if($("#id_username").val().length > 29) {
+        alert("Username must be less than 30 characters in length");
+        return false;
+    }
+    
+    $(form).submit();
+}
+
+function submit_character_pick(form) {
+    $(form.submit());
+}
 
 //update_messages = new PeriodicalExecuter(Lobby.updateMessages, 2)

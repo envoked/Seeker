@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-
     <h3>Clues for {{ user.username }}</h3>
     <ul>
 
@@ -19,6 +17,7 @@
     
     {% block toolbar %}
     <div id="toolbar">
+        <a href="#" onclick="Game.showHelp()">Help</a>
         <a href="/seeker/game/{{ game.id }}/guesser/">Guesser</a>
         <a href="/seeker/game/{{ game.id }}/quit/">Quit Game</a>
     </div>
