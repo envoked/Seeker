@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block header %}Debug Clues{% endblock %}
+
+{% block content %}
+
+<ul data-role="listview">
+{% for co in game.clue_set.all %}
+    <li>{{ co }}</li>
+{% endfor %}
+</ul>
+
+    
+
+{% endblock %}

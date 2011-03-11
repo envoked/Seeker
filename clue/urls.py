@@ -15,7 +15,7 @@ urlpatterns = patterns('',
     (r'^seeker/', include('clue.seeker.urls')),
     (r'^m/', include('django_memcached.urls')),
     (r'^login/$', 'lobby.views.login'),
-    (r'^logout/$', 'lobby.views.logout'),
+    (r'^logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}),
     (r'^accounts/profile/$', 'lobby.views.profile'),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
