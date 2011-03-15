@@ -23,13 +23,16 @@
     <body>
         <div id="page" data-role="page">
             <div id="header" data-role="header">
-                <div id="logo"><img src="{{ MEDIA_URL }}/img/logo.png"/></div>
-                <h1>{% block header %}{% endblock %}</h1>
+                
+                
+                <h1><span> | {% block header %}{% endblock %}</span></h1>
+               
                 {% if user.id %}
                     <a href="/lobby/home/" class="ui-btn-right">Home</a>
                 {% else %}
                     <a href="/login/" class="ui-btn-right">Login</a>
                 {% endif %}
+                
             </div>
             <div id="content" data-role="content">
             {% block content %}

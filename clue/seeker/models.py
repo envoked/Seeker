@@ -166,17 +166,22 @@ class Player(models.Model):
             return False
         
     def investigate_cell(self, cell):
-        to_learn = cell.cellfact_set.order_by('?')[0]
-        c = Clue(
-            fact = to_learn,
-            game = self.game,
-            player = self
-        )
-        try:
-            c.save()
-            return c
-        except IntegrityError:
-            return False
+        known_facts = self.clue_set.filter().values('fact__id')
+        to_learn = CellFact.objects.filter(cell=cell, game=self.game).exclude(pk__in=known_facts)
+        
+        if len(to_learn) > 0:
+            c = Clue(
+                fact = to_learn[0],
+                game = self.game,
+                player = self
+            )
+            try:
+                c.save()
+                return c
+            except IntegrityError:
+                return None
+        else:
+            return None
         
     def explain_clues(self):
         o = ""
@@ -190,7 +195,7 @@ class Player(models.Model):
         """        
         known_facts = self.clue_set.filter(fact__neg=False).values('fact__player')
         correct_guesses = self.guess_set.filter(correct=True).values('other_player')
-        players_left = PlayerRole.objects.filter(player__in=self.game.player_set.all()).exclude(player__in=known_facts).exclude(player__in=correct_guesses)
+        players_left = PlayerRole.objects.filter(player__in=self.game.player_set.all()).exclude(player__in=correct_guesses).exclude(player=self)
         
         return len(players_left)
 
@@ -279,9 +284,9 @@ class RoleFact(Fact):
     
     def __str__(self):
         if self.neg:
-            return "The %s is not %s" % (str(self.player.user.username), str(self.role))
+            return "%s is not the %s" % (str(self.player.user.username), str(self.role))
         else:
-            return "The %s is %s" % (str(self.player.user.username), str(self.role))
+            return "%s is the %s" % (str(self.player.user.username), str(self.role))
             
 #Specific to "Role" game
 class CellFact(Fact):
@@ -290,9 +295,9 @@ class CellFact(Fact):
     
     def __str__(self):
         if self.neg:
-            return "The %s's cell is not %d, %d" % (str(self.player.playerrole.role), self.cell.x, self.cell.y)
+            return "%s's cell is not %d, %d" % (str(self.player.user.username), self.cell.x, self.cell.y)
         else:
-            return "The %s's cell is %d, %d" % (str(self.player.playerrole.role), self.cell.x, self.cell.y)
+            return "%s's cell is %d, %d" % (str(self.player.user.username), self.cell.x, self.cell.y)
     
 class Submission(models.Model):
     player = models.ForeignKey(Player)

@@ -189,14 +189,20 @@ class BoardGame:
                     game = self.game)
                 clue.save()
                 
-            pc_clue = CellFact(
-                cell = player.playercell,
-                player = other_players[0],
-                neg = True,
-                game = self.game
-            )
-            pc_clue.save()
-            
+                pc_fact= CellFact(
+                    cell = player.playercell,
+                    player = other,
+                    neg = True,
+                    game = self.game
+                )
+                pc_fact.save()
+                pc_clue = Clue(
+                    fact = pc_fact,
+                    player = player,
+                    game = self.game
+                )
+                pc_clue.save()
+                
         for player in self.game.player_set.all():
             other_players = self.game.player_set.exclude(pk=player.id).all()
             #We know that each other role is not this player
@@ -222,6 +228,10 @@ class BoardGame:
     
     def endgame(self):
         self.game.is_current = False
+        try:
+            self.game.end = datetime.datetime.now()
+        except:
+            pass
         self.game.save()
         
         guesses = Guess.objects.filter(player__in=self.game.player_set.all()).order_by('created')
@@ -238,13 +248,15 @@ class BoardGame:
         self.game.ranking_set.all().delete()
             
         for player in self.game.player_set.all():
-            total_points = Guess.objects.filter(player=player).annotate(total_points=Sum('points')).aggregate(Sum('points'))
+            total_points = Guess.objects.filter(player=player, points=None).annotate(total_points=Sum('points')).aggregate(Sum('points'))
             print total_points
             player.ranking = Ranking(
                 total_points = total_points['points__sum'],
                 game = self.game
             )
             player.ranking.save()
+            player.is_current = False
+            player.save()
             
         i = 0
         for ranking in self.game.ranking_set.order_by('-total_points').all():
@@ -349,6 +361,7 @@ class BoardGame:
         game_dict['player']['cell'] = expand(player.playercell)
         game_dict['player']['cell']['player_id'] = player.id
         game_dict['player']['user'] = expand(player.user)
+        game_dict['player']['unkown_facts'] = player.unkown_facts()
         """
         try:
             game_dict['player']['user']['profile'] = expand(player.user.get_profile())

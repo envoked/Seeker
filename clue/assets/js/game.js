@@ -52,7 +52,6 @@ Game = {
     {
         if (Game.updating && typeof params == 'undefined')
         {
-            console.log('Skipping update')
             return
         }
         if (params) {
@@ -69,25 +68,23 @@ Game = {
             data: params,
             type: 'POST',
             success: function(data) {
-                console.log('succ')
                 Game._game = data
                 Game.updating = false
                 Game.last_update = new Date()
                 
+                if (Game._game.game.player.unkown_facts == 0)
+                {
+                    if (Game.state != 'complete') alert("You know everything")
+                    Game.pause()
+                }
                 if (Game._game.complete && Game.state != 'complete')
                 {
                     alert("The game just ended")
                     Game.state = 'complete'
                     Game.pause()
                 }
-                if (Game._game.game.player.unkown_facts == 0)
-                {
-                    if (Game.state != 'complete') alert("You know everything")
-                    Game.state = 'complete'
-                }
                 if (Game._game.new_clue)
                 {
-                    //alert(Game._game.new_clue.str
                     clue = Game._game.new_clue.str;
                     alert(clue);
                 }
@@ -102,7 +99,6 @@ Game = {
     
     redraw: function()
     {
-        console.log('redraw()')
         this.rows = []
         this.el.html("");
         this.el.css('height', $(window).height()*0.75)
@@ -131,10 +127,8 @@ Game = {
                 if (cubicle)
                 {
                     td.addClass('a-cubicle').attr('cell', cubicle.id)
-                    console.log(cubicle)
                     if (this.knowsPlayer(cubicle.player_id))
                     {
-                        console.log('knows')
                         var owner = this.getById('players', cubicle.player_id)
                         td_inner.append($('<div class="text-overlay" style="top:2em">').html(owner.user.username))
                     }
@@ -143,7 +137,7 @@ Game = {
                 if (this._game.game.player.cell.x == row && this._game.game.player.cell.y == col)
                 {
                     td.addClass('your-cubicle selectable')
-                    td_inner.append($('<div class="text-overlay">').html("Your Cubicle"))
+                    td_inner.append($('<div class="text-overlay br">').html("Your Cubicle"))
                     td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubicle2.png">'))
                 }
                 else if (cubicle)
@@ -162,6 +156,7 @@ Game = {
                         display_name = player.user.username;       
                     }
                     if (this.knowsPlayer(player.id)) td_inner.append($('<div class="text-overlay" style="top:2em">').html(player.role.name))
+                    if (!player.is_current) display_name = '<strike>' + display_name + '</strike>'
                     td_inner.append($('<div class="text-overlay">').html(display_name))
                 }
                 //If the player is you
@@ -233,7 +228,6 @@ Game = {
     {     
         $.post('/seeker/game/' + Game.id + '/guess/', Game.guess,
             function(data) {
-                console.log(data)
                 if (data.correct) alert("Correct!")
                 else alert("Wrong")
             }, 'json')
@@ -245,7 +239,7 @@ Game = {
         $('#guesser').hide()
     },
     
-    //is player in thier cubicle?
+    //is player in their cubicle?
     inCubible: function()
     {
         //If there is a cubicle here
@@ -335,7 +329,6 @@ GameCell = {
             if (Game.paused) Game.pause()
         }
         var target = $(this)
-        console.log(target)
         
         if (Game.state == 'complete')
         {
@@ -348,7 +341,7 @@ GameCell = {
             {
                 var player_id = target.attr('player')
                 Game.guess.player = player_id;
-                alert("What's thier role?")
+                alert("What's their role?")
                 Game.state = 'guessing-role';
                 Game.showRoleGuesser()
                 
@@ -359,7 +352,6 @@ GameCell = {
         {
             var cell_id = target.attr('cell')
             Game.guess.cell = cell_id;
-            console.log(Game.guess)
             
             Game.submitGuess()
             return false;
@@ -367,7 +359,11 @@ GameCell = {
         
         if (target.hasClass('occupied') && target.hasClass('can-move'))
         {
-            Game.reload({'investigate': target.attr('player')})
+            var player = Game.getById('players', parseInt(target.attr('player')))
+            if (player.is_current)
+                Game.reload({'investigate': target.attr('player')})
+            else
+                alert("This player is no longer active")
         }
         
         else if (target.hasClass('can-move'))
@@ -380,7 +376,10 @@ GameCell = {
         
         else if (target.hasClass('occupied'))
         {
-            show_alert("You must be adjacent to a player to investigate.");
+            var player = Game.getById('players', parseInt(target.attr('player')))
+            if (!player.is_current)
+                alert("This player is no longer active")
+            else alert("You must be adjacent to investigate")
         }
     }
 }

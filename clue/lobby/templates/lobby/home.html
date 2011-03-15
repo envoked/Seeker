@@ -9,14 +9,19 @@ Home
 {% endblock %}
 
 {% block content %}
+<div id="splash"><img class="mainImg" id="mainImg" src="{{ MEDIA_URL }}/img/main_banner.png" /></div>
 <div data-role="controlgroup">
     {% if player %}
         <a href="/seeker/game/{{ player.game.id}}/" data-role="button">You're in a game</a>
     {% else %}
         <a href="/lobby/create/" data-role="button">New game</a>
+        <a href="/lobby/" data-role="button">Find a game</a>
+        <a href="/lobby/" data-role="button">Join Existing Lobby</a>
+
     {% endif %}
     <!--<a href="/lobby/profile/" data-role="button">Profile</a>-->
     <a href="/lobby/settings/" data-role="button">Settings</a>
+    <a href="/logout/" data-role="button">Logout</a>
 </div>
 
 <h3>Past Games</h3>
