@@ -126,7 +126,7 @@ def guesser(request, game_id):
     known_facts = player.clue_set.filter(fact__neg=False).values('fact__player')
     correct_guesses = player.guess_set.filter(correct=True).values('other_player')
     roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(player__in=correct_guesses).exclude(player=player)
-    other_players = game.player_set.exclude(id__in=correct_guesses).exclude(player=player)
+    other_players = game.player_set.exclude(id__in=correct_guesses).exclude(id=player.id)
 
     context = {
         'game'  : game,
