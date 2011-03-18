@@ -1,7 +1,7 @@
 import os
 
 PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
-
+LOGGING_PATH = os.path.join(PROJECT_PATH, 'log/')
 ADMINS = (
     ('Lincoln', 'bryant.lincoln@gmail.com'),
 )
