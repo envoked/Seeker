@@ -1,14 +1,3 @@
-ul.hmenu {
-	padding: 0em;
-	list-style: none;
-	text-align: center;
-	margin: 1.45em 0;
-	overflow: hidden;
-}
-
-div#nav {
-	overflow: hidden;
-}
 
 form.personal label {
 	display: block;
@@ -27,23 +16,6 @@ ul.three > li{
 
 .red {
 	color: #8a1f11;
-}
-
-ul.hmenu > li > a {
-	text-decoration: none;
-}
-
-ul.hmenu > li.active {
-	background: #EFEFEF;
-	border: 2px solid #CCC;
-}
-
-div.container a {
-	text-decoration: none;	
-}
-
-div.container a:hover {
-	text-decoration: underline;	
 }
 
 a.male, a.female {
