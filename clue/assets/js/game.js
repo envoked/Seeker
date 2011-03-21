@@ -16,6 +16,7 @@ Game = {
         this.id = id;
         this.el = el;
         this.media_url = media_url;
+        this.messages_button = $('#show_messages')
         Game.interval_id = setInterval(Game.busyLoop, Game.busy_interval)
     },
     
@@ -83,10 +84,12 @@ Game = {
                     Game.state = 'complete'
                     Game.pause()
                 }
-                if (Game._game.new_clue)
+                if (Game._game.new_alerts)
                 {
-                    clue = Game._game.new_clue.str;
-                    alert(clue);
+                    for (al in Game._game.new_alerts)
+                    {
+                        alert(al)
+                    }
                 }
                 
                 Game.redraw();             
@@ -113,7 +116,8 @@ Game = {
             {
                 var td = $('<div class="cell">').attr('x', row).attr('y', col)
                 td.append($('<div class="inner">'))
-                var td_inner = $(td.children()[0])
+                td.append($('<div class="over">'))
+                var td_inner = $(td.find('.inner'))
                 var player = this.playerAt(row, col)
                 
                 //If square is in moveable range
@@ -130,14 +134,14 @@ Game = {
                     if (this.knowsPlayer(cubicle.player_id))
                     {
                         var owner = this.getById('players', cubicle.player_id)
-                        td_inner.append($('<div class="text-overlay" style="top:2em">').html(owner.user.username))
+                        td.append($('<div class="text-overlay" style="top:2em">').html(owner.user.username))
                     }
                 }
                 //If the cubicle is yours
                 if (this._game.game.player.cell.x == row && this._game.game.player.cell.y == col)
                 {
                     td.addClass('your-cubicle selectable')
-                    td_inner.append($('<div class="text-overlay br">').html("Your Cubicle"))
+                    td.append($('<div class="text-overlay br">').html("Your Cubicle"))
                     td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubicle2.png">'))
                 }
                 else if (cubicle)
@@ -157,7 +161,7 @@ Game = {
                     }
                     if (this.knowsPlayer(player.id)) td_inner.append($('<div class="text-overlay" style="top:2em">').html(player.role.name))
                     if (!player.is_current) display_name = '<strike>' + display_name + '</strike>'
-                    td_inner.append($('<div class="text-overlay">').html(display_name))
+                    td.append($('<div class="text-overlay">').html(display_name))
                 }
                 //If the player is you
                 if (this._game.game.player.x == row && this._game.game.player.y == col)
@@ -199,11 +203,12 @@ Game = {
         {
             Game.guess = {}
             Game.state = 'guessing';
+            Game.el.addClass('guessing-player')
             alert("Click on a player to guess")
         }
         else
         {
-            alert("You must be in your cubicle to guess.")
+            alert("You must be in your cubeicle to guess.")
         }
     },
     
@@ -211,6 +216,7 @@ Game = {
     {
         $.post('/seeker/game/' + Game.id + '/guesser/', {player: Game.guess.player},
             function(data) {
+                Game.el.removeClass('guessing-player')
                 lightbox(data)
             })
     },
@@ -228,8 +234,15 @@ Game = {
     {     
         $.post('/seeker/game/' + Game.id + '/guess/', Game.guess,
             function(data) {
-                if (data.correct) alert("Correct!")
-                else alert("Wrong")
+                if (data.correct)
+                {
+                    alert("Correct!")
+                    Game.el.removeClass('guessing-cubible')
+                }
+                else
+                {
+                    alert("Wrong")
+                }
             }, 'json')
     },
     
@@ -314,6 +327,7 @@ Game = {
         hideLightbox()
         alert('Click a cubicle to guess')
         Game.state = 'guessing-cell';
+        Game.el.addClass('guessing-cubicle')
         Game.guess.role = role;
     }
 }

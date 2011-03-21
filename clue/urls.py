@@ -7,8 +7,6 @@ from django.conf import settings
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Example:
-    (r'^$', 'lobby.views.index'),
     (r'^lobby/', include('clue.lobby.urls')),
     (r'^userprofile/', include('clue.userprofile.urls.en')),
     (r'^facebook/', include('facebookconnect.urls')),
@@ -24,4 +22,6 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
+    (r'^', include('www.urls')),
+    (r'^/$', 'lobby.views.index'),
 )

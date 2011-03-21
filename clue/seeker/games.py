@@ -128,6 +128,7 @@ class BasicRoleGame():
         self.game.save()
         
 class BoardGame:
+    turn_window = 10
     
     def __init__(self, game):
         self.game = game
@@ -317,7 +318,7 @@ class BoardGame:
         max_turn_id = Turn.objects.filter(player__id__in=self.game.player_set.all()).aggregate(Max('id'))['id__max']
         
         if not self.get_cached('max_turn_id'): self.set_cached('max_turn_id', max_turn_id)
-        elif max_turn_id < self.get_cached('max_turn_id')+4:
+        elif max_turn_id < self.get_cached('max_turn_id'):
             print "not updating, still on turn: %d" % (max_turn_id)
             return
         
@@ -325,17 +326,28 @@ class BoardGame:
         min_turns = self.get_cached('min_turns')
 
         if not max_turns:
-            max_turns = self.game.player_set.filter(user__is_active=True).select_related('turn').annotate(turns=Count('turn')).aggregate(Max('turns'))['turns__max']
+            max_turns = self.game.player_set.select_related('turn').annotate(turns=Count('turn')).aggregate(Max('turns'))['turns__max']
             self.set_cached('max_turns', max_turns)
         
         if not min_turns:
-            min_turns = self.game.player_set.filter(user__is_active=True).select_related('turn').annotate(turns=Count('turn')).aggregate(Min('turns'))['turns__min']
+            min_turns = self.game.player_set.select_related('turn').annotate(turns=Count('turn')).aggregate(Min('turns'))['turns__min']
             self.set_cached('min_turns', min_turns)
         
         for cpu in self.game.player_set.filter(user__is_active=False).all():
             if cpu.turn_set.count() < max_turns:
                 ai = AI(cpu)
                 turn = ai.go()
+              
+    def in_window(self, player):
+        player_turns = player.turn_set.count()
+        
+        if player_turns > self.get_cached('min_turns') + self.turn_window:
+            return True
+        
+        return False
+    
+    def turns_allowed(self, player):        
+        return self.get_cached('min_turns') - player.turn_set.count()
                 
     def get_cached(self, field, timeout=60):
         cached = cache.get('game_%d_%s' % (self.game.id, field))

@@ -3,17 +3,23 @@
 <html>
     <head>
         <title>Seeker - {% block title %}{% endblock %}</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+        <script src="{{ MEDIA_URL }}/js/jquery-1.4.4.min.js"></script>
         <script src="{{ MEDIA_URL }}/js/main.js"></script>
         <script src="{{ MEDIA_URL }}/lobby/lobby.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery.mobile.js"></script>
         
-        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.css" />
+        <link rel="stylesheet" href="{{ MEDIA_URL }}/css/jquery.mobile.css" />
         <link rel="stylesheet" href="{{ MEDIA_URL }}/css/main.css" />
-        <link rel="stylesheet" href="{{ MEDIA_URL }}/css/game.css" />
         <script src="{{ MEDIA_URL }}/js/game.js"></script>
         
         <meta name="google-site-verification" content="VN3xxT5Y1gL6rJcEJNtCtsyzymYhgcJIzhZclHil7Z8" />
+
+         <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <link rel="apple-touch-icon" href="{{ MEDIA_URL }}/img/chars/char1.png"/>
+        <meta name="apple-touch-fullscreen" content="yes" />
+        
         {% if facebook %}
         {% initialize_facebook_connect %}
         {% facebook_js %}
@@ -40,35 +46,20 @@
             {% endblock %}
             </div>
             
-            <div id="toolbar" data-role="footer">
-                <div data-role="navbar">
-                    <ul>
-                    {% block toolbar %}
-                        <a href="#" onclick="Main.showHelp()">Help</a>
-                    {% endblock %}
-                    </ul>
-                </div>
+            <div id="toolbar" data-role="footer" class="ui-bar">
+            {% block toolbar %}
+                <a href="#" onclick="Main.showHelp()">Help</a>
+            {% endblock %}
             </div>
             
         </div>
     </body>
     <script>
     $(window).resize( function(){
-        var height = $(window).height();
-        var width = $(window).width(); 
-        var ob = $('html');
-        if( width > height ) {
-            if( ob.hasClass('portrait') ) {
-                ob.removeClass('portrait').addClass('landscape');
-            }
-        }else{
-            if( ob.hasClass('landscape') ) {
-                ob.removeClass('landscape').addClass('portrait');
-            }
-        }
+       
     });
     $(document).bind("mobileinit", function(){
-      console.log(this);
+      window.top.scrollTo(0, 1);
     });
     </script>
 </html>

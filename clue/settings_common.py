@@ -78,6 +78,7 @@ INSTALLED_APPS = (
     'userprofile',
     'lobby',
     'seeker',
+    'www',
     'lb',
     'facebookconnect'
 )

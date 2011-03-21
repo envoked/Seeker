@@ -4,14 +4,12 @@
 
 {% block content %}
 
-<a href="/seeker/game/{{ game.id }}/debug_clues/">See all clues (cheat)</a>
+<!--<a href="/seeker/game/{{ game.id }}/debug_clues/">See all clues (cheat)</a>-->
 
 <ul data-role="listview" data-inset="true">
 {% for co in player.clue_set.all %}
     <li>{{ co }}</li>
 {% endfor %}
 </ul>
-
-    
 
 {% endblock %}

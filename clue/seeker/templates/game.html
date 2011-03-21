@@ -2,10 +2,13 @@
 {% load extras %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}/css/game.css" />
 
 {% if message %}<p>{{ message }}</p>{% endif %}
 
-<div class="board">Loading...</div>
+<div id="under_board">
+    <div class="board">Loading...</div>
+</div>
 
 <script type="text/javascript">
 Game.init({{ game.id }}, $('.board'), '{% media_url %}')
@@ -13,11 +16,9 @@ Game.init({{ game.id }}, $('.board'), '{% media_url %}')
 
 {% endblock %}
 
-
 {% block toolbar %}
-    <a href="#" onclick="Game.showHelp()">Help</a>
-    <a href="/seeker/game/{{ game.id }}/">Board</a>
     <a href="/seeker/game/{{ game.id }}/clues/">Show Clues</a>
+    <a id="show_messages" href="/seeker/game/{{ game.id }}/alerts/">Alerts</a>
     <a href="#" onclick="Game.showGuesser()">Guesser</a>
     <!-- <a href="#" onclick="Game.pause()" id="pause">Pause</a> -->
     <a href="/seeker/game/{{ game.id }}/quit/">Quit</a>
