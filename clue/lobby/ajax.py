@@ -110,6 +110,7 @@ def invite_member(request):
     """ % (CLUE_GENIE, settings.SMTP_USERNAME, email_address, lobby.name, lobby_link)
     
     send_item(email_address, body)
+    return HttpResponse("Success")
 
 
 @login_required
