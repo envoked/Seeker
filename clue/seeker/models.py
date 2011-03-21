@@ -2,7 +2,9 @@ import traceback
 from django.db import models
 from django.db import IntegrityError
 from django.contrib.auth.models import *
-from django.core.exceptions import MultipleObjectsReturned
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.generic import GenericForeignKey
 from lb.util import expand
 
 class Game(models.Model):
@@ -299,13 +301,32 @@ class CellFact(Fact):
         else:
             return "%s's cell is %d, %d" % (str(self.player.user.username), self.cell.x, self.cell.y)
     
-class Submission(models.Model):
+class Alert(models.Model):
     player = models.ForeignKey(Player)
-    checked = models.BooleanField(default=False)
-    score = models.IntegerField(null=True)
+    type = models.CharField(max_length=255)
+    subject = GenericForeignKey()
+    content_type = models.ForeignKey(ContentType, null=True)
+    object_id = models.IntegerField(null=True)
+    text = models.TextField(blank=True)
+    viewed = models.DateTimeField(null=True)
     created = models.DateTimeField(auto_now_add=True)
-    game = models.ForeignKey(Game)
     
+    def save(self):
+        if not self.text:
+            self.text = self._generate_text()
+        return super(Alert, self).save()
+    
+    def _generate_text(self):
+        text = ""
+        
+        if self.type == 'wrong_guess':
+            text = "Guessed about %s" % self.subject.other_player
+            
+        return text
+    
+    def __str__(self):
+        return '%s (%s)' % (self.text, str(self.subject))
+
 class Guess(models.Model):
     player = models.ForeignKey(Player)
     correct = models.NullBooleanField()
@@ -314,7 +335,7 @@ class Guess(models.Model):
     cell = models.ForeignKey(Cell)
     points = models.IntegerField(null=True)
     created = models.DateTimeField(auto_now_add=True)
-    
+
 class Ranking(models.Model):
     rank = models.IntegerField(null=True)
     total_points = models.IntegerField(null=True)

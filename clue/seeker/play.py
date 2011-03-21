@@ -37,7 +37,7 @@ def game(request, game_id):
         game_dict = {
             'complete': False
         }
-        
+
         if bg.is_over():
             game_dict["complete"] = True
 
@@ -75,20 +75,25 @@ def game(request, game_id):
             if new_clue:
                 game_dict['new_clue'] = new_clue.serialize()
             
-            turn.action = 'investidate'
+            turn.action = 'investigate'
             turn.params = investigating_player_id
                 
         if turn.action:
             turn.save()
             
         game_dict['game'] = bg.serialize(player)
+        alerts_now = player.alert_set.filter(viewed=None).count()
+        cache.set('player_%d_alerts' % alerts_now, alerts_now)
+
+        #game_dict['new_alerts'] = serialize_qs(player.alert_set.filter(viewed=None))
+        game_dict['turns_allowed'] = bg.turns_allowed(player)
+            
         
         return HttpResponse(simplejson.dumps(game_dict), content_type='application/json')
         
     context = {
         'game': game,
         'player': player,
-        'board_html': SafeString(bg.html(request)),
         'show_board': show_board,
         'message': message
     }
@@ -109,7 +114,24 @@ def clues(request, game_id):
 
     return context
 
-
+@render_to('clues_for_player.html')
+def clues_for_player(request, player_id):
+    
+    return {}
+    
+@render_to('alerts.html')
+def alerts(request, game_id):
+    game = Game.objects.get(id=game_id)
+    player = get_object_or_404(Player,
+        user = request.user,
+        game = game
+    )
+    
+    return {
+        'alerts': player.alert_set.order_by('-created'),
+        'new_alerts': player.alert_set.filter(viewed=None).order_by('-created'),
+    }
+    
 @render_to('guesser.html')
 def guesser(request, game_id):
     game = get_object_or_404(Game, id=game_id)
@@ -123,7 +145,8 @@ def guesser(request, game_id):
     )
     other_player = Player.objects.get(id=request.POST['player'])
 
-    known_facts = player.clue_set.filter(fact__neg=False).values('fact__player')
+    #LB - facts/clues do not affect guesser options, now guesses do
+    #known_facts = player.clue_set.filter(fact__neg=False).values('fact__player')
     correct_guesses = player.guess_set.filter(correct=True).values('other_player')
     roles = PlayerRole.objects.filter(player__in=game.player_set.all()).exclude(player__in=correct_guesses).exclude(player=player)
     other_players = game.player_set.exclude(id__in=correct_guesses).exclude(id=player.id)
@@ -158,10 +181,25 @@ def guess(request, game_id):
     print guess.other_player.playerrole.role, role
     print guess.other_player.playercell, cell
     
-    if guess.other_player.playerrole.role == role and guess.other_player.playercell == cell: guess.correct = True
-    else: guess.correct = False
+    if guess.other_player.playerrole.role == role and guess.other_player.playercell == cell:
+        guess.correct = True
+    else:
+        guess.correct = False
     
     guess.save()
+    
+    alert = Alert(
+        player = player,
+    )
+    alert.content_type = ContentType.objects.get_for_model(guess)
+    alert.object_id = guess.id
+    
+    if guess.correct:
+        alert.type = 'correct_guess'
+    else:
+        alert.type = 'wrong_guess'
+        
+    alert.save()
     
     turn = Turn(
         action = "guess",

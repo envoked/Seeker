@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block header %}Alerts ({{ new_alerts.count }}){% endblock %}
+
+{% block content %}
+
+<ul data-role="listview" data-inset="true">
+{% for alert in alerts.all %}
+    <li>{{ alert }} {{ alert.created|timesince }} ago</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

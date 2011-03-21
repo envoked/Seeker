@@ -1,15 +1,19 @@
 /* Board view CSS */
 
+div#content {
+    padding: 0px;
+}
+
 div.board {
-    empty-cells: show;
-    background-color: #eeeeee;
-    background-position: center center;
-    background-repeat: no-repeat;
-    margin: 0 auto 20px auto;
+
+}
+
+div#under_board {
+    height: 100%;
+    background-color: black
 }
 
 div.board div.cell {
-    background-color: #eee;
     float: left;
     font-size: 1em;
     font-weight: normal;
@@ -19,12 +23,22 @@ div.board div.cell {
 
 div.board div.inner {
     position: relative;
-    left: 0;
-    top: 0;
+    left: 2%;
+    top: 2%;
     width: 96%;
     height: 96%;
     z-index: 1;
-    background-color: #ccc;
+    background-color: #84C2CC;
+}
+
+div.board div.over {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    opacity: 0.3;
 }
 
 div.board div.row {
@@ -39,7 +53,8 @@ div.board div.cell div.text-overlay {
     color: white;
     padding: 0.1em;
     z-index: 10;
-    font-size: 1em;
+    font-size: 0.8em;
+    opacity: 0.8;
 }
 
 div.board div.cell div.br {
@@ -54,10 +69,14 @@ div.board div.can-move {
     cursor: pointer;
 }
 
-div.board div.selectable div.inner {
+div.board div.selectable div.inner div.over {
     background: #DF720A;
-    opacity: 0.7;
+    opacity: 0.3;
     cursor: pointer
+}
+
+div.board div.selectable {
+    background-color: transparent !important;
 }
 
 
@@ -66,7 +85,7 @@ div.board div.selectable:hover div.inner {
 }
 
 div.board div.occupied {
-    background-color: #333;
+    background-color: black;
 }
 
 div.board div.a-cubicle div.inner {
@@ -75,10 +94,9 @@ div.board div.a-cubicle div.inner {
     cursor: pointer
 }
 
-div.board div.your-cubicle div.inner {
-    background: #DF720A;
-    border: 2px dotted yellow;
-    opacity: 0.7;
+div.board div.your-cubicle div.over {
+    background: red;
+    opacity: 0.3;
     cursor: pointer
 }
 
@@ -86,14 +104,17 @@ div.board div.you {
     /*background: transparent;*/
 }
 
-div.board div.you div.inner {
-    background-color: red;
+div.board div.you div.over {
+    /*background-color: red;*/
 }
 
+div.board div.you div.inner {
+    background-color: #333;
+}
 
 div.board div.you div.text-overlay {
     color: yellow;
-    font-weight: bold;
+    font-weight: bold;    
 }
 
 div.board .tile {
@@ -102,3 +123,21 @@ div.board .tile {
     width: 100%;
     height: 100%
 }
+
+div.guessing-player div.occupied div.inner {
+    border: 3px dashed yellow;
+}
+
+div.guessing-player div.you div.inner {
+    border: 0 none;
+}
+
+
+div.guessing-cubicle div.a-cubicle div.inner {
+    border: 3px dashed yellow;
+}
+
+div.guessing-cubicle div.your-cubicle div.inner {
+    border: 0 none;
+}
+

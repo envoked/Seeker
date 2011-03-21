@@ -67,10 +67,6 @@ html {
 
 #header h1 span { display: inline-block; background: url('../img/logo.png') 0px -5px no-repeat ; overflow: visible; padding-left: 90px; height: 22px; line-height: 28px }
 
-#content {
-    padding: 15px 15px 30px 15px;
-}
-
 #toolbar {
     background: #222;
     color: white;

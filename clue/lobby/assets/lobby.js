@@ -107,7 +107,7 @@ Lobby = {
     inviteMember: function()
     {
         $.post('/lobby/members/invite/',
-            {'lobby': Lobby.id, 'email': $('#email').value},
+            {'lobby': Lobby.id, 'email': $('#email').val()},
             function(resp)
             {
                 

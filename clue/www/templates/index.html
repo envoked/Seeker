@@ -1,0 +1,14 @@
+{% extends "www_base.html" %}
+
+{% block content %}
+<h1>Seeker</h1>
+<a href="#" onclick="play()">Play</a>
+<script>
+
+function play()
+{
+    window.open('/lobby/', 'seeker', 'width=320,height=460,resizeable=0')
+}
+
+</script>
+{% endblock %}
