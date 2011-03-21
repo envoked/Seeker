@@ -1,2 +1,5 @@
 clue/settings.py
+clue/django_common.wsgi
+.DS_Store
+clue/settings.py.old
 *.pyc
