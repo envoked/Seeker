@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import widgets
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
@@ -26,6 +27,9 @@ class LocationForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('location', 'latitude', 'longitude', 'country')
+        widgets = {
+            'country': widgets.Select(attrs={'data-role': 'none'}),
+        }
 
 class ProfileForm(forms.ModelForm):
     """

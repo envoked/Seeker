@@ -84,4 +84,4 @@ def css_classes(request):
     except:
         css_dict = CSS_CLASSES['blueprint']
 
-    return { 'css_classes': css_dict }
+    return { 'css_classes': css_dict, 'sections': ['overview', 'personal', 'avatar', 'location'] }

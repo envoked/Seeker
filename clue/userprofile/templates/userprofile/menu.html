@@ -1,13 +1,12 @@
-{% load i18n %}
+{% load nav %}
 {% if user.is_authenticated %}
-<div id="nav" class="{{ css_classes.nav }}">
+<div id="nav" class="{{ css_classes.nav }}" data-role="navbar">
 	<ul class="hmenu">
-		<li{% ifequal section "overview" %} class="active"{% endifequal %}><a href="{% url profile_overview %}">{% trans "Overview" %}</a></li>
-		<li{% ifequal section "personal" %} class="active"{% endifequal %}><a href="{% url profile_edit_personal %}">{% trans "Personal information" %}</a></li>
-		<li{% ifequal section "avatar" %} class="active"{% endifequal %}><a href="{% url profile_edit_avatar %}">{% trans "Avatar" %}</a></li>
-		<li{% ifequal section "location" %} class="active"{% endifequal %}><a href="{% url profile_edit_location %}">{% trans "Location" %}</a></li>
-		<li{% ifequal section "delete" %} class="active"{% endifequal %}><a href="{% url profile_delete %}">{% trans "Remove profile" %}</a></li>
+        {% for s in sections %}
+            <li>
+                <a href="{% nav_url s %}" data-ajax="false" {% ifequal section s %} class="ui-btn-active"{% endifequal %}>{{ s }}</a>
+            </li>
+        {% endfor %}
 	</ul>
-	<hr class="space" />
 </div>
 {% endif %}

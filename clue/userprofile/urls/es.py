@@ -5,7 +5,7 @@ from django.conf import settings
 
 urlpatterns = patterns('',
     # Private profile
-    url(r'^perfil/$', overview, name='profile_overview'),
+    url(r'^perfil/$', overview, name='profile_edit_overview'),
 
     url(r'^perfil/editar/ubicacion/$', location, name='profile_edit_location'),
 

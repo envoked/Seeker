@@ -64,6 +64,8 @@ GOOGLE_MAPS_API_KEY = hasattr(settings, "GOOGLE_MAPS_API_KEY") and \
 AVATAR_WEBSEARCH = hasattr(settings, "AVATAR_WEBSEARCH") and \
                    settings.AVATAR_WEBSEARCH or None
 
+SECTIONS = ['overview', 'personal', 'avatar', 'location']
+
 if AVATAR_WEBSEARCH:
     try:
         import gdata.service
@@ -120,7 +122,7 @@ def overview(request):
     } for f in Profile._meta.fields if not (f in BaseProfile._meta.fields or f.name=='id')]
 
     template = "userprofile/profile/overview.html"
-    data = { 'section': 'overview', 'GOOGLE_MAPS_API_KEY': GOOGLE_MAPS_API_KEY,
+    data = { 'section': 'overview', 'sections': SECTIONS, 'GOOGLE_MAPS_API_KEY': GOOGLE_MAPS_API_KEY,
             'email': email, 'validated': validated, 'fields' : fields, 'DEFAULT_AVATAR_SIZE': DEFAULT_AVATAR_SIZE }
     signals.context_signal.send(sender=overview, request=request, context=data)
     return render_to_response(template, data, context_instance=RequestContext(request))
@@ -146,7 +148,7 @@ def personal(request):
         form = ProfileForm(instance=profile)
 
     template = "userprofile/profile/personal.html"
-    data = { 'section': 'personal', 'GOOGLE_MAPS_API_KEY': GOOGLE_MAPS_API_KEY,
+    data = { 'section': 'personal', 'sections': SECTIONS, 'GOOGLE_MAPS_API_KEY': GOOGLE_MAPS_API_KEY,
              'form': form, }
     signals.context_signal.send(sender=personal, request=request, context=data)
     return render_to_response(template, data, context_instance=RequestContext(request))
@@ -183,7 +185,7 @@ def location(request):
         form = LocationForm(instance=profile)
 
     template = "userprofile/profile/location.html"
-    data = { 'section': 'location', 'GOOGLE_MAPS_API_KEY': GOOGLE_MAPS_API_KEY,
+    data = { 'section': 'location', 'sections': SECTIONS, 'GOOGLE_MAPS_API_KEY': GOOGLE_MAPS_API_KEY,
              'form': form, 'geoip': geoip }
     signals.context_signal.send(sender=location, request=request, context=data)
     return render_to_response(template, data, context_instance=RequestContext(request))
@@ -209,7 +211,7 @@ def delete(request):
         messages.success(request, _("Your profile information has been removed successfully."), fail_silently=True)
 
         signal_responses = signals.post_signal.send(sender=delete, request=request, extra={'old_profile':old_profile, 'old_user': old_user})
-        return signals.last_response(signal_responses) or HttpResponseRedirect(reverse("profile_overview"))
+        return signals.last_response(signal_responses) or HttpResponseRedirect(reverse("profile_edit_overview"))
 
     template = "userprofile/profile/delete.html"
     data = { 'section': 'delete', }
@@ -276,7 +278,7 @@ def avatarchoose(request):
 
     template = "userprofile/avatar/choose.html"
     data = { 'generic': generic, 'form': form, "images": images,
-             'AVATAR_WEBSEARCH': AVATAR_WEBSEARCH, 'section': 'avatar',
+             'AVATAR_WEBSEARCH': AVATAR_WEBSEARCH, 'section': 'avatar', 'sections': SECTIONS,
              'DEFAULT_AVATAR_SIZE': DEFAULT_AVATAR_SIZE, 'MIN_AVATAR_SIZE': MIN_AVATAR_SIZE }
     signals.context_signal.send(sender=avatarchoose, request=request, context=data)
     return render_to_response(template, data, context_instance=RequestContext(request))
