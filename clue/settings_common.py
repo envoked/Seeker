@@ -2,6 +2,9 @@ import os
 
 PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
 LOGGING_PATH = os.path.join(PROJECT_PATH, 'log/')
+# Absolute path to the directory that holds media.
+# Example: "/home/media/media.lawrence.com/"
+MEDIA_ROOT = os.path.join(PROJECT_PATH, 'assets/')
 ADMINS = (
     ('Lincoln', 'bryant.lincoln@gmail.com'),
 )
