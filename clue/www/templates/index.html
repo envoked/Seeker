@@ -1,14 +1,73 @@
-{% extends "www_base.html" %}
+{% extends 'www_base.html' %}
 
 {% block content %}
-<h1>Seeker</h1>
-<a href="#" onclick="play()">Play</a>
-<script>
+<div style="margin-bottom:18px;" class="contentsection">
+    <!--<div class="welcome">
+        <h1 style="letter-spacing:2px;">Welcome to Seekr</h1>
+        <h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus consectetur, leo vel ultrices commodo, neque nisi venenatis massa, ac adipiscing tellus risus 					sodales augue. Pellentesque mauris nisl, bibendum sollicitudin congue a, iaculis eget nibh. Sed id tortor lorem. </h2>
+        -->
+        <img style="padding-top:8px;" src="{{ MEDIA_URL}}/img/welcomebanner.png">
+        
+</div>
 
-function play()
-{
-    window.open('/lobby/', 'seeker', 'width=320,height=460,resizeable=0')
-}
+<div class="contentsection boldstroke">
+    
+    <div class="twocollumn">
+        <h1>"Seekr is more compelling than doing your work."</h1>
+        <h2 style="line-height:250%; font-style:italic;">-Dave, accounting</h2>
+    
+    </div>
+     
+    <div class="threecollumn last">
+        <div class="text">
+            <h3 style="color:#F5F5F5;">Seekr is a mystery game</h3>
+            <h3 style="color:#F5F5F5;">where players compete to discover the secret lives of their co-workers.</h3>
+            <h2 style="font-style:italic;">Learn more</h2>
+        </div>
+    </div>
+   
+</div>
 
-</script>
+<div class="contentsection">
+    <div class="collumn nobg" style="background-image:url({{ MEDIA_URL}}/img/chars/char1.png);"><p>The Accountant</p></div>
+    <div class="collumn nobg" style="background-image:url({{ MEDIA_URL}}/img/chars/char2.png);"><p>The New Hire</p></div>
+    <div class="collumn nobg" style="background-image:url({{ MEDIA_URL}}/img/chars/char3.png);"><p>The HR Rep</p></div>
+    <div class="collumn nobg" style="background-image:url({{ MEDIA_URL}}/img/chars/char4.png);"><p>The Boss</p></div>
+    <div class="collumn  nobg last" style="background-image:url({{ MEDIA_URL}}/img/chars/char5.png);"><p>The IT guy</p></div>
+</div>
+
+<div class="contentsection boldstroke">
+    
+    <div class="threecollumn nobg">
+        <div class="text">
+            <h3>Seekr is a mobile game</h3>
+            <h3>of intrigue and inquiry, exposing the seedy underbelly of modern life.</h3>
+            <h2>Using their skill, players must investigate one another in order to uncover the role and position of their rivals in the corporate underworld.</h2>
+        </div>
+    </div>
+    
+    <div class="twocollumn last">
+        <div class="demo">
+            <h1><a href="#" onclick="play()">View Demo +</a></h1>
+        </div>
+    </div>
+    
+</div>
+    
+
+<div class="contentsection"> 
+    
+    <div class="collumn nobg">
+    </div>
+    
+    <div class="twocollumn nobg" style="background-image:url({{ MEDIA_URL}}/img/scene1.png)">
+    </div>
+    
+    
+    <div class="twocollumn last">
+        <h1>"It dulls the pain of my monotonous corporate life."</h1>
+        <h2 style="line-height:250%; font-style:italic;">-Cynthia, finance and operations</h2>
+    </div>
+    
+</div>
 {% endblock %}
