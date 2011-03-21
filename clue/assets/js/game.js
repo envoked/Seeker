@@ -422,10 +422,10 @@ lightbox = function(data)
     hideLightbox()
     var opaque = $('<div class="opaque">')
     opaque.click(hideLightbox)
-    $('#content').append(opaque)
+    $('body').append(opaque)
     var el = $('<div class="lightbox">')
     el.html(data)
-    $('#content').append(el)
+    $('body').append(el)
 }
 
 hideLightbox = function()

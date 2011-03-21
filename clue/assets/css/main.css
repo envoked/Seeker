@@ -42,6 +42,10 @@ html {
     background-color: #aaa;
 }
 
+body {
+    position: relative
+}
+
 #header {
     border-bottom:1px solid #4D4D4D;
     color: #E0E0E0;
