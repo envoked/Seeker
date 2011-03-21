@@ -64,16 +64,13 @@ def create(request):
             new_lobby = Lobby(
                 creator = request.user,
                 name = request.POST['name'],
-                #num_players = request.POST['num_players'],
-                creator_image = request.POST['creator_image']
             )
             new_lobby.save()
 
             return HttpResponseRedirect('/lobby/%d/' % new_lobby.id)
     else:
         create_lobby_form = CreateLobbyForm()
-        char_images = Lobby.getCharImages()
-        
+
     return locals()
     
 @login_required
@@ -81,11 +78,16 @@ def create(request):
 def lobby(request, id):
     lobby = get_object_or_404(Lobby, id=id, game=None)
     
+    if request.user.get_profile().has_avatar() > 0:
+        avatar = request.user.avatar_set.all()[0].image
+    else:
+        avatar = Lobby.default_cpu_image()
+    
     if request.user.is_authenticated():
         member = Member(
             lobby = lobby,
             user = request.user,
-            image = lobby.creator_image
+            image = avatar
         )
         try:
             member.save()

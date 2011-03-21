@@ -9,8 +9,7 @@ class Lobby(models.Model):
     creator = models.ForeignKey(User)
     #num_players = models.IntegerField()
     created = models.DateTimeField(auto_now_add=True)
-    creator_image = models.ImageField(upload_to="/img/chars", blank="char1.png")
-    
+
     #Once a lobby turns into a game, this will reference it ant the lobby is dead
     game = models.ForeignKey('seeker.Game', null=True)
 

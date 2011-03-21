@@ -4,5 +4,4 @@ settings.py
 django.wsgi
 log
 log/*
-assets/userprofile/*
 assets/avatars/*

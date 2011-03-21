@@ -74,8 +74,6 @@ body {
 #toolbar {
     background: #222;
     color: white;
-    position: absolute;
-    bottom: 0px;
 }
 
 #toolbar a { color: white }
