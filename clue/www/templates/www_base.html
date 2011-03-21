@@ -1,8 +1,41 @@
-<html>
-    <title>Seeker | {% block title %} Home{% endblock %}</title>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0044)http://www.infinitevisual.com/seeker/portal/ -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Seeker | {% block title %} Home{% endblock %}</title>    
+        <link rel="stylesheet" href="http://www.infinitevisual.com/seeker/portal/css/portal.css">
+    </head>
     <body>
-        {% block content %}
+
+        <div id="headerContainer">
+            <div id="header">
+                <div id="logo">
+                        <img src="{{ MEDIA_URL}}/img/logo.png">
+                </div>
+                <div id="menucontainer">
+                    <a class="buttoncontainer" href="/portal/"><span>Login</span></a>
+                    <a class="buttoncontainer btnlast" href="/portal/"><span>Sign up</span></a>
+                </div>
+            </div>
+                    
+        </div>
+                    
+        <div id="wrapper">
+            <div id="GlobalContainer">
+                {% block content %}
+                {% endblock %}
+                <div id="footer">
+                <div class="contentsection"></div>
+            </div>
+        </div>  
+        <script>
         
-        {% endblock %}
+        function play()
+        {
+            window.open('/lobby/', 'seeker', 'width=320,height=460,resizeable=0')
+        }
+        
+        </script>
     </body>
 </html>
