@@ -103,7 +103,7 @@ LOGGING_PATH = 'log/'
 SMTP_USERNAME = 'noreply@seekr.us'
 SMTP_PASSWORD = 'secret'
 
-AUTH_PROFILE_MODULE = 'userprofile.UserProfile'
+AUTH_PROFILE_MODULE = 'userprofile.Profile'
 I18N_URLS = False
 DEFAULT_AVATAR_WIDTH = 96
 DEFAULT_AVATAR = os.path.join(MEDIA_ROOT, 'img', 'chars', 'char1.png')

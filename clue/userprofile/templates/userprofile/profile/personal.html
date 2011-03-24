@@ -23,6 +23,13 @@
 
 {% block userprofile_content %}
 	<form class="personal" action="{% url profile_edit_personal %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+    {% if request.GET.message %}
+        <p>
+           {% if request.GET.message == "please_create" %}
+           Please enter your basic info
+           {% endif %}
+        </p>
+    {% endif %}
 	<fieldset>
 		<legend>{% trans "Edit your personal information" %}</legend>
 		{{ form.as_p }}

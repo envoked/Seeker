@@ -63,8 +63,14 @@ class BaseProfile(models.Model):
     def get_absolute_url(self):
         return reverse("profile_public", args=[self.user])
 
-class UserProfile(BaseProfile):
-    pass
+
+GENDER_CHOICES = ( ('F', _('Female')), ('M', _('Male')),)
+
+class Profile(BaseProfile):
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
+    birthdate = models.DateField(blank=True)
+    url = models.URLField(blank=True)
+    about = models.TextField(blank=True)
 
 class Avatar(models.Model):
     """

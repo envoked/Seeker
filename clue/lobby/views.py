@@ -78,7 +78,7 @@ def create(request):
 def lobby(request, id):
     lobby = get_object_or_404(Lobby, id=id, game=None)
     
-    if request.user.get_profile().has_avatar() > 0:
+    if request.user.avatar_set.count() > 0:
         avatar = request.user.avatar_set.all()[0].image
     else:
         avatar = Lobby.default_cpu_image()
@@ -200,10 +200,11 @@ def login(request):
         username = request.POST['username']
         password = request.POST['password']
         user = auth.authenticate(username=username, password=password)
-        print user
         if user is not None:
             if user.is_active:
                 auth.login(request, user)
+                if user.profile_set.count() == 0:
+                    return HttpResponseRedirect('/userprofile/profile/edit/personal/?message=please_create')
                 if 'next' in request.POST:
                     return HttpResponseRedirect(request.POST['next'])
                 return HttpResponseRedirect("/lobby/home/")
