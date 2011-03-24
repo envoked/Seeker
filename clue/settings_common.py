@@ -6,7 +6,7 @@ LOGGING_PATH = os.path.join(PROJECT_PATH, 'log/')
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = os.path.join(PROJECT_PATH, 'assets/')
 ADMINS = (
-    ('Lincoln', 'bryant.lincoln@gmail.com'),
+    ('Lincoln', 'bryant.lincoln@gmail.com'),('Adrian', 'adrian.wisernig@envoked.com'),
 )
 
 MANAGERS = ADMINS
