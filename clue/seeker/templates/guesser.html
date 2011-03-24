@@ -1,17 +1,22 @@
+{% extends "base.html" %}
 
+{% block header %}Guess Role{% endblock %}
+
+{% block page-data-role %}dialog{% endblock %}
+
+{% block content %}
 
 {% if game.is_current %}
     {% if other_players.count > 0 %}
-
-    {{ other_player.user.username }}
     <img src="{{ MEDIA_URL }}/{{ other_player.image }}" />
+    <h4>{{ other_player.user.username }}</h4>
+
         <select id="role">
             {% for player_role in roles %}
             <option value="{{ player_role.role.id }}">{{ player_role.role.name }}</option>
             {% endfor %}
         </select>
-        <a href="#" onclick="Game.guessCubicle($('#role').val())">Ok</a>
-
+        <a href="#" data-role="button" onclick="Game.guessCubicle($('#role').val()); $('.ui-dialog:last').dialog('close')">Ok</a>
     {% else %}
     You know everything!
     {% endif %}
@@ -19,3 +24,4 @@
 <b>This game is over</b>
 {% endif %}
 
+{% endblock %}

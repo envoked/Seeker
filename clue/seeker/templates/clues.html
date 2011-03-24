@@ -2,9 +2,9 @@
 
 {% block header %}Clues{% endblock %}
 
-{% block content %}
+{% block page-data-role %}dialog{% endblock %}
 
-<!--<a href="/seeker/game/{{ game.id }}/debug_clues/">See all clues (cheat)</a>-->
+{% block content %}
 
 <ul data-role="listview" data-inset="true">
 {% for co in player.clue_set.all %}

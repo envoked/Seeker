@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load extras %}
 
+{% block id %}seeker_game{% endblock %}
+
 {% block content %}
 <link rel="stylesheet" href="{{ MEDIA_URL }}/css/game.css" />
 
@@ -12,14 +14,17 @@
 
 <script type="text/javascript">
 Game.init({{ game.id }}, $('.board'), '{% media_url %}')
+
+
 </script>
 
 {% endblock %}
 
 {% block toolbar %}
-    <a href="/seeker/game/{{ game.id }}/clues/">Show Clues</a>
-    <a id="show_messages" href="/seeker/game/{{ game.id }}/alerts/">Alerts</a>
-    <a href="#" onclick="Game.showGuesser()">Guesser</a>
+    <a href="#" onclick="Game.cluesForPlayer()">Clues</a>
+    <a id="show_alerts" href="/seeker/game/{{ game.id }}/alerts/" data-rel="dialog">Alerts</a>
+    <a href="#" onclick="Game.showGuesser()">Guess</a>
+    <a href="#" onclick="Game.investigate()">Investigate</a>
     <!-- <a href="#" onclick="Game.pause()" id="pause">Pause</a> -->
     <a href="/seeker/game/{{ game.id }}/quit/">Quit</a>
 {% endblock %}

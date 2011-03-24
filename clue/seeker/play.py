@@ -56,7 +56,14 @@ def game(request, game_id):
                 cubicle_owner = cubicle.player
                 new_clue = player.investigate_cell(cubicle)
                 if new_clue:
-                    game_dict['new_clue'] = new_clue.serialize()
+                    alert = Alert(
+                        player = player,
+                        type = 'cubicle_clue',
+                        content_type = ContentType.objects.get_for_model(Clue),
+                        object_id = new_clue.id
+                    )
+                    alert.save()
+                    game_dict['new_alerts'] = [expand(alert)]
                     
             try:
                 player.move_to(x, y)
@@ -73,7 +80,14 @@ def game(request, game_id):
             investigating_player = Player.objects.get(id=investigating_player_id, game=game)
             new_clue = player.investigate(investigating_player)
             if new_clue:
-                game_dict['new_clue'] = new_clue.serialize()
+                alert = Alert(
+                    player = player,
+                    type = 'investigate_clue',
+                    content_type = ContentType.objects.get_for_model(Clue),
+                    object_id = new_clue.id
+                )
+                alert.save()
+                game_dict['new_alerts'] = [expand(alert)]
             
             turn.action = 'investigate'
             turn.params = investigating_player_id
@@ -85,9 +99,8 @@ def game(request, game_id):
         alerts_now = player.alert_set.filter(viewed=None).count()
         cache.set('player_%d_alerts' % alerts_now, alerts_now)
 
-        #game_dict['new_alerts'] = serialize_qs(player.alert_set.filter(viewed=None))
+        game_dict['unviewed_alerts'] = alerts_now
         game_dict['turns_allowed'] = bg.turns_allowed(player)
-            
         
         return HttpResponse(simplejson.dumps(game_dict), content_type='application/json')
         
@@ -115,9 +128,22 @@ def clues(request, game_id):
     return context
 
 @render_to('clues_for_player.html')
-def clues_for_player(request, player_id):
+def clues_for_player(request, game_id):
+    game = Game.objects.get(id=game_id)
+    for_player = Player.objects.get(id=request.REQUEST['player'])
+    print for_player
+    player = get_object_or_404(Player,
+        user = request.user,
+        game = game
+    )
+    role_positive = RoleFact.objects.filter(fact__neg=False, clue__player=player, fact__player=for_player).all()
+    cell_positive = CellFact.objects.filter(fact__neg=False, clue__player=player, fact__player=for_player).all()
     
-    return {}
+    role_negative = RoleFact.objects.filter(fact__neg=True, clue__player=player, fact__player=for_player).all()
+    cell_negative = CellFact.objects.filter(fact__neg=True, clue__player=player, fact__player=for_player).all()
+    print "wetwetwtw"
+    return locals()
+
     
 @render_to('alerts.html')
 def alerts(request, game_id):
@@ -128,9 +154,16 @@ def alerts(request, game_id):
     )
     
     return {
-        'alerts': player.alert_set.order_by('-created'),
-        'new_alerts': player.alert_set.filter(viewed=None).order_by('-created'),
+        'viewed_alerts': player.alert_set.filter(viewed__isnull=False).order_by('-created'),
+        'unviewed_alerts': player.alert_set.filter(viewed=None).order_by('-created'),
     }
+    
+def alert_viewed(request, game_id):
+    alert = Alert.objects.get(id=request.POST['id'])
+    alert.viewed = datetime.datetime.now()
+    alert.save()
+    
+    return HttpResponse("OK")
     
 @render_to('guesser.html')
 def guesser(request, game_id):

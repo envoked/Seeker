@@ -29,26 +29,26 @@
         
     </head>
     <body>
-        <div id="page" data-role="page">
-            <div id="header" data-role="header">
+        <div data-role="{% block page-data-role %}page{% endblock %}" id="{% block id %}seeker{% endblock %}">
+            <div class="header" data-role="header" data-backbtn="{% block data-backbtn %}false{% endblock %}">
                 
                 
                 <h1><span> | {% block header %}{% endblock %}</span></h1>
                
                 {% if user.id %}
-                    <a href="/lobby/home/" class="ui-btn-right">Home</a>
+                    <!--<a href="/lobby/home/" class="ui-btn-right">Home</a>-->
                 {% else %}
                     <a href="/login/" class="ui-btn-right">Login</a>
                 {% endif %}
                 
             </div>
-            <div id="content" data-role="content">
+            <div class="content" data-role="content">
             {% block content %}
             
             {% endblock %}
             </div>
             
-            <div id="toolbar" data-role="footer" class="ui-bar">
+            <div class="toolbar" data-role="footer" class="ui-bar" data-position="fixed">
             {% block toolbar %}
                 <a href="#" onclick="Main.showHelp()">Help</a>
             {% endblock %}
@@ -61,7 +61,7 @@
        
     });
     $(document).bind("mobileinit", function(){
-      window.top.scrollTo(0, 1);
+      //window.top.scrollTo(0, 1);
     });
     </script>
 </html>

@@ -1,11 +1,21 @@
 {% extends "base.html" %}
 
-{% block header %}Alerts ({{ new_alerts.count }}){% endblock %}
+{% block header %}Alerts ({{ unviewed_alerts.count }}){% endblock %}
+
+{% block page-data-role %}dialog{% endblock %}
 
 {% block content %}
 
 <ul data-role="listview" data-inset="true">
-{% for alert in alerts.all %}
+    <li data-role="list-divider" role="heading">New Alerts ({{ unviewed_alerts.count }})</li>
+{% for alert in unviewed_alerts.all %}
+    <li class="alert-unviewed" onclick="Game.viewedAlert({{ alert.id }}, Game.showAlerts)">{{ alert }} {{ alert.created|timesince }} ago</li>
+{% endfor %}
+</ul>
+
+<ul data-role="listview" data-inset="true">
+    <li data-role="list-divider" role="heading">Old Alerts</li>
+{% for alert in viewed_alerts.all %}
     <li>{{ alert }} {{ alert.created|timesince }} ago</li>
 {% endfor %}
 </ul>

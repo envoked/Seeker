@@ -72,7 +72,7 @@ Game = {
                 Game._game = data
                 Game.updating = false
                 Game.last_update = new Date()
-                
+
                 if (Game._game.game.player.unkown_facts == 0)
                 {
                     if (Game.state != 'complete') alert("You know everything")
@@ -86,13 +86,24 @@ Game = {
                 }
                 if (Game._game.new_alerts)
                 {
-                    for (al in Game._game.new_alerts)
+                    for (a in Game._game.new_alerts)
                     {
-                        alert(al)
+                        new_alert = Game._game.new_alerts[a]
+                        console.log(new_alert)
+                        alert(new_alert.text)
+                        Game.viewedAlert(new_alert.id)
                     }
                 }
+                if (Game._game.unviewed_alerts)
+                {
+                    $('#show_alerts').find('.ui-btn-text').html("Alerts (" + Game._game.unviewed_alerts + ")")
+                }
+                if (Game._game.turns_allowed <= 0)
+                {
+                    Game.state = "frozen"
+                }
                 
-                Game.redraw();             
+                Game.redraw();            
             },
             error: function() {
                 Game.last_update = new Date()
@@ -104,8 +115,8 @@ Game = {
     {
         this.rows = []
         this.el.html("");
-        this.el.css('height', $(window).height()*0.75)
-        this.el.css('width', this.el.height())
+        this.el.css('width', $(window).width() + 'px')
+        this.el.css('height', Game.el.width() + 'px')
         
         for (col=0; col<this._game.game.board_size; col++)
         {
@@ -168,6 +179,13 @@ Game = {
                 {
                     td.addClass('you')
                     assign_player_avatar(td_inner, this._game.game.player)
+                    
+                    if (Game._game.turns_allowed <= 0)
+                    {
+                        td.append($('<div class="text-overlay text-overlay-central">').html("Wait " + Math.abs(Game._game.turns_allowed)))
+                        td.addClass('frozen')
+                    }
+                    
                 }
                 else if (player)
                 {
@@ -184,12 +202,36 @@ Game = {
             
             this.el.append(tr)
             this.rows.push(column)
+            $.fixedToolbars.show()
         }
     },
     
     showHelp: function()
     {
         alert("Coming when Help documentation is written.");
+    },
+    
+    showAlerts: function(data)
+    {
+        $.mobile.changePage('/seeker/' + Game.id + '/alerts/', "none", false, true)
+    },
+    
+    viewedAlert: function(alert_id, callback)
+    {
+        if (typeof callback != "function") callback = function() {}
+        $.post('/seeker/game/' + Game.id + '/alert/viewed/', {id: alert_id}, callback, 'json')
+    },
+    
+    investigate: function()
+    {
+        Game.el.addClass('guessing-player')
+        Game.state = "investigating"
+    },
+    
+    cluesForPlayer: function()
+    {
+        Game.el.addClass('guessing-player')
+        Game.state = "clues_for_player"
     },
     
     showGuesser: function()
@@ -214,11 +256,15 @@ Game = {
     
     showRoleGuesser: function()
     {
+        $.mobile.changePage({url: '/seeker/game/' + Game.id + '/guesser/', type: 'post', data: {player: Game.guess.player}}, "slide", false, false)
+        Game.el.removeClass('guessing-player')
+        /*
         $.post('/seeker/game/' + Game.id + '/guesser/', {player: Game.guess.player},
             function(data) {
                 Game.el.removeClass('guessing-player')
                 lightbox(data)
             })
+        */
     },
     
     showClues: function()
@@ -237,7 +283,7 @@ Game = {
                 if (data.correct)
                 {
                     alert("Correct!")
-                    Game.el.removeClass('guessing-cubible')
+                    Game.el.removeClass('guessing-cubicle')
                 }
                 else
                 {
@@ -324,8 +370,6 @@ Game = {
     
     guessCubicle: function(role)
     {
-        hideLightbox()
-        alert('Click a cubicle to guess')
         Game.state = 'guessing-cell';
         Game.el.addClass('guessing-cubicle')
         Game.guess.role = role;
@@ -344,7 +388,7 @@ GameCell = {
         }
         var target = $(this)
         
-        if (Game.state == 'complete')
+        if (Game.state == 'complete' || Game.state == 'frozen')
         {
             return false;
         }
@@ -371,16 +415,39 @@ GameCell = {
             return false;
         }
         
-        if (target.hasClass('occupied') && target.hasClass('can-move'))
+        if (Game.state == "investigating")
         {
-            var player = Game.getById('players', parseInt(target.attr('player')))
-            if (player.is_current)
-                Game.reload({'investigate': target.attr('player')})
-            else
-                alert("This player is no longer active")
+            if (target.hasClass('occupied') && target.hasClass('can-move'))
+            {
+                var player = Game.getById('players', parseInt(target.attr('player')))
+                if (player.is_current) {
+                    Game.state = null;
+                    Game.reload({'investigate': target.attr('player')})
+                }
+                else
+                    alert("This player is no longer active")
+            }
+            else if (target.hasClass('occupied'))
+            {
+                var player = Game.getById('players', parseInt(target.attr('player')))
+                if (!player.is_current)
+                    alert("This player is no longer active")
+                else alert("You must be adjacent to investigate")
+            }
+            return false;
+        }
+        else if (Game.state == "clues_for_player")
+        {
+            if (target.hasClass('occupied')) {
+                var player_id = target.attr('player');
+                $('#clues_for_player').remove()
+                $.mobile.changePage('/seeker/game/' + Game.id + '/clues_for_player/?player=' + player_id)
+            }
+ 
+            return false;
         }
         
-        else if (target.hasClass('can-move'))
+        if (target.hasClass('can-move'))
         {
             Game._game.game.player.x = parseInt(target.attr('x'))
             Game._game.game.player.y = parseInt(target.attr('y'))
@@ -388,13 +455,6 @@ GameCell = {
             Game.reload({'move': target.attr('x') + ',' + target.attr('y')})
         }
         
-        else if (target.hasClass('occupied'))
-        {
-            var player = Game.getById('players', parseInt(target.attr('player')))
-            if (!player.is_current)
-                alert("This player is no longer active")
-            else alert("You must be adjacent to investigate")
-        }
     }
 }
 
@@ -415,21 +475,4 @@ submitGuess = function()
     var user = $('#player')[0].value
     var role = $('#role')[0].value
     Game.submitGuess(user, role)
-}
-
-lightbox = function(data)
-{
-    hideLightbox()
-    var opaque = $('<div class="opaque">')
-    opaque.click(hideLightbox)
-    $('body').append(opaque)
-    var el = $('<div class="lightbox">')
-    el.html(data)
-    $('body').append(el)
-}
-
-hideLightbox = function()
-{
-    $('.lightbox').remove()
-    $('.opaque').remove()
 }

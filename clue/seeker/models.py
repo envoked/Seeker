@@ -320,8 +320,13 @@ class Alert(models.Model):
         text = ""
         
         if self.type == 'wrong_guess':
-            text = "Guessed about %s" % self.subject.other_player
-            
+            text = "Guessed incorrectly about %s" % self.subject.other_player
+        elif self.type == 'correct_guess':
+            text = "Guessed correctly about %s" % self.subject.other_player
+        elif self.type == 'investigate_clue':
+            text = str(self.subject)
+        elif self.type =='cubicle_clue':
+            text = str(self.subject)
         return text
     
     def __str__(self):

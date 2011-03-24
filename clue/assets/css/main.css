@@ -39,15 +39,14 @@ p {
 
 /*not visible in the phone */
 html {
-    background-color: #aaa;
+    background-color: #333;
 }
 
 body {
     position: relative
 }
 
-#header {
-    border-bottom:1px solid #4D4D4D;
+.header {
     color: #E0E0E0;
     border:1px solid #8C8C8C;
     background-image: url('../img/headerbg.png');
@@ -56,7 +55,7 @@ body {
     background-repeat: repeat-x;
 }
 
-#header .left-button {
+.header .left-button {
     display: block;
     float: left;
     margin: 2px;
@@ -65,18 +64,30 @@ body {
     position: relative
 }
 
-#header a { color: white }
+.header a { color: white }
 
-#header h1 { }
+.header h1 { }
 
-#header h1 span { display: inline-block; background: url('../img/logo.png') 0px -5px no-repeat ; overflow: visible; padding-left: 90px; height: 22px; line-height: 28px }
+.header h1 span { display: inline-block; background: url('../img/logo.png') 0px -5px no-repeat ; overflow: visible; padding-left: 90px; height: 22px; line-height: 28px }
 
-#toolbar {
+.toolbar {
     background: #222;
     color: white;
 }
 
-#toolbar a { color: white }
+.toolbar a { color: white }
+
+.ui-page {
+    border: 0 none
+}
+
+.ui-page .content {
+    padding: 10px
+}
+
+.portrait, .portrait .ui-page {
+    min-height: 460px;
+}
 
 /* General Styles */
 h1{
@@ -254,4 +265,9 @@ form {
     line-height:120%;
     font-weight:100;
     color:#232323;
+}
+
+.alert-unviewed {
+    background-color: #84C2CC;
+    background-image: none
 }

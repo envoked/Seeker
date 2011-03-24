@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block header %}Clues{% endblock %}
+
+{% block id %}clues_for_player{% endblock %}
+{% block page-data-role %}dialog{% endblock %}
+
+{% block content %}
+
+<h1>{{ for_player.user.username }}</h1>
+<img src="{{ for_player.image.url }}" />
+
+<h3>Role</h3>
+{% if role_positive %}
+    <b title="{{ role_positive.0 }}">{{ role_postitive.0.role }}</b>
+{% else %}
+    {% if role_negative.count > 0 %}
+        {% for role in role_negative.all %}
+            <strike style="color: red">{{ role.role }}</strike>
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
+<h3>Cubicle</h3>
+{% if cell_positive %}
+    <b title="{{ cell_positive.0 }}">{{ cell_positive.0.cell.x }}, {{ cell_positive.0.cell.y }}</b>
+{% else %}
+    {% if cell_negative.count > 0 %}
+        {% for cell in cell_negative.all %}
+            <strike style="color: red">{{ cell.cell.x }}, {{ cell.cell.y }}</strike>
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
+
+{% endblock %}
