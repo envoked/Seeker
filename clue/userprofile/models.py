@@ -68,7 +68,6 @@ GENDER_CHOICES = ( ('F', _('Female')), ('M', _('Male')),)
 
 class Profile(BaseProfile):
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
-    birthdate = models.DateField(blank="null")
     url = models.URLField(blank=True)
     about = models.TextField(blank=True)
 
