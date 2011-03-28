@@ -6,6 +6,7 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from lb.util import expand
+from userprofile.models import Profile
 
 class Game(models.Model):
     start = models.DateTimeField(null=True)
@@ -366,9 +367,22 @@ class Clue(models.Model):
     
     def __str__(self):
         if self.source:
-            return "%s told %s that %s" % (self.source.player.user.username, self.player.user.username, str(self.fact))
+            clue_str = "%s told you that " % (self.source.player.user.username)
+            if self.source.player.user.username == self.fact.player.user.username:
+                #src_profile = Profile.objects.get(user=self.source.player.user.username)
+                #pronoun = "he"                
+                #if src_profile.gender == "F":
+                #    pronoun = "she"
+                #clue_str += str(self.fact).replace(self.fact.player.user.username, pronoun)
+                clue_str += str(self.fact).replace(self.fact.player.user.username, "he")
+            else:
+                clue_str += str(self.fact)
+            
         else:
-            return "%s knows that %s" % (self.player.user.username, str(self.fact))
+            clue_str = "%s knows that %s" % (self.player.user.username, str(self.fact))
+
+        clue_str = clue_str.replace("%s's" % self.player.user.username, "your")
+        return clue_str
         
     def serialize(self):
         ex = expand(self)
