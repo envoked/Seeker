@@ -7,6 +7,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from lb.util import expand
 from userprofile.models import Profile
+from django.core.exceptions import ObjectDoesNotExist
+
 
 class Game(models.Model):
     start = models.DateTimeField(null=True)
@@ -369,19 +371,26 @@ class Clue(models.Model):
         if self.source:
             clue_str = "%s told you that " % (self.source.player.user.username)
             if self.source.player.user.username == self.fact.player.user.username:
-                #src_profile = Profile.objects.get(user=self.source.player.user.username)
-                #pronoun = "he"                
-                #if src_profile.gender == "F":
-                #    pronoun = "she"
-                #clue_str += str(self.fact).replace(self.fact.player.user.username, pronoun)
-                clue_str += str(self.fact).replace(self.fact.player.user.username, "he")
+                pronoun = "he"                
+                try:
+                    src_profile = Profile.objects.get(user=self.source.player.user)
+                    if src_profile.gender == "F":
+                        pronoun = "she"
+                except ObjectDoesNotExist:
+                    pronoun = "he"
+                clue_str += str(self.fact).replace(self.fact.player.user.username, pronoun)    
             else:
                 clue_str += str(self.fact)
-            
         else:
             clue_str = "%s knows that %s" % (self.player.user.username, str(self.fact))
 
-        clue_str = clue_str.replace("%s's" % self.player.user.username, "your")
+        clue_str = clue_str.replace("%s knows" % self.player.user.username, "you know")
+        clue_str = clue_str.replace("%s's cell" % self.player.user.username, "your cell")
+        clue_str = clue_str.replace(self.player.user.username, "you")
+        clue_str = clue_str.replace("you's", "your")
+        clue_str = clue_str.replace("you is", "you're")
+        
+
         return clue_str
         
     def serialize(self):
