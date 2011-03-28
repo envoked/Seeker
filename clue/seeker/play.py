@@ -49,8 +49,8 @@ def game(request, game_id):
             
             cells = game.get_player_cells_within(int(x), int(y), 0)
             if cells:
-                direction = player.get_direction_of_movement(x, y)
-                print "DIRECTION: %s" % direction
+                #direction = player.get_direction_of_movement(x, y)
+                #print "DIRECTION: %s" % direction
 
                 cubicle = cells[0]
                 cubicle_owner = cubicle.player
