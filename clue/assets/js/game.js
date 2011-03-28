@@ -237,10 +237,14 @@ Game = {
     
     showAlert: function(al)
     {
-        Game.text_el.html(al.text)
-        var mark_alert_viewed = $('<a href="#" style="line-height: 1.0em" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + ');">').html("OK")
-        Game.text_el.html('<p>' + al.text + '</p><div data-inline="true"><a href="#" style="line-height: 1.0em" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + ');">OK</a></div>')
-        $('#board_text a').button({inline: true})  
+        try {
+            Game.text_el.html(al.text);
+        
+            var mark_alert_viewed = $('<a href="#" style="line-height: 1.0em" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + ');">').html("OK")
+            Game.text_el.html('<p>' + al.text + '</p><div data-inline="true"><a href="#" style="line-height: 1.0em" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + ');">OK</a></div>')
+            $('#board_text a').button({inline: true})
+        }
+        catch(e){}
     },
     
     showAlerts: function(data)
