@@ -36,7 +36,7 @@
                 <h1><span> | {% block header %}{% endblock %}</span></h1>
                
                 {% if user.id %}
-                    <!--<a href="/lobby/home/" class="ui-btn-right">Home</a>-->
+                    {% block header_right %}<a href="/lobby/home/" class="ui-btn-right">Home</a>{% endblock %}
                 {% else %}
                     <a href="/login/" class="ui-btn-right">Login</a>
                 {% endif %}

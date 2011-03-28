@@ -18,6 +18,15 @@ submitForm = function(_form)
     })
 }
 
+String.prototype.format = function(obj) {
+    var formatted = this;
+    for(i in obj) {
+        formatted = formatted.replace("{" + i + "}", obj[i]);
+    }
+    return formatted;
+};
+
+
 $(document).bind("mobileinit", function(){
       $.mobile.defaultTransition = 'none';
 });

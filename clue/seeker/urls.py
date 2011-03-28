@@ -7,7 +7,7 @@ urlpatterns = patterns('',
     (r'^game/(?P<game_id>[0-9]+)/guess/$', 'seeker.play.guess'),
     (r'^game/(?P<game_id>[0-9]+)/guess_for_cpus/$', 'seeker.play.guess_for_cpus'),
     (r'^game/(?P<game_id>[0-9]+)/quit/$', 'seeker.play.quit'),
-    (r'^game/(?P<game_id>[0-9]+)/clues_for_player/$', 'seeker.play.clues_for_player'),
+    (r'^game/(?P<game_id>[0-9]+)/player/$', 'seeker.play.clues_for_player'),
     (r'^game/(?P<game_id>[0-9]+)/clues/$', 'seeker.play.clues'),
     
     (r'^game/(?P<game_id>[0-9]+)/alerts/$', 'seeker.play.alerts'),

@@ -3,18 +3,17 @@
 
 {% block id %}seeker_game{% endblock %}
 
+{% block header_right %}<a href="/seeker/game/{{ game.id }}/quit/" class="ui-btn-right">Quit</a>{% endblock %}
+
 {% block content %}
 <link rel="stylesheet" href="{{ MEDIA_URL }}/css/game.css" />
 
-{% if message %}<p>{{ message }}</p>{% endif %}
-
-<div id="under_board">
-    <div class="board">Loading...</div>
-</div>
+<div class="board">Loading...</div>
+<div id="board_text"></div>
 
 <script type="text/javascript">
-Game.init({{ game.id }}, $('.board'), '{% media_url %}')
 
+Game.init({{ game.id }}, $('.board'), '{% media_url %}')
 
 </script>
 
@@ -26,5 +25,4 @@ Game.init({{ game.id }}, $('.board'), '{% media_url %}')
     <a href="#" onclick="Game.showGuesser()">Guess</a>
     <a href="#" onclick="Game.investigate()">Investigate</a>
     <!-- <a href="#" onclick="Game.pause()" id="pause">Pause</a> -->
-    <a href="/seeker/game/{{ game.id }}/quit/">Quit</a>
 {% endblock %}

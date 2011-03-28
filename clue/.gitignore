@@ -5,3 +5,4 @@ django.wsgi
 log
 log/*
 assets/avatars/*
+django_memcached
