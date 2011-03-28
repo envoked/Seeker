@@ -240,8 +240,8 @@ Game = {
         try {
             Game.text_el.html(al.text);
         
-            var mark_alert_viewed = $('<a href="#" style="line-height: 1.0em" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + ');">').html("OK")
-            Game.text_el.html('<p>' + al.text + '</p><div data-inline="true"><a href="#" style="line-height: 1.0em" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + ');">OK</a></div>')
+            var mark_alert_viewed = $('<a href="#" style="line-height: 1.0em;" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + ');">').html("OK")
+            Game.text_el.html('<p>' + al.text + '</p><div style="height: 1.0em"><a href="#" style="line-height: 1em;" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + ');">OK</a></div>')
             $('#board_text a').button({inline: true})
         }
         catch(e){}
@@ -256,6 +256,7 @@ Game = {
     {
         if (typeof callback != "function") callback = function() {}
         $.post('/seeker/game/' + Game.id + '/alert/viewed/', {id: alert_id}, callback, 'json')
+        Game.text_el.html("");
     },
     
     investigate: function()
@@ -269,7 +270,7 @@ Game = {
     {
         Game.el.addClass('guessing-player')
         Game.state = "clues_for_player"
-        Game.text_el.html("Select a player to review facts on...")
+        Game.text_el.html("Select a player to review clues about them...")
     },
     
     showGuesser: function()
@@ -283,12 +284,12 @@ Game = {
         {
             Game.guess = {}
             Game.state = 'guessing';
-            Game.el.addClass('guessing-player')
-            Game.text_el.html("Select a player to guess their role and cubicle...")
+            Game.el.addClass('guessing-player');
+            Game.text_el.html("Select a player to guess their role and cubicle...");
         }
         else
         {
-            Game.text_el.html("You must be in your cubeicle to guess.")
+            Game.text_el.html("You must be in your cubicle to guess.");
         }
     },
     
