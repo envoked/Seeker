@@ -103,8 +103,8 @@ def invite_member(request):
     import util
     lobby_link = util.site_url(request) + '/lobby/%d/' % lobby.id
     
-    body = """From: %s <%s>\nTo: Player <%s>\nSubject: Clue!\n\n
-    You're invited to join the seeker game '%s'.
+    body = """From: %s <%s>\nTo: Player <%s>\nSubject: \n\n
+    You're invited to join the Seekr game '%s'.
     
     %s
     """ % (CLUE_GENIE, settings.SMTP_USERNAME, email_address, lobby.name, lobby_link)

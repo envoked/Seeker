@@ -14,7 +14,9 @@ New Game "{{ lobby.name }}"
     Created by <b> {{ lobby.creator.username }}</b> at {{ lobby.created }}
 {% else %}
     <h3>Invite Someone</h3>
-    <label>Email</label><input type="text" id="email"><a href="javascript: Lobby.inviteMember()">Send</a>
+    <label>Email</label><input type="text" id="email">
+    
+    <a href="javascript: Lobby.inviteMember()" data-role="button" data-inline="true" >Send</a>
 {% endif %}
 
 <h3>Members</h3>
