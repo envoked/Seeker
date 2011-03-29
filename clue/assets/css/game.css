@@ -34,7 +34,7 @@ div.board div.inner {
     position: relative;
     width: 100%;
     height: 100%;
-    border: 3px solid #333;
+    border: 3px solid #666;
     z-index: 1;
     background: transparent;
 }
