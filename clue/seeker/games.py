@@ -129,6 +129,7 @@ class BasicRoleGame():
         
 class BoardGame:
     turn_window = 10
+    cpu_window = 10
     
     def __init__(self, game):
         self.game = game
@@ -334,7 +335,7 @@ class BoardGame:
             self.set_cached('min_turns', min_turns)
         
         for cpu in self.game.player_set.filter(user__is_active=False).all():
-            if cpu.turn_set.count() < max_turns:
+            if cpu.turn_set.count() < max_turns + self.cpu_window:
                 ai = AI(cpu)
                 turn = ai.go()
               
