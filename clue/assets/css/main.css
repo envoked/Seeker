@@ -68,7 +68,7 @@ body {
 
 .header h1 { }
 
-.header h1 span { display: inline-block; background: url('../img/logo.png') 0px -5px no-repeat ; overflow: visible; padding-left: 90px; height: 22px; line-height: 28px }
+.header h1 span { display: inline-block; background: url('../img/logo.png') 0px -5px no-repeat ; overflow: visible; height: 22px; line-height: 28px; text-indent: -9999px; }
 
 .toolbar {
     background: #222;
