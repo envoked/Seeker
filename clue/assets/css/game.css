@@ -91,7 +91,7 @@ div.board div.selectable {
 
 
 div.board div.selectable:hover div.inner {
-    border: 3px dashed yellow
+    border: 3px dashed #992632
 }
 
 div.board div.occupied {
@@ -108,7 +108,7 @@ div.board div.your-cubicle div.over {
 
 
 div.board div.your-cubicle div.text-overlay {
-    color:yellow
+    color:#84C2CC
 }
 
 div.board div.you div.inner {
@@ -129,7 +129,7 @@ div.board div.frozen div.over {
 }
 
 div.board div.you div.text-overlay {
-    color: yellow;  
+    color: #84C2CC;  
 }
 
 div.board div.you div.text-overlay-central {
@@ -146,7 +146,7 @@ div.board .tile {
 }
 
 div.guessing-player div.occupied div.inner {
-    border: 3px dashed yellow;
+    border: 3px dashed #992632;
 }
 
 div.guessing-player div.you div.inner {
@@ -155,7 +155,7 @@ div.guessing-player div.you div.inner {
 
 
 div.guessing-cubicle div.a-cubicle div.inner {
-    border: 3px dashed yellow;
+    border: 3px dashed #992632;
 }
 
 div.guessing-cubicle div.your-cubicle div.inner {
