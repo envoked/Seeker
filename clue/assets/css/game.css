@@ -81,8 +81,8 @@ div.board div.selectable div.inner {
 }
 
 div.board div.selectable div.over {
-    background: #DF720A;
-    opacity: 0.2;
+/*    background: #DF720A;
+    opacity: 0.2; */
     cursor: pointer
 }
 
