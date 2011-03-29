@@ -181,11 +181,11 @@ Game = {
                 {
                     td.addClass('your-cubicle selectable')
                     td.append($('<div class="text-overlay br">').html("Your Cubicle"))
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubicle2.png">'))
+                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubeNoWall.png">'))
                 }
                 else if (cubicle)
                 {
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubicle1.png">'))
+                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubeTopRightWall.png">'))
                 }
                 
                 //If there is a player here
