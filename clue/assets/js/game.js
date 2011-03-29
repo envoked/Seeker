@@ -172,7 +172,7 @@ Game = {
                         td.append($('<div class="text-overlay" style="top:2em">').html(owner.user.username))
                     }
                 }else{
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/empty.png">'))
+                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/empty.png" style="opacity:0.6;">'))
                     
                 }
                 
