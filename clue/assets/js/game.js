@@ -495,6 +495,7 @@ GameCell = {
         
         if (target.hasClass('can-move'))
         {
+            
             Game._game.game.player.x = parseInt(target.attr('x'))
             Game._game.game.player.y = parseInt(target.attr('y'))
             Game.redraw()
