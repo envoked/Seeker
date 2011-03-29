@@ -36,7 +36,7 @@ div.board div.inner {
     height: 100%;
     border: 3px solid #333;
     z-index: 1;
-    background-color: #84C2CC;
+    background: transparent;
 }
 
 div.board div.over {
