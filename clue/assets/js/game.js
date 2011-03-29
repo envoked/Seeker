@@ -171,7 +171,11 @@ Game = {
                         var owner = this.getById('players', cubicle.player_id)
                         td.append($('<div class="text-overlay" style="top:2em">').html(owner.user.username))
                     }
+                }else{
+                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/empty.png">'))
+                    
                 }
+                
                 //If the cubicle is yours
                 if (this._game.game.player.cell.x == row && this._game.game.player.cell.y == col)
                 {
