@@ -58,16 +58,23 @@ Lobby = {
         //alert(Lobby.creator);
         $(Lobby.members).each(function(i, member)
         {
-            h = "<li><img class='ui-li-icon small_avatar' src='" + member.image + "' /><span class='text'><b>" + member.user.username + "</b>"
-            h += " at " + member.created;
-            if (User.id == Lobby.creator) {
-                if (member.user.id != Lobby.creator) {
-                    h += " <a href='javascript: Lobby.removeUser("+ member.id +")'>x</a>";
-                }
-            }
             if(User.id == member.user.id) {
-                h += " <a data-rel='dialog' href='/lobby/show_character_picker/"+Lobby.id+"/'>Pick Character</a></span></li>";
+                    h = "<li><img class='ui-li-icon small_avatar' src='" + member.image + "' /><span class='text'><b>" + member.user.username + "</b>"
+                    //h += " at " + member.created;
+                    h += " <a data-rel='dialog' href='/lobby/show_character_picker/"+Lobby.id+"/' style='float: right'>Pick Character</a></span></li>";
             }
+            else if (User.id == Lobby.creator) {
+                
+               
+                    h = "<li data-icon='delete'><img class='ui-li-icon small_avatar' src='" + member.image + "' /><span class='text'><b>" + member.user.username + "</b>"
+                    //h += " at " + member.created;
+                    h += " <a href='javascript: Lobby.removeUser("+ member.id +")'></a>";
+                
+            }
+            else {
+                    h = "<li data-icon='delete'><img class='ui-li-icon small_avatar' src='" + member.image + "' /><span class='text'><b>" + member.user.username + "</b>"
+                    //h += " at " + member.created;
+                }
 
             $('#members').append(h)
             
