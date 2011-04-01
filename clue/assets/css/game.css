@@ -18,7 +18,6 @@ div#board_text {
     color: white;
     padding: 2px;
     text-shadow: none;
-    height: 100px
 }
 
 div.board div.cell {
