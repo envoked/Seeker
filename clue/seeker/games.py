@@ -363,13 +363,13 @@ class BoardGame:
         if cached is None:
             return None
         if 'v' in cached and timeout > (time.time() - int(cached['t'])):
-            self.log("memcached hit: %s=%s" % (field, cached['v']))
+            self.log.info("memcached hit: %s=%s" % (field, cached['v']))
             return cached['v']
         else:
             return None
     
     def set_cached(self, field, value):
-        self.log( "memcached set: %s=%s" % (field, value))
+        self.log.info( "memcached set: %s=%s" % (field, value))
         return cache.set('game_%d_%s' % (self.game.id, field), {'t': int(time.time()),'v': value})
         
     def serialize(self, player):
