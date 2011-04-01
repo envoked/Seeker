@@ -11,6 +11,7 @@ class BasicRoleGame():
     
     def __init__(self, game):
         self.game = game
+        log = get_logger('game')
         self.num_players = game.player_set.count()
         self.num_clues = self.num_players - 1 # Number of clues per player
             
@@ -353,7 +354,7 @@ class BoardGame:
         if not min_turns: min_turns = 0
         return self.turn_window - (player.turn_set.count() - min_turns)
                 
-    def get_cached(self, field, timeout=0):
+    def get_cached(self, field, timeout=20):
         cached = cache.get('game_%d_%s' % (self.game.id, field))
         try:
             time.time() - int(cached['t'])
@@ -362,13 +363,13 @@ class BoardGame:
         if cached is None:
             return None
         if 'v' in cached and timeout > (time.time() - int(cached['t'])):
-            #print "memcached hit: %s=%s" % (field, cached['v'])
+            self.log("memcached hit: %s=%s" % (field, cached['v']))
             return cached['v']
         else:
             return None
     
     def set_cached(self, field, value):
-        #print "memcached set: %s=%s" % (field, value)
+        self.log( "memcached set: %s=%s" % (field, value))
         return cache.set('game_%d_%s' % (self.game.id, field), {'t': int(time.time()),'v': value})
         
     def serialize(self, player):
