@@ -11,7 +11,6 @@ class BasicRoleGame():
     
     def __init__(self, game):
         self.game = game
-        log = get_logger('game')
         self.num_players = game.player_set.count()
         self.num_clues = self.num_players - 1 # Number of clues per player
             
@@ -131,6 +130,7 @@ class BasicRoleGame():
 class BoardGame:
     turn_window = 10
     cpu_window = 10
+    log = get_logger('game')
     
     def __init__(self, game):
         self.game = game
