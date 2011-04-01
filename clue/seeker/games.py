@@ -335,11 +335,8 @@ class BoardGame:
             self.set_cached('min_turns', min_turns)
         
         for cpu in self.game.player_set.filter(user__is_active=False).all():
-<<<<<<< HEAD
+
             if cpu.turn_set.count() < max_turns + self.cpu_window:
-=======
-            if cpu.turn_set.count() < max_turns + 10:
->>>>>>> 69aee4ec02e3ea8aee845677959f2c34b610d8d8
                 ai = AI(cpu)
                 turn = ai.go()
               
