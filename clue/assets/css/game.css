@@ -10,6 +10,7 @@
 
 div.board {
     width: 100%;
+    text-shadow: none;
 }
 
 div#board_text {
@@ -33,9 +34,9 @@ div.board div.inner {
     position: relative;
     width: 100%;
     height: 100%;
-    border: 3px solid #333;
+    border: 3px solid #dedede;
     z-index: 1;
-    background-color: #84C2CC;
+    background: transparent;
 }
 
 div.board div.over {
@@ -80,8 +81,8 @@ div.board div.selectable div.inner {
 }
 
 div.board div.selectable div.over {
-    background: #DF720A;
-    opacity: 0.2;
+/*    background: #DF720A;
+    opacity: 0.2; */
     cursor: pointer
 }
 
@@ -91,7 +92,7 @@ div.board div.selectable {
 
 
 div.board div.selectable:hover div.inner {
-    border: 3px dashed yellow
+    border: 3px dashed #992632
 }
 
 div.board div.occupied {
@@ -108,7 +109,7 @@ div.board div.your-cubicle div.over {
 
 
 div.board div.your-cubicle div.text-overlay {
-    color:yellow
+    color:#84C2CC
 }
 
 div.board div.you div.inner {
@@ -129,7 +130,7 @@ div.board div.frozen div.over {
 }
 
 div.board div.you div.text-overlay {
-    color: yellow;  
+    color: #84C2CC;  
 }
 
 div.board div.you div.text-overlay-central {
@@ -146,7 +147,7 @@ div.board .tile {
 }
 
 div.guessing-player div.occupied div.inner {
-    border: 3px dashed yellow;
+    border: 3px dashed #992632;
 }
 
 div.guessing-player div.you div.inner {
@@ -155,7 +156,7 @@ div.guessing-player div.you div.inner {
 
 
 div.guessing-cubicle div.a-cubicle div.inner {
-    border: 3px dashed yellow;
+    border: 3px dashed #992632;
 }
 
 div.guessing-cubicle div.your-cubicle div.inner {

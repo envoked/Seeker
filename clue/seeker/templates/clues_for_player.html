@@ -10,9 +10,9 @@
 <h1>{{ for_player.user.username }}</h1>
 <img src="{{ for_player.image.url }}" />
 
-<h3>Role</h3>
+<h3 style="margin-bottom: 2px">Role</h3>
 {% if role_positive %}
-    <b title="{{ role_positive.0 }}">{{ role_postitive.0.role }}</b>
+    <h2><b title="{{ role_positive.0 }}">{{ role_postitive.0.role }}</b></h2>
 {% else %}
     {% if role_negative.count > 0 %}
         {% for role in role_negative.all %}
@@ -21,7 +21,11 @@
     {% endif %}
 {% endif %}
 
-<h3>Cubicle</h3>
+<!--{% for r in all_roles %}
+        <b>{{ r }}</b>
+{% endfor %}-->
+
+<h3 style="margin-top: 15px; margin-bottom: 2px">Cubicle</h3>
 {% if cell_positive %}
     <b title="{{ cell_positive.0 }}">{{ cell_positive.0.cell.x }}, {{ cell_positive.0.cell.y }}</b>
 {% else %}

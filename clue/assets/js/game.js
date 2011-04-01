@@ -172,17 +172,21 @@ Game = {
                         var owner = this.getById('players', cubicle.player_id)
                         td.append($('<div class="text-overlay" style="top:2em">').html(owner.user.username))
                     }
+                }else{
+                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/empty.png" style="opacity:0.6;">'))
+                    
                 }
+                
                 //If the cubicle is yours
                 if (this._game.game.player.cell.x == row && this._game.game.player.cell.y == col)
                 {
                     td.addClass('your-cubicle selectable')
                     td.append($('<div class="text-overlay br">').html("Your Cubicle"))
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubicle2.png">'))
+                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubeNoWall.png">'))
                 }
                 else if (cubicle)
                 {
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubicle1.png">'))
+                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubeTopRightWall.png">'))
                 }
                 
                 //If there is a player here
@@ -496,6 +500,7 @@ GameCell = {
         
         if (target.hasClass('can-move'))
         {
+            
             Game._game.game.player.x = parseInt(target.attr('x'))
             Game._game.game.player.y = parseInt(target.attr('y'))
             Game.redraw()

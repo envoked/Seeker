@@ -335,7 +335,11 @@ class BoardGame:
             self.set_cached('min_turns', min_turns)
         
         for cpu in self.game.player_set.filter(user__is_active=False).all():
+<<<<<<< HEAD
             if cpu.turn_set.count() < max_turns + self.cpu_window:
+=======
+            if cpu.turn_set.count() < max_turns + 10:
+>>>>>>> 69aee4ec02e3ea8aee845677959f2c34b610d8d8
                 ai = AI(cpu)
                 turn = ai.go()
               
@@ -352,7 +356,7 @@ class BoardGame:
         if not min_turns: min_turns = 0
         return self.turn_window - (player.turn_set.count() - min_turns)
                 
-    def get_cached(self, field, timeout=10):
+    def get_cached(self, field, timeout=0):
         cached = cache.get('game_%d_%s' % (self.game.id, field))
         try:
             time.time() - int(cached['t'])

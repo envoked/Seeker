@@ -390,7 +390,6 @@ class Clue(models.Model):
         clue_str = clue_str.replace("you's", "your")
         clue_str = clue_str.replace("you is", "you're")
         
-
         return clue_str
         
     def serialize(self):

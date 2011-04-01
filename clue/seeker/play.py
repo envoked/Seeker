@@ -141,7 +141,22 @@ def clues_for_player(request, game_id):
     
     role_negative = RoleFact.objects.filter(fact__neg=True, clue__player=player, fact__player=for_player).all()
     cell_negative = CellFact.objects.filter(fact__neg=True, clue__player=player, fact__player=for_player).all()
-    print "wetwetwtw"
+
+    # An attempt to display a list of all possible roles for the player.
+    # Known negative facts will make their corresponding role crossed out in the list
+    # Known positive facts will make thier corresponding role emphasized in the list
+    #all_roles = Role.objects.all()
+    #all_roles = list(all_roles)    
+    #for rneg in role_negative:
+    #    try:        
+    #        all_roles.remove(rneg.role)
+    #    except ValueError:
+    #        continue
+    #for rpos in role_positive:
+    #    try:
+    #        all_roles.remove(rpos.role)
+    #    except:
+    #        continue
     return locals()
 
     
