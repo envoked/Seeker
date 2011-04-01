@@ -131,7 +131,7 @@ def clues(request, game_id):
 def clues_for_player(request, game_id):
     game = Game.objects.get(id=game_id)
     for_player = Player.objects.get(id=request.REQUEST['player'])
-    print for_player
+ 
     player = get_object_or_404(Player,
         user = request.user,
         game = game

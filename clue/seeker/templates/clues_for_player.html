@@ -27,7 +27,7 @@
 
 <h3 style="margin-top: 15px; margin-bottom: 2px">Cubicle</h3>
 {% if cell_positive %}
-    <b title="{{ cell_positive.0 }}">{{ cell_positive.0.cell.x }}, {{ cell_positive.0.cell.y }}</b>
+    <b title="{{ cell_positive.0 }}">{{ cell_positive.0 }}</b>
 {% else %}
     {% if cell_negative.count > 0 %}
         {% for cell in cell_negative.all %}

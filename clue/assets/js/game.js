@@ -493,6 +493,7 @@ GameCell = {
                 //Forces reload of aJAX content
                 $('#clues_for_player').remove()
                 $.mobile.changePage('/seeker/game/' + Game.id + '/player/?player=' + player_id)
+                Game.clearState()
             }
  
             return false;
