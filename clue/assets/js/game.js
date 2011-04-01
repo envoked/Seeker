@@ -116,7 +116,8 @@ Game = {
                 if (Game._game.turns_allowed <= 0)
                 {
                     Game.state = "frozen"
-                    Game.text_el.html("Sorry, you must wait {turns} turns for other players to catch up.".format({turns: Math.abs(Game._game.turns_allowed)}))
+                    Game.text_el.html("Please wait other players to catch up")
+                    //Game.text_el.html("Please wait other players to catch up.".format({turns: Math.abs(Game._game.turns_allowed)}))
                 }
                 else if (Game.state == "frozen")
                 {
@@ -206,7 +207,7 @@ Game = {
                     
                     if (Game._game.turns_allowed <= 0)
                     {
-                        td.append($('<div class="text-overlay text-overlay-central">').html("Wait " + Math.abs(Game._game.turns_allowed)))
+                        td.append($('<div class="text-overlay text-overlay-central">').html("Waiting..."))
                         td.addClass('frozen')
                     }
                     

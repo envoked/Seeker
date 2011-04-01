@@ -28,15 +28,17 @@ String.prototype.format = function(obj) {
 
 
 $(document).bind("mobileinit", function(){
-      $.mobile.defaultTransition = 'none';
+      //$.mobile.defaultTransition = 'none';
+      $.mobile.ajaxFormsEnabled = false
 });
-
+/*
 $('#page').live('pagebeforeshow', function(event, ui)
 {
     //$('#seeker').remove()
     //$($('.ui-page')[0]).remove()
     //$('#' + ui.nextPage.attr("id")).remove()
-}) 
+})
+*/
 
 var fixgeometry = function() {
     console.log('fixgeo')

@@ -204,7 +204,8 @@ def login(request):
             if user.is_active:
                 auth.login(request, user)
                 if user.profile_set.count() == 0:
-                    return HttpResponseRedirect('/userprofile/profile/edit/personal/?message=please_create')
+                    #return HttpResponseRedirect('/userprofile/profile/edit/personal/?message=please_create')
+                    pass
                 if 'next' in request.POST:
                     return HttpResponseRedirect(request.POST['next'])
                 return HttpResponseRedirect("/lobby/home/")
