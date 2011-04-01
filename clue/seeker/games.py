@@ -328,11 +328,11 @@ class BoardGame:
         min_turns = self.get_cached('min_turns')
 
         if not max_turns:
-            max_turns = self.game.player_set.select_related('turn').annotate(turns=Count('turn')).aggregate(Max('turns'))['turns__max']
+            max_turns = self.game.player_set.filter(is_current=True).select_related('turn').annotate(turns=Count('turn')).aggregate(Max('turns'))['turns__max']
             self.set_cached('max_turns', max_turns)
         
         if not min_turns:
-            min_turns = self.game.player_set.select_related('turn').annotate(turns=Count('turn')).aggregate(Min('turns'))['turns__min']
+            min_turns = self.game.player_set.filter(is_current=True).select_related('turn').annotate(turns=Count('turn')).aggregate(Min('turns'))['turns__min']
             self.set_cached('min_turns', min_turns)
         
         for cpu in self.game.player_set.filter(user__is_active=False).all():
