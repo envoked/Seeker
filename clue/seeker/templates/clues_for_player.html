@@ -12,7 +12,7 @@
 
 <h3 style="margin-bottom: 2px">Role</h3>
 {% if role_positive %}
-    <h2><b title="{{ role_positive.0 }}">{{ role_postitive.0 }}</b></h2>
+    <h2><b title="{{ role_positive.0 }}">{{ role_positive.0 }}</b></h2>
 {% else %}
     {% if role_negative.count > 0 %}
         {% for role in role_negative.all %}
