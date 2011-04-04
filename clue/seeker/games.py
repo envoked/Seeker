@@ -337,6 +337,8 @@ class BoardGame:
         
         for cpu in self.game.player_set.filter(user__is_active=False).all():
 
+            cpu_turns = cpu.turn_set.count()
+            if cpu_turns is None: cpu_turns = 0
             if cpu.turn_set.count() < max_turns + self.cpu_window:
                 ai = AI(cpu)
                 turn = ai.go()
