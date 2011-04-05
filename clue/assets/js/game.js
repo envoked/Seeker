@@ -313,14 +313,6 @@ Game = {
         $('#page_guesser').remove()
         $.mobile.changePage({url: '/seeker/game/' + Game.id + '/guesser/', type: 'post', data: {player: Game.guess.player}})
         Game.el.removeClass('guessing-player')
-        
-        /*
-        $.post('/seeker/game/' + Game.id + '/guesser/', {player: Game.guess.player},
-            function(data) {
-                Game.el.removeClass('guessing-player')
-                lightbox(data)
-            })
-        */
     },
     
     showClues: function()
@@ -328,7 +320,8 @@ Game = {
         $.post('/seeker/game/' + this.id + '/clues/', {},
             function(data) {
                 showView(data, {left_button: "< Game"})
-                $('#clues').show()
+                $('#clues').show();
+                $('#homeButton').hide();
             })
     },
     
@@ -350,6 +343,7 @@ Game = {
     
     showBoard: function()
     {
+        $('#homeButton').show()
         $('#clues').hide()
         $('#guesser').hide()
     },

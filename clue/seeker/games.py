@@ -344,9 +344,12 @@ class BoardGame:
             min_turns = self.game.player_set.filter(is_current=True).select_related('turn').annotate(turns=Count('turn')).aggregate(Min('turns'))['turns__min']
             self.set_cached('min_turns', min_turns)
         
+        #For each CPU
         for cpu in self.game.player_set.filter(user__is_active=False).all():
-
-            if not max_turns or cpu.turn_set.count() < max_turns + self.cpu_window:
+            cpu_turns = cpu.turn_set.count()
+            if cpu_turns is None: cpu_turns = 0
+            #If the cpu has less turns than the maximum active player, move
+            if not max_turns or cpu_turns < max_turns + self.cpu_window:
                 ai = AI(cpu)
                 turn = ai.go()
               
