@@ -320,7 +320,6 @@ Game = {
                 showView(data, {left_button: "< Game"})
                 $('#clues').show();
                 $('#homeButton').hide();
-                alert("WOO");
             })
     },
     
