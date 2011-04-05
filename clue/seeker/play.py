@@ -258,6 +258,16 @@ def guess(request, game_id):
     
     if player.unkown_facts() == 0 and player.is_current:
         print "Player finished: %s" % str(player)
+        #Tell this player they finished
+        alert = Alert(
+            player = player,
+            type = "message",
+            text = "You solved the puzzle!, waiting for other players to finish."
+        )
+        alert.content_type = ContentType.objects.get_for_model(guess)
+        alert.object_id = guess.id
+        alert.save()
+    
         for other in game.player_set.exclude(pk=player.id).all():
             consolation_guess = other.guess_set.filter(other_player=player, correct=True).all()
             if len(consolation_guess) == 0:
@@ -266,11 +276,21 @@ def guess(request, game_id):
                     player = other,
                     other_player = player,
                     correct = True,
-                    points = 0,
+                    tally = False,
                     role = player.playerrole.role,
                     cell = player.playercell,
                 )
                 consolation_guess.save()
+                
+                #Tell each other player that this player finished
+                alert = Alert(
+                    player = other,
+                    type = "message",
+                    text = "%s solved the puzzle, wait for other players to finish." % (player.user.username)
+                )
+                alert.content_type = ContentType.objects.get_for_model(guess)
+                alert.object_id = guess.id
+                alert.save()
         
         player.is_current = False
         player.x = player.playercell.x

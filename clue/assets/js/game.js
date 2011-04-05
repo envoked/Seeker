@@ -97,8 +97,6 @@ Game = {
                     }
                     
                     Game.state = 'complete'
-                    Game.pause()
-                    return;
                 }
                 
                 //Only active games now

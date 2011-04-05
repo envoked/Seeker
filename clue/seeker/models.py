@@ -342,6 +342,7 @@ class Guess(models.Model):
     role = models.ForeignKey(Role)
     cell = models.ForeignKey(Cell)
     points = models.IntegerField(null=True)
+    tally = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
 
 class Ranking(models.Model):

@@ -250,20 +250,12 @@ class BoardGame:
             
         self.game.ranking_set.all().delete()
             
-        for player in self.game.player_set.all():
-            
-            if player.is_current:
-                endgame_alert = Alert(
-                    player = player,
-                    type = "message",
-                    text = "The game is over"
-                )
-                endgame_alert.save()
-                
-            total_points = Guess.objects.filter(player=player, points=None).annotate(total_points=Sum('points')).aggregate(Sum('points'))
+        for player in self.game.player_set.all():                
+            total_points = Guess.objects.filter(player=player, tally=True).annotate(total_points=Sum('points')).aggregate(Sum('points'))['points__sum']
+            if not total_points: total_points = 0
             
             player.ranking = Ranking(
-                total_points = total_points['points__sum'],
+                total_points = total_points,
                 game = self.game
             )
             player.ranking.save()
@@ -275,6 +267,14 @@ class BoardGame:
             ranking.rank = i
             ranking.save()
             i+=1
+            
+        for player in self.game.player_set.all():
+            endgame_alert = Alert(
+                player = player,
+                type = "message",
+                text = "The game is over, you got %s place with %d points." % (player.ranking.human_rank(), player.ranking.total_points) 
+            )
+            endgame_alert.save()
             
     
     def guess(self, user, other_user, role):
