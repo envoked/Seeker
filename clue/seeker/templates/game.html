@@ -3,7 +3,14 @@
 
 {% block id %}seeker_game{% endblock %}
 
-{% block header_right %}<a href="/seeker/game/{{ game.id }}/quit/" class="ui-btn-right">Quit</a>{% endblock %}
+{% block header_right %}
+    {% if game.is_current and player.is_current %}
+    <a href="/seeker/game/{{ game.id }}/quit/" class="ui-btn-right">Quit</a>
+    {% else %}
+    <a href="/lobby/home/" class="ui-btn-right">Home</a>
+    {% endif %}
+
+{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="{{ MEDIA_URL }}/css/game.css" />
@@ -21,7 +28,7 @@ Game.init({{ game.id }}, $('.board'), '{% media_url %}')
 
 {% block toolbar %}
     <a href="#" onclick="Game.cluesForPlayer()">Clues</a>
-    <a id="show_alerts" href="/seeker/game/{{ game.id }}/alerts/" data-rel="dialog">Alerts</a>
+    <a id="show_alerts" onclick="Game.showAlerts()">Alerts</a>
     <a href="#" onclick="Game.showGuesser()">Guess</a>
     <a href="#" onclick="Game.investigate()">Investigate</a>
     <!-- <a href="#" onclick="Game.pause()" id="pause">Pause</a> -->

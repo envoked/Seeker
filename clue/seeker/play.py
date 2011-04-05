@@ -99,7 +99,7 @@ def game(request, game_id):
         alerts_now = player.alert_set.filter(viewed=None).count()
         cache.set('player_%d_alerts' % alerts_now, alerts_now)
 
-        game_dict['unviewed_alerts'] = serialize_qs(player.alert_set.filter(viewed=None).all())
+        game_dict['unviewed_alerts'] = serialize_qs(player.alert_set.filter(viewed=None).order_by('-created').all())
         game_dict['turns_allowed'] = bg.turns_allowed(player)
         
         return HttpResponse(simplejson.dumps(game_dict), content_type='application/json')

@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% block header %}Alerts ({{ unviewed_alerts.count }}){% endblock %}
-
+{% block header_right %}{% endblock %}
+{% block id %}page_alerts{% endblock %}
 {% block page-data-role %}dialog{% endblock %}
 
 {% block content %}
@@ -9,7 +10,7 @@
 <ul data-role="listview" data-inset="true">
     <li data-role="list-divider" role="heading">New Alerts ({{ unviewed_alerts.count }})</li>
 {% for alert in unviewed_alerts.all %}
-    <li class="alert-unviewed" onclick="Game.viewedAlert({{ alert.id }}, Game.showAlerts)">{{ alert }} {{ alert.created|timesince }} ago</li>
+    <li class="alert-unviewed" onclick="Game.viewedAlert({{ alert.id }}, Game.showAlerts); $(this).removeClass('alert-unviewed');">{{ alert }} {{ alert.created|timesince }} ago</li>
 {% endfor %}
 </ul>
 

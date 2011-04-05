@@ -25,12 +25,15 @@ New Game "{{ lobby.name }}"
     <!-- filled in by Lobby.js -->
 </ul>
 
-<div data-role="controlgroup" data-type="horizontal">
 {% if user.id == lobby.creator.id %}
-<a href="/lobby/start_game/{{ lobby.id }}/" data-role="button">Start Game</a>
-<a href="javascript: Lobby.addCpuUser()" data-role="button">Add CPU User</a>
-{% endif %}
+<div data-role="controlgroup" data-type="horizontal">
+    <form action="/lobby/start_game/{{ lobby.id }}/" method="post" id="start_game_form" data-ajax="false">
+        <input type="submit" data-role="button" data-ajax="false" value="Start Game" />
+        <a href="javascript: Lobby.addCpuUser()" data-role="button">Add CPU User</a>
+    </form>
 </div>
+{% endif %}
+
 
 <script>
 jQuery.extend(Lobby, {{ lobby_json|safe }})

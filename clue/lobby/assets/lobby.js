@@ -61,7 +61,7 @@ Lobby = {
             if(User.id == member.user.id) {
                     h = "<li><img class='ui-li-icon small_avatar' src='" + member.image + "' /><span class='text'><b>" + member.user.username + "</b>"
                     //h += " at " + member.created;
-                    h += " <a data-rel='dialog' href='/lobby/show_character_picker/"+Lobby.id+"/' style='float: right'>Pick Character</a></span></li>";
+                    h += " <a data-rel='dialog' href='/lobby/show_character_picker/"+Lobby.id+"/' style='float: right'>Avatar</a></span></li>";
             }
             else if (User.id == Lobby.creator) {
                 

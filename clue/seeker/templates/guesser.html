@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% block header %}Guess Role{% endblock %}
-
+{% block header_right %}{% endblock %}
+{% block id %}page_guesser{% endblock %}
 {% block page-data-role %}dialog{% endblock %}
 
 {% block content %}
@@ -9,14 +10,14 @@
 {% if game.is_current %}
     {% if other_players.count > 0 %}
     <img src="{{ MEDIA_URL }}/{{ other_player.image }}" />
-    <h4>{{ other_player.user.username }}</h4>
+    <h4>What is {{ other_player.user.username }}'s role?</h4>
 
-        <select id="role">
+        <ul id="role" data-role="listview" data-inset="true" data-theme="d">
             {% for player_role in roles %}
-            <option value="{{ player_role.role.id }}">{{ player_role.role.name }}</option>
+            <li onclick="Game.guessCubicle('{{ player_role.role.id }}'); Game.text_el.html('Select a cubicle to submit your guess...'); $('.ui-dialog').dialog('close')">{{ player_role.role.name }}</li>
             {% endfor %}
-        </select>
-        <a href="#" data-role="button" onclick="Game.guessCubicle($('#role').val()); $('.ui-dialog:last').dialog('close')">Ok</a>
+        </ul>
+       
     {% else %}
     You know everything!
     {% endif %}

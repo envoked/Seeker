@@ -252,7 +252,7 @@ class PlayerCell(Cell):
     
     def __str__(self):
         try:
-            return '%s at %d, %s' % (self.player, self.x, self.y)
+            return '%s at (%d, %s)' % (self.player, self.x, self.y)
         except:
             return '%s at ?' % str(self.player)
             
@@ -300,9 +300,9 @@ class CellFact(Fact):
     
     def __str__(self):
         if self.neg:
-            return "%s's cell is not %d, %d" % (str(self.player.user.username), self.cell.x, self.cell.y)
+            return "%s's cell is not (%d, %d)" % (str(self.player.user.username), self.cell.x, self.cell.y)
         else:
-            return "%s's cell is %d, %d" % (str(self.player.user.username), self.cell.x, self.cell.y)
+            return "%s's cell is (%d, %d)" % (str(self.player.user.username), self.cell.x, self.cell.y)
     
 class Alert(models.Model):
     player = models.ForeignKey(Player)
@@ -333,7 +333,7 @@ class Alert(models.Model):
         return text
     
     def __str__(self):
-        return '%s (%s)' % (self.text, str(self.subject))
+        return '%s' % (self.text)
 
 class Guess(models.Model):
     player = models.ForeignKey(Player)

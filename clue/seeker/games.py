@@ -251,8 +251,17 @@ class BoardGame:
         self.game.ranking_set.all().delete()
             
         for player in self.game.player_set.all():
+            
+            if player.is_current:
+                endgame_alert = Alert(
+                    player = player,
+                    type = "message",
+                    text = "The game is over"
+                )
+                endgame_alert.save()
+                
             total_points = Guess.objects.filter(player=player, points=None).annotate(total_points=Sum('points')).aggregate(Sum('points'))
-            print total_points
+            
             player.ranking = Ranking(
                 total_points = total_points['points__sum'],
                 game = self.game
@@ -337,7 +346,7 @@ class BoardGame:
         
         for cpu in self.game.player_set.filter(user__is_active=False).all():
 
-            if cpu.turn_set.count() < max_turns + self.cpu_window:
+            if not max_turns or cpu.turn_set.count() < max_turns + self.cpu_window:
                 ai = AI(cpu)
                 turn = ai.go()
               

@@ -12,6 +12,9 @@ Game = {
     guess: {},
     has_loaded_once: false,
     _text_el: 'board_text',
+    turn_window: 10,
+    active: true, //Is Player awake?
+    player_active: true,//Is Player still current?
     
     init: function(id, el, media_url)
     {
@@ -44,6 +47,7 @@ Game = {
             console.log("Going to sleep...")
             Game.pause()
         }
+        
     },
     
     /*alled to update the game automatically (no params) or to take a turn
@@ -76,6 +80,12 @@ Game = {
                 Game.updating = false
                 Game.last_update = new Date()
 
+                if (Game._game.game.player.unkown_facts == 0)
+                {
+                    if (Game.state != 'complete') Game.text_el.html("You know everything")
+                    Game.player_active = false;
+                }
+
                 if (Game._game.complete && Game.state != 'complete')
                 {
                     if (Game.has_loaded_once)
@@ -88,12 +98,12 @@ Game = {
                     
                     Game.state = 'complete'
                     Game.pause()
+                    return;
                 }
-
-                if (Game._game.game.player.unkown_facts == 0)
-                {
-                    if (Game.state != 'complete') Game.text_el.html("You know everything")
-                    Game.pause()
+                
+                //Only active games now
+                if (Game._game.turns_allowed >= Game.turn_window && Game.has_loaded_once) {
+                    Game.text_el.html("Other players are waiting on you, move!")
                 }
 
                 if (Game._game.new_alerts)
@@ -240,13 +250,12 @@ Game = {
         Game.text_el.html("Coming when Help documentation is written...");
     },
     
+    //Show one alert under board
     showAlert: function(al)
     {
-        try {
-            Game.text_el.html(al.text);
-        
+        try {        
             var mark_alert_viewed = $('<a href="#" style="line-height: 1.0em;" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + ');">').html("OK")
-            Game.text_el.html('<p>' + al.text + '</p><div style="height: 1.0em"><a href="#" style="line-height: 1em;" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + ');">OK</a></div>')
+            Game.text_el.html('<div class="alert"><p>' + al.text + '</p><div style="height: 1.0em"><a href="#" style="line-height: 1em;" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + ');">OK</a></div><br style="clear:both" /></div>')
             $('#board_text a').button({inline: true})
         }
         catch(e){}
@@ -254,7 +263,8 @@ Game = {
     
     showAlerts: function(data)
     {
-        $.mobile.changePage('/seeker/' + Game.id + '/alerts/', "none", false, true)
+        $('#page_alerts').remove()
+        $.mobile.changePage('/seeker/game/' + Game.id + '/alerts/', "none", false, true)
     },
     
     viewedAlert: function(alert_id, callback)
@@ -300,8 +310,10 @@ Game = {
     
     showRoleGuesser: function()
     {
-        $.mobile.changePage({url: '/seeker/game/' + Game.id + '/guesser/', type: 'post', data: {player: Game.guess.player}}, "slide", false, false)
+        $('#page_guesser').remove()
+        $.mobile.changePage({url: '/seeker/game/' + Game.id + '/guesser/', type: 'post', data: {player: Game.guess.player}})
         Game.el.removeClass('guessing-player')
+        
         /*
         $.post('/seeker/game/' + Game.id + '/guesser/', {player: Game.guess.player},
             function(data) {
@@ -432,6 +444,10 @@ GameCell = {
   
     cellClick: function(evt)
     {
+        if (!Game.player_active) {
+            return false;
+        }
+        
         if (!Game.active)
         {
             console.log("Waking up...")

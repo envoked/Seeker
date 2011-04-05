@@ -50,7 +50,7 @@ def home(request):
 def join(request):
     context['user'] = request.user
     one_hour_ago = datetime.datetime.now() - timedelta(hours=1)
-    lobbies = Lobby.objects.filter(created__gte=one_hour_ago).all()
+    lobbies = Lobby.objects.filter(created__gte=one_hour_ago, game=None).order_by('-created').all()
     
     context.update(locals())
     return context

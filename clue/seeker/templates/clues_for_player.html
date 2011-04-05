@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block header %}Clues{% endblock %}
-
+{% block header_right %}{% endblock %}
 {% block id %}clues_for_player{% endblock %}
 {% block page-data-role %}dialog{% endblock %}
 
@@ -12,7 +12,7 @@
 
 <h3 style="margin-bottom: 2px">Role</h3>
 {% if role_positive %}
-    <h2><b title="{{ role_positive.0 }}">{{ role_positive.0 }}</b></h2>
+    <b style="color: green" title="{{ role_positive.0 }}">{{ role_positive.0 }}</b>
 {% else %}
     {% if role_negative.count > 0 %}
         {% for role in role_negative.all %}
@@ -27,7 +27,7 @@
 
 <h3 style="margin-top: 15px; margin-bottom: 2px">Cubicle</h3>
 {% if cell_positive %}
-    <b title="{{ cell_positive.0 }}">{{ cell_positive.0 }}</b>
+    <b style="color: green" title="{{ cell_positive.0 }}">{{ cell_positive.0 }}</b>
 {% else %}
     {% if cell_negative.count > 0 %}
         {% for cell in cell_negative.all %}

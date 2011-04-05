@@ -85,12 +85,12 @@ body {
 }
 
 .portrait, .portrait .ui-page {
-    min-height: 460px;
+    /*min-height: 460px;*/
 }
 
 /* General Styles */
 h1{
-	padding:0px 18px 0px 0px;		
+    padding:0px 18px 0px 0px;		
 }
 
 h1, h2, h3 {
@@ -219,6 +219,7 @@ form {
 
 #members li .text {
     margin-left: 32px;
+    
 }
 
 #avatar_picker {

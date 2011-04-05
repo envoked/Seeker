@@ -28,8 +28,7 @@ String.prototype.format = function(obj) {
 
 
 $(document).bind("mobileinit", function(){
-      //$.mobile.defaultTransition = 'none';
-      $.mobile.ajaxFormsEnabled = false
+      $.mobile.defaultTransition = 'none';
 });
 /*
 $('#page').live('pagebeforeshow', function(event, ui)

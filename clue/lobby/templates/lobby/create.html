@@ -9,7 +9,7 @@ New Game
 {% endblock %}
 
 {% block content %}
-<form action="/lobby/create/" method="POST">
+<form action="/lobby/create/" method="POST" data-ajax="false">
     {{ create_lobby_form.as_p }}
 
     {% if char_images %}
