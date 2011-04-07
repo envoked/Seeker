@@ -187,7 +187,7 @@ Game = {
                         td.append($('<div class="text-overlay" style="top:2em">').html(owner.user.username))
                     }
                 }else{
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/empty.png" style="opacity:0.6;">'))
+                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/empty.png" style="opacity:0.8;">'))
                     
                 }
                 
@@ -533,7 +533,7 @@ GameCell = {
 function assign_player_avatar(element, player) {
     //element.append($('<img class="tile" src="' + Game.media_url + 'img/char1.png">'))
     //alert(player.user.username)
-    element.append($('<img class="tile" src="' + player.image + '" />'));
+    element.append($('<img class="char tile" src="' + player.image + '" />'));
 }
 
 function show_alert(text) {
