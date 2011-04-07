@@ -218,7 +218,7 @@ def login(request):
     
 def logout(request):
     auth.logout(request)
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect('/lobby/home/')
 
 def pick_character_for_player(request, lobby_id):
     if request.method == 'POST':
