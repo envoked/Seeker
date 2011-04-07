@@ -385,9 +385,13 @@ class BoardGame:
         return cache.set('game_%d_%s' % (self.game.id, field), {'t': int(time.time()),'v': value})
         
     def serialize(self, player):
+        players_role = PlayerRole.objects.get(player=player)
+        print players_role.role
+
         game_dict = expand(self.game)
         game_dict['player'] = expand(player)
         game_dict['player']['cell'] = expand(player.playercell)
+        game_dict['player']['role'] = expand(players_role.role)
         game_dict['player']['cell']['player_id'] = player.id
         game_dict['player']['user'] = expand(player.user)
         game_dict['player']['unkown_facts'] = player.unkown_facts()

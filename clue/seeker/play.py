@@ -29,7 +29,7 @@ def game(request, game_id):
         message = "You are no longer active in this game."
         show_board = False
     
-    turn = Turn(
+    turn = Turn (
         player = player
     )        
 
@@ -108,7 +108,7 @@ def game(request, game_id):
         'game': game,
         'player': player,
         'show_board': show_board,
-        'message': message
+        'message': message,
     }
 
     return context
