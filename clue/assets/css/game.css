@@ -141,8 +141,9 @@ div.board div.you div.text-overlay-central {
 div.board .tile {
     position: absolute;
     z-index: 8;
-    width: 100%;
-    height: 100%
+    width: 80%;
+    height: 80%;
+    margin: 10%;
 }
 
 div.guessing-player div.occupied div.inner {
