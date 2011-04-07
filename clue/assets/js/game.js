@@ -24,6 +24,7 @@ Game = {
         this.media_url = media_url;
         this.messages_button = $('#show_messages')
         Game.interval_id = setInterval(Game.busyLoop, Game.busy_interval)
+        
     },
     
     //LB - The game needs to be smart about refreshing itself
@@ -79,7 +80,12 @@ Game = {
                 Game._game = data
                 Game.updating = false
                 Game.last_update = new Date()
-
+                
+                if(!Game.has_loaded_once) {
+                    role = Game._game.game.player.role.name;
+                    show_alert("Shhhh, your role is the: " + role);
+                }                
+            
                 if (Game._game.game.player.unkown_facts == 0)
                 {
                     if (Game.state != 'complete') Game.text_el.html("You know everything")
@@ -532,7 +538,7 @@ function assign_player_avatar(element, player) {
 
 function show_alert(text) {
     text = text.replace(/ /g, "_");
-    $("#content").append("<a id='open_dialog' style='display: none' data-rel='dialog' href='/seeker/game/show_notification/"+text+"'>open</a>");
+    $("body").append("<a id='open_dialog' style='display: none' data-rel='dialog' href='/seeker/game/show_notification/"+text+"'>open</a>");
     $("#open_dialog").click();
 }
 
