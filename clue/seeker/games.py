@@ -247,23 +247,13 @@ class BoardGame:
         if not min_turns: min_turns = 0
         return self.turn_window - (player.turn_set.count() - min_turns)
                 
-    def get_cached(self, field, timeout=20):
+    def get_cached(self, field):
         cached = cache.get('game_%d_%s' % (self.game.id, field))
-        try:
-            time.time() - int(cached['t'])
-        except:
-            pass
-        if cached is None:
-            return None
-        if 'v' in cached and timeout > (time.time() - int(cached['t'])):
-            self.log.info("memcached hit: %s=%s" % (field, cached['v']))
-            return cached['v']
-        else:
-            return None
+        return cached
     
-    def set_cached(self, field, value):
-        self.log.info( "memcached set: %s=%s" % (field, value))
-        return cache.set('game_%d_%s' % (self.game.id, field), {'t': int(time.time()),'v': value})
+    def set_cached(self, field, value, timeout=20):
+        self.log.info("memcached set: %s=%s / %d" % (field, value, timeout))
+        return cache.set('game_%d_%s' % (self.game.id, field), value, timeout)
 
     def serialize(self, player, firsttime=False):
         game_dict = {}
