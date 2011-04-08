@@ -58,7 +58,7 @@ MIDDLEWARE_CLASSES = (
     'facebook.djangofb.FacebookMiddleware',
     'facebookconnect.middleware.FacebookConnectMiddleware',
     'lb.util.AJAXSimpleExceptionResponse',
-    #'lb.middleware.SlowQueryLogMiddleware'
+    'lb.middleware.SlowQueryLogMiddleware',
     'lb.middleware.ConsoleExceptionMiddleware'
     
 )

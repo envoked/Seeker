@@ -11,7 +11,9 @@ from django.utils import simplejson
 from lobby.models import *
 from lobby import *
 from games import *
-from lb.util import expand, serialize_qs
+from lb.util import expand, serialize_qs, get_logger
+
+log = get_logger("game")
 
 @login_required
 @render_to('game.html')
@@ -40,12 +42,14 @@ def game(request, game_id):
 
         if bg.is_over():
             game_dict["complete"] = True
+            
+        extra_data = {}
 
         if 'move' in request.POST:
             move_coords = request.POST['move']
             x, y = move_coords.split(',')
-            print "NEW LOCATION %s , %s" % (x, y)
-            print "PLAYER LOCATION %s , %s" % (player.x, player.y)  
+            #print "NEW LOCATION %s , %s" % (x, y)
+            #print "PLAYER LOCATION %s , %s" % (player.x, player.y)  
             
             cells = game.get_player_cells_within(int(x), int(y), 0)
             if cells:
@@ -63,19 +67,17 @@ def game(request, game_id):
                         object_id = new_clue.id
                     )
                     alert.save()
-                    game_dict['new_alerts'] = [expand(alert)]
+                    extra_data['new_alerts'] = [expand(alert)]
                     
             try:
                 player.move_to(x, y)
                 turn.action = 'move'
                 turn.params = move_coords
-                game_dict['game'] = bg.serialize(player)
             except ValueError:
                 print "Too late move: %s" % (move_coords)
-        else:
-            bg.move_for_cpus()
             
-        if 'investigate' in request.POST:
+            
+        elif 'investigate' in request.POST:
             investigating_player_id = request.POST['investigate']
             investigating_player = Player.objects.get(id=investigating_player_id, game=game)
             new_clue = player.investigate(investigating_player)
@@ -87,27 +89,30 @@ def game(request, game_id):
                     object_id = new_clue.id
                 )
                 alert.save()
-                game_dict['new_alerts'] = [expand(alert)]
+                extra_data['new_alerts'] = [expand(alert)]
             
             turn.action = 'investigate'
             turn.params = investigating_player_id
                 
+        elif 'update' in request.POST:
+            update_id = request.POST['update']
+            if int(update_id) == 0: game_dict['data'] = bg.serialize(player, True)
+            else: game_dict['data'] = bg.serialize(player)
+        
+            if game.is_current:
+                pass
+                #bg.move_for_cpus()
+                
         if turn.action:
             turn.save()
             
-        game_dict['game'] = bg.serialize(player)
-        alerts_now = player.alert_set.filter(viewed=None).count()
-        cache.set('player_%d_alerts' % alerts_now, alerts_now)
-
-        game_dict['unviewed_alerts'] = serialize_qs(player.alert_set.filter(viewed=None).order_by('-created').all())
-        game_dict['turns_allowed'] = bg.turns_allowed(player)
+        if len(extra_data) > 0: game_dict['extra'] = extra_data
         
         return HttpResponse(simplejson.dumps(game_dict), content_type='application/json')
         
     context = {
         'game': game,
         'player': player,
-        'show_board': show_board,
         'message': message
     }
 

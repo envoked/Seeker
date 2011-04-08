@@ -6,126 +6,6 @@ from django.core.cache import cache
 from models import *
 from distributor import *
 from lb.util import get_logger, expand, serialize_qs
-
-class BasicRoleGame():
-    
-    def __init__(self, game):
-        self.game = game
-        self.num_players = game.player_set.count()
-        self.num_clues = self.num_players - 1 # Number of clues per player
-            
-    def process_players(self):
-        """
-        Gives each player a playerRole
-        """
-        #we do list() because were going to need to get one item at a time out and we dont want to re-SELECT
-        roles = list(Role.objects.order_by('?').all()[:self.num_players])
-    
-        players = self.game.player_set.all()
-        for player in players:
-            role = roles[0]
-            roles = roles[1:]
-            player_roles_used = []
- 
-            pr = PlayerRole(
-                player = player,
-                role = role
-            )
-            pr.save()
-            
-            # Create clues
-            for i in range(0, self.num_clues):    
-                is_not_role = Role.objects.exclude(id=player.playerrole.id).exclude(id__in=player_roles_used)[0]
-                rf = RoleFact(
-                    player = player,
-                    role = is_not_role,
-                    neg = True
-                )
-                player_roles_used.append(is_not_role.id)
-                rf.save()
-        
-    def play(self):
-        """
-        Gives a clue to each player
-        -will not give a clue to a player about that player
-        -will not give a clue based on a PlayerRole fact already used
-        """
-        
-        #PlayerRoles already given away
-        prs_given = []
-        players = self.game.player_set.all()
-        now = datetime.now()
-        print self.game.end
-        for i in range(0, self.num_clues):
-            
-            if i == 0:
-                time_to_send = now
-            else:
-                duration = self.game.end - self.game.start
-                interval_to_send = (duration.seconds / 60) / self.num_clues
-                time_to_send = self.game.start + timedelta(minutes=(interval_to_send * i))
-
-            for player in players:
-                #select a PlayerRole that does not describe the player getting the clue
-                try:
-                    pr = RoleFact.objects.exclude(player=player).exclude(id__in=prs_given).order_by('?')[0]
-                except:
-                    #print "error finding fact for " + str(player)
-                    #print "unused facts", PlayerRole.objects.exclude(id__in=prs_given).all()
-                    #print RoleFact.objects.all()
-                    break    
-                
-                clue = self.convert_rf_to_clue(pr, player, time_to_send)
-                clue.save()
-                
-                prs_given.append(pr.id)
-                
-        return self.game
-    
-    def convert_rf_to_clue(self,rf,player,time_to_send):   
-        clue = Clue(
-            player = player,
-            fact = rf,
-            game = self.game,
-            sent = 0,
-            send_time = time_to_send
-        )
-        
-        return clue
-    
-    def check_submission(self, submission):
-        number_correct = 0
-
-        for guess in submission.roleguess_set.all():
-            pr = PlayerRole.objects.get(player = guess.other_player)            
-            if pr.role != guess.role:
-                guess.correct = False
-            else:
-                guess.correct = True
-                number_correct+=1
-                
-            guess.save()
-        
-        submission.checked = True
-        submission.score = number_correct
-        submission.save()
-        
-        
-    def create_rankings(self):
-        rank = 0
-        submissions = self.game.submission_set.order_by('-score').all()
-        for submission in submissions:
-            ranking = Ranking(
-                rank = rank,
-                submission = submission,
-                player = submission.player,
-                game = self.game
-            )
-            ranking.save()
-            rank+=1
-            
-        self.game.is_current = False
-        self.game.save()
         
 class BoardGame:
     turn_window = 10
@@ -142,7 +22,8 @@ class BoardGame:
             player.set_random_position()
             
             pc = PlayerCell(
-                player = player
+                player = player,
+                game = self.game
             )
             pc.save()
             pc.set_random_position()
@@ -384,42 +265,25 @@ class BoardGame:
         self.log.info( "memcached set: %s=%s" % (field, value))
         return cache.set('game_%d_%s' % (self.game.id, field), {'t': int(time.time()),'v': value})
         
-    def serialize(self, player):
-        game_dict = expand(self.game)
-        game_dict['player'] = expand(player)
-        game_dict['player']['cell'] = expand(player.playercell)
-        game_dict['player']['cell']['player_id'] = player.id
-        game_dict['player']['user'] = expand(player.user)
-        game_dict['player']['unkown_facts'] = player.unkown_facts()
-        """
-        try:
-            game_dict['player']['user']['profile'] = expand(player.user.get_profile())
-        except:
-            pass
-        """
+    def serialize(self, player, firsttime=False):
+        game_dict = {}
+        game_dict['game'] = expand(self.game)
+
+        _players = self.game.player_set.select_related('user').all()
+        game_dict['players'] = serialize_qs(_players)
+        game_dict['unviewed_alerts'] = serialize_qs(player.alert_set.filter(viewed=None).order_by('-created').all())
         
-        game_dict['players'] = [] 
-        _players = self.game.player_set.select_related('user', 'cell').all()
-        
-        for i in _players:
-            _player = expand(i)
-            _player['user'] = expand(i.user)
-            _player['role'] = expand(i.playerrole.role)
-            _player['cell'] = expand(i.playercell)
-            _player['cell']['player_id'] = i.id
-            _player['unkown_facts'] = i.unkown_facts()
-            """
-            try: _player['user']['profile'] = expand(i.user.get_profile())
-            except: pass
-            """
-            game_dict['players'].append(_player)
-        
-        game_dict['clues'] = serialize_qs(player.clue_set.all())
         game_dict['turns'] = {
             'min': self.get_cached('min_turns'),
             'max': self.get_cached('max_turns'),
+            'allowed': self.turns_allowed(player),
             'max_turn_id': self.get_cached('max_turn_id')}
         game_dict['correct_guesses'] = serialize_qs(player.guess_set.filter(correct=1))
+        
+        if firsttime:
+            game_dict['player_cells'] = serialize_qs(PlayerCell.objects.filter(game=self.game))
+            game_dict['users'] = serialize_qs(User.objects.filter(player__game=self.game))
+        
         return game_dict
     
     def html(self, request):

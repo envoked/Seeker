@@ -198,11 +198,12 @@ class Player(models.Model):
         """
         How many guesses is the player away from knowing everthing
         """        
-        known_facts = self.clue_set.filter(fact__neg=False).values('fact__player')
+        #LB - perf
+        #known_facts = self.clue_set.filter(fact__neg=False).values('fact__player')
         correct_guesses = self.guess_set.filter(correct=True).values('other_player')
-        players_left = PlayerRole.objects.filter(player__in=self.game.player_set.all()).exclude(player__in=correct_guesses).exclude(player=self)
+        players_left = self.game.player_set.count() - len(correct_guesses) -1 # for self
         
-        return len(players_left)
+        return players_left
 
     def __str__(self):
         return self.user.username
@@ -214,7 +215,9 @@ class Player(models.Model):
 class Cell(models.Model):
     x = models.IntegerField(null=True)
     y = models.IntegerField(null=True)
+    game = models.ForeignKey(Game) #LB - performance
     created = models.DateTimeField(auto_now_add=True)
+    
 
 class PlayerCell(Cell):
     player = models.OneToOneField(Player)

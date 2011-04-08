@@ -15,10 +15,12 @@ Game = {
     turn_window: 10,
     active: true, //Is Player awake?
     player_active: true,//Is Player still current?
+    update_id: 0,
     
-    init: function(id, el, media_url)
+    init: function(id, el, media_url, player_id)
     {
         this.id = id;
+        this.player_id = player_id;
         this.el = el;
         this.text_el = $('#'+this._text_el)
         this.media_url = media_url;
@@ -33,13 +35,13 @@ Game = {
         {
             Game.last_update = new Date()
             Game.last_activity = new Date()
-            Game.reload()
+            Game.reload({update: Game.update_id})
         }
 
         if (new Date().valueOf() > (Game.update_interval + Game.last_update.valueOf()))
         {
             console.log('Updating')
-            Game.reload()
+            Game.reload({update: Game.update_id})
         }
         
         if (new Date().valueOf() > (Game.activity_timeout + Game.last_activity.valueOf()) && !Game.paused)
@@ -66,8 +68,6 @@ Game = {
             Game.last_activity = new Date()
             Game.last_update = new Date()
             Game.updating = true
-            console.log("Action:")
-            console.log(params)
         }
         else params = {}
         
@@ -76,17 +76,19 @@ Game = {
             data: params,
             type: 'POST',
             success: function(data) {
-                Game._game = data
+                Game.data = data
+                Game.update_id += 1
+                
                 Game.updating = false
                 Game.last_update = new Date()
 
-                if (Game._game.game.player.unkown_facts == 0)
+                if (Game.data.unkown_facts == 0)
                 {
                     if (Game.state != 'complete') Game.text_el.html("You know everything")
                     Game.player_active = false;
                 }
 
-                if (Game._game.complete && Game.state != 'complete')
+                if (Game.data.complete && Game.state != 'complete')
                 {
                     if (Game.has_loaded_once)
                     {
@@ -100,32 +102,35 @@ Game = {
                 }
                 
                 //Only active games now
-                if (Game._game.turns_allowed >= Game.turn_window && Game.has_loaded_once) {
+                if (Game.data.turns_allowed >= Game.turn_window && Game.has_loaded_once) {
                     Game.text_el.html("Other players are waiting on you, move!")
                 }
-
-                if (Game._game.new_alerts)
+                
+                //If the last turn created alerts, show the first
+                if (Game.data.extra.new_alerts)
                 {
-                    var new_alert = Game._game.new_alerts[0]
+                    var new_alert = Game.extra.data.new_alerts[0]
                     Game.showAlert(new_alert)
                 }
-                else if (Game._game.unviewed_alerts)
+                //Otherwise if there are unviewed alerts, show them
+                else if (Game.data.unviewed_alerts)
                 {
-                    var new_alert = Game._game.unviewed_alerts[0]
+                    var new_alert = Game.data.unviewed_alerts[0]
                     Game.showAlert(new_alert)               
                 }
                 
-                if (Game._game.unviewed_alerts)
+                //Update alerts button with correct count
+                if (Game.data.unviewed_alerts)
                 {
-                    $('#show_alerts').find('.ui-btn-text').html("Alerts (" + Game._game.unviewed_alerts.length + ")")
+                    $('#show_alerts').find('.ui-btn-text').html("Alerts (" + Game.data.unviewed_alerts.length + ")")
                 }
                 else $('#show_alerts').find('.ui-btn-text').html("Alerts")
                 
-                if (Game._game.turns_allowed <= 0)
+                if (Game.data.turns.allowed <= 0)
                 {
                     Game.state = "frozen"
                     Game.text_el.html("Please wait other players to catch up")
-                    //Game.text_el.html("Please wait other players to catch up.".format({turns: Math.abs(Game._game.turns_allowed)}))
+        
                 }
                 else if (Game.state == "frozen")
                 {
@@ -148,15 +153,15 @@ Game = {
         this.el.html("");
         this.el.css('width', $(window).width() + 'px')
         this.el.css('height', Game.el.width() + 'px')
-        var td_width = Math.floor((this.el.width()/this._game.game.board_size) - 6)
-        var td_height = Math.floor((this.el.height()/this._game.game.board_size) - 6)
+        var td_width = Math.floor((this.el.width()/this.data.game.board_size) - 6)
+        var td_height = Math.floor((this.el.height()/this.data.game.board_size) - 6)
         
-        for (col=0; col<this._game.game.board_size; col++)
+        for (col=0; col<this.data.game.board_size; col++)
         {
             var column = []
             var tr = $('<div class="row">')
             
-            for (row=0; row<this._game.game.board_size; row++)
+            for (row=0; row<this.data.game.board_size; row++)
             {
                 var td = $('<div class="cell">').attr('x', row).attr('y', col)
                 td.append($('<div class="inner">'))
@@ -165,7 +170,7 @@ Game = {
                 var player = this.playerAt(row, col)
                 
                 //If square is in moveable range
-                if (Math.abs(this._game.game.player.x - row) <= 1 && Math.abs(this._game.game.player.y - col) <= 1)
+                if (Math.abs(this.data.game.player.x - row) <= 1 && Math.abs(this.data.game.player.y - col) <= 1)
                 {
                     td.addClass('can-move selectable')
                     
@@ -186,7 +191,7 @@ Game = {
                 }
                 
                 //If the cubicle is yours
-                if (this._game.game.player.cell.x == row && this._game.game.player.cell.y == col)
+                if (this.data.game.player.cell.x == row && this.data.game.player.cell.y == col)
                 {
                     td.addClass('your-cubicle selectable')
                     td.append($('<div class="text-overlay br">').html("Your Cubicle"))
@@ -212,12 +217,12 @@ Game = {
                     td.append($('<div class="text-overlay">').html(display_name))
                 }
                 //If the player is you
-                if (this._game.game.player.x == row && this._game.game.player.y == col)
+                if (this.data.game.player.x == row && this.data.game.player.y == col)
                 {
                     td.addClass('you')
-                    assign_player_avatar(td_inner, this._game.game.player)
+                    assign_player_avatar(td_inner, this.data.game.player)
                     
-                    if (Game._game.turns_allowed <= 0)
+                    if (Game.data.turns_allowed <= 0)
                     {
                         td.append($('<div class="text-overlay text-overlay-central">').html("Waiting..."))
                         td.addClass('frozen')
@@ -350,19 +355,24 @@ Game = {
     inCubible: function()
     {
         //If there is a cubicle here
-        var cubicle = this.cubicleAt(this._game.game.player.x, this._game.game.player.y)
-        if (this._game.game.player.cell.x == this._game.game.player.x && this._game.game.player.cell.y == this._game.game.player.y)
+        var cubicle = this.cubicleAt(Game.me().player.x, this.data.game.player.y)
+        if (this.data.game.player.cell.x == this.data.game.player.x && this.data.game.player.cell.y == this.data.game.player.y)
         {
             return true
         }
         return false
     },
     
+    me: function()
+    {
+        return Game.getById('players', Game.player_id)
+    },
+    
     knowsPlayer: function(player_id)
     {
-        for (var i in this._game.game.correct_guesses)
+        for (var i in this.data.correct_guesses)
         {
-            var guess =  this._game.game.correct_guesses[i]
+            var guess =  this.data.correct_guesses[i]
             if (guess.other_player == player_id) return true
         }
         return false;
@@ -370,9 +380,9 @@ Game = {
     
     getById: function(type, id)
     {
-        for (var i in this._game.game[type])
+        for (var i in this.data[type])
         {
-            var obj = this._game.game[type][i]
+            var obj = this.data[type][i]
             if (obj.id == id) return obj
         }
         return null
@@ -380,9 +390,9 @@ Game = {
     
     playerAt: function(x, y)
     {
-        for (var id in this._game.game.players)
+        for (var id in this.data.game.players)
         {
-            var player = this._game.game.players[id]
+            var player = this.data.game.players[id]
             if (player.x == x && player.y == y) return player;
         }
         
@@ -391,9 +401,9 @@ Game = {
     
     cubicleAt: function(x, y)
     {
-        for (var id in this._game.game.players)
+        for (var id in this.data.player_cells)
         {
-            var cell = this._game.game.players[id].cell
+            var cell = this.data.player_cells[id].cell
             if (cell.x == x && cell.y == y) return cell;
         }
         
@@ -459,7 +469,6 @@ GameCell = {
             {
                 var player_id = target.attr('player')
                 Game.guess.player = player_id;
-                alert("What's their role?")
                 Game.state = 'guessing-role';
                 Game.showRoleGuesser()
                 
@@ -510,8 +519,8 @@ GameCell = {
         if (target.hasClass('can-move'))
         {
             
-            Game._game.game.player.x = parseInt(target.attr('x'))
-            Game._game.game.player.y = parseInt(target.attr('y'))
+            Game.data.game.player.x = parseInt(target.attr('x'))
+            Game.data.game.player.y = parseInt(target.attr('y'))
             Game.redraw()
             Game.reload({'move': target.attr('x') + ',' + target.attr('y')})
         }
