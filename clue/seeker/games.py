@@ -243,12 +243,11 @@ class BoardGame:
         return False
     
     def turns_allowed(self, player):
-        min_turns = self.get_cached('min_turns')
-        if not min_turns: min_turns = 0
+        min_turns = self.get_cached('min_turns', 0)
         return self.turn_window - (player.turn_set.count() - min_turns)
                 
-    def get_cached(self, field):
-        cached = cache.get('game_%d_%s' % (self.game.id, field))
+    def get_cached(self, field, default=None):
+        cached = cache.get('game_%d_%s' % (self.game.id, field), default)
         return cached
     
     def set_cached(self, field, value, timeout=20):
@@ -266,8 +265,8 @@ class BoardGame:
         game_dict['unviewed_alerts'] = serialize_qs(player.alert_set.filter(viewed=None).order_by('-created').all())
         
         game_dict['turns'] = {
-            'min': self.get_cached('min_turns'),
-            'max': self.get_cached('max_turns'),
+            'min': self.get_cached('min_turns', 0),
+            'max': self.get_cached('max_turns', 0),
             'allowed': self.turns_allowed(player),
             'max_turn_id': self.get_cached('max_turn_id')}
         game_dict['correct_guesses'] = serialize_qs(player.guess_set.filter(correct=1))
