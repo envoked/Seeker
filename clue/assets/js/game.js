@@ -26,6 +26,7 @@ Game = {
         this.media_url = media_url;
         this.messages_button = $('#show_messages')
         Game.interval_id = setInterval(Game.busyLoop, Game.busy_interval)
+        
     },
     
     //LB - The game needs to be smart about refreshing itself
@@ -77,11 +78,19 @@ Game = {
             type: 'POST',
             success: function(data) {
                 Game.data = data
+                if (Game.update_id == 0) Game.original_data = data
                 Game.update_id += 1
                 
                 Game.updating = false
                 Game.last_update = new Date()
+                
+                if (Game.data.unkown_facts == 0)
 
+                if(!Game.has_loaded_once) {
+                    role = Game._game.game.player.role.name;
+                    show_alert("Shhhh, your role is the: " + role);
+                }                
+            
                 if (Game.data.unkown_facts == 0)
                 {
                     if (Game.state != 'complete') Game.text_el.html("You know everything")
@@ -109,7 +118,7 @@ Game = {
                 //If the last turn created alerts, show the first
                 if (Game.data.extra.new_alerts)
                 {
-                    var new_alert = Game.extra.data.new_alerts[0]
+                    var new_alert = Game.data.extra.new_alerts[0]
                     Game.showAlert(new_alert)
                 }
                 //Otherwise if there are unviewed alerts, show them
@@ -170,11 +179,12 @@ Game = {
                 var player = this.playerAt(row, col)
                 
                 //If square is in moveable range
-                if (Math.abs(this.data.game.player.x - row) <= 1 && Math.abs(this.data.game.player.y - col) <= 1)
+                if (Math.abs(this.me().x - row) <= 1 && Math.abs(this.me().y - col) <= 1)
                 {
                     td.addClass('can-move selectable')
                     
                 }
+                
                 //If there is a cubicle here
                 var cubicle = this.cubicleAt(row, col)
                 if (cubicle)
@@ -185,13 +195,13 @@ Game = {
                         var owner = this.getById('players', cubicle.player_id)
                         td.append($('<div class="text-overlay" style="top:2em">').html(owner.user.username))
                     }
-                }else{
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/empty.png" style="opacity:0.6;">'))
+                } else {
+                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/empty.png" style="opacity:0.8;">'))
                     
                 }
                 
                 //If the cubicle is yours
-                if (this.data.game.player.cell.x == row && this.data.game.player.cell.y == col)
+                if (this.myCubicle().x == row && this.myCubicle().y == col)
                 {
                     td.addClass('your-cubicle selectable')
                     td.append($('<div class="text-overlay br">').html("Your Cubicle"))
@@ -206,18 +216,22 @@ Game = {
                 if (player)
                 {
                     td.addClass('occupied').attr('player', player.id)
-                    if(player.user.username.length > 10) {
-                        display_name = player.user.username.substring(0, 9) + "...";
+                    var user = this.original_data.player_extra[player.id].user
+                    
+                    if (user.username.length > 10) {
+                        display_name = user.username.substring(0, 9) + "...";
                     }
                     else {
-                        display_name = player.user.username;       
+                        display_name = user.username;       
                     }
-                    if (this.knowsPlayer(player.id)) td_inner.append($('<div class="text-overlay" style="top:2em">').html(player.role.name))
+                    if (this.knowsPlayer(player.id)) {
+                        td_inner.append($('<div class="text-overlay" style="top:2em">').html(Game.original_data.player_extra[player.id]['role']['name']))
+                    }
                     if (!player.is_current) display_name = '<strike>' + display_name + '</strike>'
                     td.append($('<div class="text-overlay">').html(display_name))
                 }
                 //If the player is you
-                if (this.data.game.player.x == row && this.data.game.player.y == col)
+                if (this.me().x == row && this.me().y == col)
                 {
                     td.addClass('you')
                     assign_player_avatar(td_inner, this.data.game.player)
@@ -355,8 +369,8 @@ Game = {
     inCubible: function()
     {
         //If there is a cubicle here
-        var cubicle = this.cubicleAt(Game.me().player.x, this.data.game.player.y)
-        if (this.data.game.player.cell.x == this.data.game.player.x && this.data.game.player.cell.y == this.data.game.player.y)
+        var cubicle = this.cubicleAt(Game.data.me.x, Game.data.me.y)
+        if (this.myCubicle().x == this.myCubicle().x && this.myCubicle().y == this.myCubicle().y)
         {
             return true
         }
@@ -365,7 +379,12 @@ Game = {
     
     me: function()
     {
-        return Game.getById('players', Game.player_id)
+        return Game.data.me;
+    },
+    
+    myCubicle: function()
+    {
+        return Game.data.my_cubicle;
     },
     
     knowsPlayer: function(player_id)
@@ -390,9 +409,9 @@ Game = {
     
     playerAt: function(x, y)
     {
-        for (var id in this.data.game.players)
+        for (var id in this.data.players)
         {
-            var player = this.data.game.players[id]
+            var player = this.data.players[id]
             if (player.x == x && player.y == y) return player;
         }
         
@@ -401,9 +420,9 @@ Game = {
     
     cubicleAt: function(x, y)
     {
-        for (var id in this.data.player_cells)
+        for (var id in this.original_data.player_cells)
         {
-            var cell = this.data.player_cells[id].cell
+            var cell = this.original_data.player_cells[id]
             if (cell.x == x && cell.y == y) return cell;
         }
         
@@ -518,9 +537,8 @@ GameCell = {
         
         if (target.hasClass('can-move'))
         {
-            
-            Game.data.game.player.x = parseInt(target.attr('x'))
-            Game.data.game.player.y = parseInt(target.attr('y'))
+            Game.data.me.x = parseInt(target.attr('x'))
+            Game.data.me.y = parseInt(target.attr('y'))
             Game.redraw()
             Game.reload({'move': target.attr('x') + ',' + target.attr('y')})
         }
@@ -536,12 +554,12 @@ GameCell = {
 function assign_player_avatar(element, player) {
     //element.append($('<img class="tile" src="' + Game.media_url + 'img/char1.png">'))
     //alert(player.user.username)
-    element.append($('<img class="tile" src="' + player.image + '" />'));
+    element.append($('<img class="char tile" src="' + Game.me().image + '" />'));
 }
 
 function show_alert(text) {
     text = text.replace(/ /g, "_");
-    $("#content").append("<a id='open_dialog' style='display: none' data-rel='dialog' href='/seeker/game/show_notification/"+text+"'>open</a>");
+    $("body").append("<a id='open_dialog' style='display: none' data-rel='dialog' href='/seeker/game/show_notification/"+text+"'>open</a>");
     $("#open_dialog").click();
 }
 

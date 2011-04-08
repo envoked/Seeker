@@ -31,7 +31,7 @@ def game(request, game_id):
         message = "You are no longer active in this game."
         show_board = False
     
-    turn = Turn(
+    turn = Turn (
         player = player
     )        
 
@@ -95,25 +95,25 @@ def game(request, game_id):
             turn.params = investigating_player_id
                 
         elif 'update' in request.POST:
-            update_id = request.POST['update']
-            if int(update_id) == 0: game_dict['data'] = bg.serialize(player, True)
-            else: game_dict['data'] = bg.serialize(player)
-        
             if game.is_current:
-                pass
-                #bg.move_for_cpus()
+                bg.move_for_cpus()
                 
         if turn.action:
             turn.save()
             
-        if len(extra_data) > 0: game_dict['extra'] = extra_data
+        if 'update' in request.POST and int(request.POST['update']) == 0:
+            #first time
+            game_dict.update(bg.serialize(player, True))
+        else: game_dict['data'] = game_dict.update(bg.serialize(player))
+            
+        game_dict['extra'] = extra_data
         
         return HttpResponse(simplejson.dumps(game_dict), content_type='application/json')
         
     context = {
         'game': game,
         'player': player,
-        'message': message
+        'message': message,
     }
 
     return context

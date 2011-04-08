@@ -264,13 +264,15 @@ class BoardGame:
     def set_cached(self, field, value):
         self.log.info( "memcached set: %s=%s" % (field, value))
         return cache.set('game_%d_%s' % (self.game.id, field), {'t': int(time.time()),'v': value})
-        
+
     def serialize(self, player, firsttime=False):
         game_dict = {}
         game_dict['game'] = expand(self.game)
 
-        _players = self.game.player_set.select_related('user').all()
+        _players = self.game.player_set.all()
         game_dict['players'] = serialize_qs(_players)
+        game_dict['me'] = expand(player)
+        game_dict['my_cubicle'] = expand(player.playercell)
         game_dict['unviewed_alerts'] = serialize_qs(player.alert_set.filter(viewed=None).order_by('-created').all())
         
         game_dict['turns'] = {
@@ -281,9 +283,22 @@ class BoardGame:
         game_dict['correct_guesses'] = serialize_qs(player.guess_set.filter(correct=1))
         
         if firsttime:
-            game_dict['player_cells'] = serialize_qs(PlayerCell.objects.filter(game=self.game))
-            game_dict['users'] = serialize_qs(User.objects.filter(player__game=self.game))
-        
+            player_cells = PlayerCell.objects.filter(game=self.game).all()
+            game_dict['player_cells'] = []
+            for cell in player_cells:
+                _cell = expand(cell)
+                _cell['player_id'] = cell.player_id
+                game_dict['player_cells'].append(_cell)
+            game_dict['player_extra'] = {}
+            
+            for _p in _players:
+                game_dict['player_extra'][_p.id] = {'user': expand(_p.user)}
+                
+            roles = PlayerRole.objects.filter(player__in=self.game.player_set.values('id')).all()
+            for role in roles:
+                game_dict['player_extra'][role.player.id]['role'] = expand(role)
+                game_dict['player_extra'][role.player.id]['role']['name'] = role.role.name
+                
         return game_dict
     
     def html(self, request):
