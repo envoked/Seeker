@@ -344,14 +344,15 @@ Game = {
     {     
         $.post('/seeker/game/' + Game.id + '/guess/', Game.guess,
             function(data) {
+                Game.clearState()
+                Game.el.removeClass('guessing-cubicle')
                 if (data.correct)
                 {
                     Game.text_el.html("Correct!")
-                    Game.el.removeClass('guessing-cubicle')
                 }
                 else
                 {
-                    Game.text_el.html("Wrong.  (Hint: you're one fact close now)")
+                    Game.text_el.html("Wrong.  (Hint: you're one fact closer now)")
                 }
             }, 'json')
     },
@@ -366,9 +367,7 @@ Game = {
     //is player in their cubicle?
     inCubible: function()
     {
-        //If there is a cubicle here
-        var cubicle = this.cubicleAt(Game.data.me.x, Game.data.me.y)
-        if (this.myCubicle().x == this.myCubicle().x && this.myCubicle().y == this.myCubicle().y)
+        if (this.myCubicle().x == this.me().x && this.myCubicle().y == this.me().y)
         {
             return true
         }
@@ -569,4 +568,5 @@ submitGuess = function()
     var user = $('#player')[0].value
     var role = $('#role')[0].value
     Game.submitGuess(user, role)
+    Game.clearState()
 }
