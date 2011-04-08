@@ -232,7 +232,7 @@ Game = {
                 if (this.me().x == row && this.me().y == col)
                 {
                     td.addClass('you')
-                    assign_player_avatar(td_inner, this.data.game.player)
+                    assign_player_avatar(td_inner, Game.me())
                     
                     if (Game.data.turns_allowed <= 0)
                     {
@@ -555,7 +555,7 @@ GameCell = {
 function assign_player_avatar(element, player) {
     //element.append($('<img class="tile" src="' + Game.media_url + 'img/char1.png">'))
     //alert(player.user.username)
-    element.append($('<img class="char tile" src="' + Game.me().image + '" />'));
+    element.append($('<img class="char tile" src="' + player.image + '" />'));
 }
 
 function show_alert(text) {
