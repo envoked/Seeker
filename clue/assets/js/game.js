@@ -83,12 +83,10 @@ Game = {
                 
                 Game.updating = false
                 Game.last_update = new Date()
-                
-                if (Game.data.unkown_facts == 0)
-
-                if(!Game.has_loaded_once) {
-                    role = Game._game.game.player.role.name;
-                    show_alert("Shhhh, your role is the: " + role);
+     
+                if (!Game.has_loaded_once) {
+                    var role = Game.me(true).role.name;
+                    Game.text_el.html("Shhhh, your role is the: " + role);
                 }                
             
                 if (Game.data.unkown_facts == 0)
@@ -377,9 +375,12 @@ Game = {
         return false
     },
     
-    me: function()
+    me: function(include_orginal_data)
     {
-        return Game.data.me;
+        if (typeof include_orginal_data == "undefined") include_orginal_data = false
+        var _me = Game.data.me;
+        if (include_orginal_data) $.extend(_me, _me, Game.original_data.player_extra[Game.data.me.id])
+        return _me;
     },
     
     myCubicle: function()
