@@ -232,3 +232,6 @@ def pick_character_for_player(request, lobby_id):
     
     return locals()
     
+@render_to('lobby/help.html')
+def help(request):
+    return locals()

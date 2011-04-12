@@ -1,9 +1,10 @@
 User = {}
 
 Main = {
-    showHelp: function()
+    helpMenu: function(target, previous)
     {
-        alert("Coming when Help documentation is written.");
+        $('#help #' + target).show();
+        $('#help #' + previous).hide();
     }
 }
 

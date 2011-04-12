@@ -260,9 +260,10 @@ Game = {
         }
     },
     
-    showHelp: function()
+    helpMenu: function(target, previous)
     {
-        Game.text_el.html("Coming when Help documentation is written...");
+        $('#help #' + target).show();
+        $('#help #' + previous).hide();
     },
     
     //Show one alert under board
