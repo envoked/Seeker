@@ -271,3 +271,13 @@ form {
     background-color: #84C2CC;
     background-image: none
 }
+
+#help { }
+
+    #help #menu {
+	display: inline;
+    }
+    
+    #help #startgame1, #startgame2, #startgame3, #startgame4, #joingame1, #joingame2, #joingame3, #changechar1, #changechar2, #viewstats1, #viewstats2 {
+	display: none;
+    }

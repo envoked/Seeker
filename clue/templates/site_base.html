@@ -2,7 +2,7 @@
 {% load facebook_tags %}
 <html>
     <head>
-        <title>Seeker - {% block title %}{% endblock %}</title>
+        <title>Seekr - {% block title %}{% endblock %}</title>
         <script src="{{ MEDIA_URL }}/js/jquery-1.4.4.min.js"></script>
         <script src="{{ MEDIA_URL }}/js/main.js"></script>
         <script src="{{ MEDIA_URL }}/lobby/lobby.js"></script>
@@ -50,7 +50,7 @@
             
             <div class="toolbar" data-role="footer" class="ui-bar" data-position="fixed">
             {% block toolbar %}
-                <a href="#" onclick="Main.showHelp()">Help</a>
+                <a href="/lobby/help/" data-rel="dialog">Help</a>
             {% endblock %}
             </div>
             

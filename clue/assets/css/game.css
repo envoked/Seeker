@@ -168,3 +168,12 @@ div.guessing-cubicle div.your-cubicle div.inner {
     border: 3px solid transparent;
 }
 
+#help { }
+
+    #help #menu {
+	display: inline;
+    }
+    
+    #help #moving1 #moving2 {
+	display: none;
+    }

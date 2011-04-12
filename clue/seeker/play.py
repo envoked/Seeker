@@ -424,4 +424,9 @@ def quit(request, game_id):
 def show_notification(request, text):
     text = text.replace("_", " ")
     return {"text" : text}
+
+
+@render_to('help.html')
+def help(request):
+    return locals()
     

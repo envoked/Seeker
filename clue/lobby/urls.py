@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     (r'^settings/$', 'lobby.views.settings'),
     (r'^(?P<id>[0-9]+)/$', 'lobby.views.lobby'),
     (r'^start_game/(?P<lobby_id>[0-9]+)/$', 'lobby.views.start_game'),
+    (r'^help/$', 'lobby.views.help'),
     
     #API
     (r'^messages/send/$', 'lobby.ajax.send_message'),
