@@ -101,6 +101,7 @@ def game(request, game_id):
         if turn.action:
             turn.save()
             
+            
         if 'update' in request.POST and int(request.POST['update']) == 0:
             #first time
             game_dict.update(bg.serialize(player, True))

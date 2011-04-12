@@ -160,7 +160,12 @@ class GameTest(TestCase):
                         
                     raw_input("Press ANY KEY")
                 
-                
+def TurnWindowTest(TestCase):
+    fixtures = ['auth.json', 'seeker.json']
+    num_players = 4
+    
+    def setup(self):
+        pass
 
 def _clear():
     curses.setupterm()

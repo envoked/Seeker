@@ -144,8 +144,11 @@ Game = {
                     Game.state = ""
                 }
                 
+                if (!Game.has_loaded_once) Game.draw()
+                Game.redraw()
+                
                 Game.has_loaded_once = true;
-                Game.redraw();            
+                         
             },
             error: function() {
                 Game.last_update = new Date()
@@ -154,7 +157,7 @@ Game = {
             dataType: 'json'});  
     },
     
-    redraw: function()
+    draw: function()
     {
         this.rows = []
         this.el.html("");
@@ -170,10 +173,39 @@ Game = {
             
             for (row=0; row<this.data.game.board_size; row++)
             {
-                var td = $('<div class="cell">').attr('x', row).attr('y', col)
+                var td = $('<div class="cell">').attr('x', row).attr('y', col).attr('id', 'cell_' + row + '_' + col)
                 td.append($('<div class="inner">'))
                 td.append($('<div class="over">'))
                 var td_inner = $(td.find('.inner'))
+                
+                td.css('width', td_width)
+                td.css('height', td_height)
+                td.click(GameCell.cellClick)
+                column.push(td)
+                tr.append(td)
+                
+            }
+            
+            this.el.append(tr)
+            this.rows.push(column)
+            $.fixedToolbars.show()
+        }
+    },
+    
+    redraw: function()
+    {
+        
+        for (var col=0; col<this.data.game.board_size; col++)
+        {
+            for (var row=0; row<this.data.game.board_size; row++)
+            {
+                //Grab existing <div> and reset its class
+                var td = $('#cell_' + row + '_' + col)
+                td.attr('class', 'cell')
+                td.find(".text-overlay").remove()
+                
+                var td_inner = $(td.find('.inner'))
+                td_inner.html("")
                 var player = this.playerAt(row, col)
                 
                 //If square is in moveable range
@@ -247,15 +279,8 @@ Game = {
                     //td_inner.append($('<img class="tile" src="' + this.media_url + 'img/char2.png">'))   
                 }
 
-                td.css('width', td_width)
-                td.css('height', td_height)
-                td.click(GameCell.cellClick)
-                column.push(td)
-                tr.append(td)
             }
-            
-            this.el.append(tr)
-            this.rows.push(column)
+
             $.fixedToolbars.show()
         }
     },
