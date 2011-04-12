@@ -51,6 +51,7 @@ class Player(models.Model):
     joined = models.DateTimeField(auto_now_add=True)
     x = models.IntegerField(null=True,)
     y = models.IntegerField(null=True)
+    turn_count = models.IntegerField(default=0)
     image = models.ImageField(upload_to="/img/chars", blank="char1.png")
     
     def current_game(self):

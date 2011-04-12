@@ -100,7 +100,8 @@ def game(request, game_id):
                 
         if turn.action:
             turn.save()
-            
+            player.turn_count +=1
+            player.save()
             
         if 'update' in request.POST and int(request.POST['update']) == 0:
             #first time

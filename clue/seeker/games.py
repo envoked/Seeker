@@ -243,8 +243,8 @@ class BoardGame:
         return False
     
     def turns_allowed(self, player):
-        min_turns = self.get_cached('min_turns', 0)
-        return self.turn_window - (player.turn_set.count() - min_turns)
+        max_turns = self.get_cached('max_turns', 0)
+        return 100
                 
     def get_cached(self, field, default=None):
         cached = cache.get('game_%d_%s' % (self.game.id, field), default)
