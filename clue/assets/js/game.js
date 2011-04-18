@@ -6,6 +6,7 @@ Game = {
     update_interval: 1000*5, //ms between updates
     busy_interval: 300,
     activity_timeout: 1000*60*60,
+    action_window: 1*1000, //cant move more often than this
     updateing: false,
     paused: false,
     state: null,
@@ -61,14 +62,22 @@ Game = {
     */
     reload: function(params)
     {
-        if (Game.updating && typeof params == 'undefined')
+        if (Game.updating && (typeof params == 'undefined' || params['update']))
         {
             return
         }
+        
+        if (Game.last_activity.valueOf() + Game.action_window > new Date().valueOf() && Game.has_loaded_once)
+        {
+            console.log('Governer')
+            return
+        }
+        
         if (params) {
-            Game.last_activity = new Date()
+            if (!params['update']) Game.last_activity = new Date()
             Game.last_update = new Date()
             Game.updating = true
+            params['player_id'] = Game.player_id
         }
         else params = {}
         
@@ -120,14 +129,14 @@ Game = {
                     Game.showAlert(new_alert)
                 }
                 //Otherwise if there are unviewed alerts, show them
-                else if (Game.data.unviewed_alerts)
+                else if (Game.data.unviewed_alerts.length > 0)
                 {
                     var new_alert = Game.data.unviewed_alerts[0]
                     Game.showAlert(new_alert)               
                 }
                 
                 //Update alerts button with correct count
-                if (Game.data.unviewed_alerts)
+                if (Game.data.unviewed_alerts.length > 0)
                 {
                     $('#show_alerts').find('.ui-btn-text').html("Alerts (" + Game.data.unviewed_alerts.length + ")")
                 }
@@ -159,17 +168,34 @@ Game = {
     
     draw: function()
     {
+        console.log(this.original_data)
         this.rows = []
         this.el.html("");
-        this.el.css('width', $(window).width() + 'px')
-        this.el.css('height', Game.el.width() + 'px')
-        var td_width = Math.floor((this.el.width()/this.data.game.board_size) - 6)
-        var td_height = Math.floor((this.el.height()/this.data.game.board_size) - 6)
+        this.el.css('width', ($(window).width()) + 'px')
+        this.el.css('height', (Game.el.width()) + 'px')
+        var td_width = Math.floor(((this.el.width()-20)/this.data.game.board_size) - 6)
+        var td_height = Math.floor(((this.el.height()-20)/this.data.game.board_size) - 6)
+        
+        var tr = $('<div class="row">')
+        var td = ($('<div class="cell numeral numeral-topleft"> </div>'))
+        tr.append(td)
+        
+        for (col=0; col<this.data.game.board_size; col++)
+        {
+            var td = ($('<div class="cell numeral numeral-top">' + (col + 1) + '</div>'))
+            td.css('width', td_width)
+            tr.append(td)
+        }
+        tr.append($('<br class="clear"/>'))
+        this.el.append(tr)
         
         for (col=0; col<this.data.game.board_size; col++)
         {
             var column = []
             var tr = $('<div class="row">')
+            var numeral = $('<div class="cell numeral numeral-left">' + (col + 1) + '</div>')
+            numeral.css('line-height', (td_height-1)+ 'px')
+            tr.append(numeral)
             
             for (row=0; row<this.data.game.board_size; row++)
             {
@@ -178,13 +204,18 @@ Game = {
                 td.append($('<div class="over">'))
                 var td_inner = $(td.find('.inner'))
                 
+                var cell = Game.cellAt(row, col)
+                
                 td.css('width', td_width)
                 td.css('height', td_height)
+                if (cell) td.css('background-color', '#' + cell['color'])
                 td.click(GameCell.cellClick)
                 column.push(td)
                 tr.append(td)
                 
             }
+            
+            tr.append($('<br class="clear"/>'))
             
             this.el.append(tr)
             this.rows.push(column)
@@ -206,6 +237,8 @@ Game = {
                 
                 var td_inner = $(td.find('.inner'))
                 td_inner.html("")
+                td_inner.attr('class', 'inner')
+                td_inner.css('background-color', 'transparent')
                 var player = this.playerAt(row, col)
                 
                 //If square is in moveable range
@@ -226,7 +259,7 @@ Game = {
                         td.append($('<div class="text-overlay" style="top:2em">').html(owner.user.username))
                     }
                 } else {
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/empty.png" style="opacity:0.8;">'))
+                    //td_inner.append($('<img class="tile" src="' + this.media_url + 'img/empty.png" style="opacity:0.8;">'))
                     
                 }
                 
@@ -255,15 +288,18 @@ Game = {
                         display_name = user.username;       
                     }
                     if (this.knowsPlayer(player.id)) {
+                        td_inner.css('background-color', '#' + Game.original_data.player_extra[player.id].role.color)
                         td_inner.append($('<div class="text-overlay" style="top:2em">').html(Game.original_data.player_extra[player.id]['role']['name']))
                     }
                     if (!player.is_current) display_name = '<strike>' + display_name + '</strike>'
                     td.append($('<div class="text-overlay">').html(display_name))
                 }
+                
                 //If the player is you
                 if (this.me().x == row && this.me().y == col)
                 {
                     td.addClass('you')
+                    td_inner.css('background-color', '#' + Game.me(true).role.color)
                     assign_player_avatar(td_inner, Game.me())
                     
                     if (Game.data.turns_allowed <= 0)
@@ -294,10 +330,18 @@ Game = {
     //Show one alert under board
     showAlert: function(al)
     {
-        try {        
-            var mark_alert_viewed = $('<a href="#" style="line-height: 1.0em;" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + ');">').html("OK")
-            Game.text_el.html('<div class="alert"><p>' + al.text + '</p><div style="height: 1.0em"><a href="#" style="line-height: 1em;" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + ');">OK</a></div><br style="clear:both" /></div>')
-            $('#board_text a').button({inline: true})
+        if (Game.alert_open) return false;
+        
+        var alert_text = '<div class="alert"><p>' + al.text + '</p><div style="height: 1.0em"><a href="#" style="line-height: 1em;" data-role="button" data-theme="b" onclick="Game.viewedAlert(' + al.id + '); hideLightbox()">OK</a></div><br style="clear:both" /></div>'
+        try {
+            if (al.important) {
+                lightbox(alert_text)
+                Game.alert_open = true
+            }
+            else {
+                Game.text_el.html(alert_text)
+                $('#board_text a').button({inline: true})
+            }
         }
         catch(e){}
     },
@@ -352,7 +396,7 @@ Game = {
     showRoleGuesser: function()
     {
         $('#page_guesser').remove()
-        $.mobile.changePage({url: '/seeker/game/' + Game.id + '/guesser/', type: 'post', data: {player: Game.guess.player}})
+        $.mobile.changePage({url: '/seeker/game/' + Game.id + '/guesser/', type: 'post', data: {player: Game.guess.player}}, "none", false, true)
         Game.el.removeClass('guessing-player')
     },
     
@@ -455,6 +499,17 @@ Game = {
         return null;
     },
     
+    cellAt: function(x, y)
+    {
+        for (var id in this.original_data.cells)
+        {
+            var cell = this.original_data.cells[id]
+            if (cell.x == x && cell.y == y) return cell;
+        }
+        
+        return null;
+    },
+    
     pause: function()
     {
         if (!Game.paused)
@@ -484,6 +539,11 @@ Game = {
         Game.state = null;
         Game.el.removeClass('guessing-cubicle')
         Game.el.removeClass('guessing-player')
+    },
+    
+    showCluesForPlayer: function(player_id)
+    {
+        $.mobile.changePage('/seeker/game/' + Game.id + '/player/?player=' + player_id, "none", false, false)
     }
 }
 
@@ -556,9 +616,10 @@ GameCell = {
                 $('#clues_for_player').remove()
                 $.mobile.changePage('/seeker/game/' + Game.id + '/player/?player=' + player_id)
                 Game.clearState()
+                return false;
             }
  
-            return false;
+            
         }
         
         if (target.hasClass('can-move'))

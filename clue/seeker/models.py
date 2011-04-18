@@ -1,4 +1,4 @@
-import traceback
+import traceback, random
 from django.db import models
 from django.db import IntegrityError
 from django.contrib.auth.models import *
@@ -218,6 +218,14 @@ class Cell(models.Model):
     y = models.IntegerField(null=True)
     game = models.ForeignKey(Game) #LB - performance
     created = models.DateTimeField(auto_now_add=True)
+    color = models.CharField(max_length=6)
+    COLOR_OPTIONS = ['cccccc', '006699', '666666', 'a0a0a0']
+    
+    def save(self, *args, **kwargs):
+        if not self.color:
+            self.color = random.choice(self.COLOR_OPTIONS)
+            
+        return super(Cell, self).save(args, kwargs)
     
 
 class PlayerCell(Cell):
@@ -256,7 +264,7 @@ class PlayerCell(Cell):
     
     def __str__(self):
         try:
-            return '%s at (%d, %s)' % (self.player, self.x, self.y)
+            return '%s at (%d, %s)' % (self.player, self.x+1, self.y+1)
         except:
             return '%s at ?' % str(self.player)
             
@@ -264,6 +272,7 @@ class PlayerCell(Cell):
 #Specific to "Role" game
 class Role(models.Model):
     name = models.CharField(max_length=255)
+    color = models.CharField(max_length=6)
 
     def __str__(self):
         return self.name
@@ -304,9 +313,9 @@ class CellFact(Fact):
     
     def __str__(self):
         if self.neg:
-            return "%s's cell is not (%d, %d)" % (str(self.player.user.username), self.cell.x, self.cell.y)
+            return "%s's cell is not (%d, %d)" % (str(self.player.user.username), self.cell.x+1, self.cell.y+1)
         else:
-            return "%s's cell is (%d, %d)" % (str(self.player.user.username), self.cell.x, self.cell.y)
+            return "%s's cell is (%d, %d)" % (str(self.player.user.username), self.cell.x+1, self.cell.y+1)
     
 class Alert(models.Model):
     player = models.ForeignKey(Player)
@@ -315,6 +324,7 @@ class Alert(models.Model):
     content_type = models.ForeignKey(ContentType, null=True)
     object_id = models.IntegerField(null=True)
     text = models.TextField(blank=True)
+    important = models.BooleanField(default=False)
     viewed = models.DateTimeField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     

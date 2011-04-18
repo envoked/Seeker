@@ -1,4 +1,7 @@
 User = {}
+$(document).bind("mobileinit", function(){
+//$.mobile.ajaxEnabled = false;
+})
 
 Main = {
     helpMenu: function(target, previous)
@@ -67,21 +70,25 @@ lightbox = function(data)
 {
     hideLightbox()
     var opaque = $('<div class="opaque">')
-    opaque.click(hideLightbox)
-    $('body').append(opaque)
+    opaque.click(function() { $('.ui-dialog').dialog('close') })
     var el = $('<div class="lightbox ui-dialog">')
-    var header = $('<div class="ui-header">')
+    var header = $('<div class="header ui-corner-top ui-overlay-shadow ui-bar-a ui-header">')
+    header.append('<h1>Alert</h1>')
     el.append(header)
     
-    var content = $('<div class="ui-content">')
+    var content = $('<div class="content ui-content ui-body-c">')
     content.html(data)
     el.append(content)
     
     $('body').append(el)
+    $('.ui-dialog').dialog()
+    $.mobile.changePage($('.lightbox'), "none", false, true)
 }
 
 hideLightbox = function()
 {
-    $('.lightbox').remove()
-    $('.opaque').remove()
+    //$('.ui-dialog').dialog('close')
+    Game.alert_open = false
+    $.mobile.changePage($('#seeker_game'))
+    $('.ui-dialog').remove()
 }

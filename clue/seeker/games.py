@@ -60,6 +60,26 @@ class BoardGame:
             )
             clue.save()
             
+            inform_player = Alert(
+                player = player,
+                type = 'message',
+                important = True,
+                text = "SHH! You are the %s" % (role.name)
+            )
+            inform_player.save()
+            
+        for row in range(0, self.game.board_size):
+            for col in range(0, self.game.board_size):
+                try:
+                    cell = Cell(
+                        x=row,
+                        y=col,
+                        game=self.game
+                    )
+                    cell.save()
+                except:
+                    pass
+            
         for player in self.game.player_set.all():
             other_players = self.game.player_set.exclude(pk=player.id).order_by('?')
             
@@ -218,11 +238,11 @@ class BoardGame:
         min_turns = self.get_cached('min_turns')
 
         if not max_turns:
-            max_turns = self.game.player_set.filter(is_current=True).select_related('turn').annotate(turns=Count('turn')).aggregate(Max('turns'))['turns__max']
+            max_turns = self.game.player_set.filter(is_current=True).aggregate(Max('turn_count'))['turn_count__max']
             self.set_cached('max_turns', max_turns)
         
         if not min_turns:
-            min_turns = self.game.player_set.filter(is_current=True).select_related('turn').annotate(turns=Count('turn')).aggregate(Min('turns'))['turns__min']
+            min_turns = self.game.player_set.filter(is_current=True).aggregate(Min('turn_count'))['turn_count__min']
             self.set_cached('min_turns', min_turns)
         
         #For each CPU
@@ -233,6 +253,9 @@ class BoardGame:
             if not max_turns or cpu_turns < max_turns + self.cpu_window:
                 ai = AI(cpu)
                 turn = ai.go()
+                if turn:
+                    cpu.turn_count += 1
+                    cpu.save()
               
     def in_window(self, player):
         player_turns = player.turn_set.count()
@@ -274,6 +297,7 @@ class BoardGame:
         if firsttime:
             player_cells = PlayerCell.objects.filter(game=self.game).all()
             game_dict['player_cells'] = []
+            game_dict['cells'] = serialize_qs(Cell.objects.filter(game=self.game).all())
             for cell in player_cells:
                 _cell = expand(cell)
                 _cell['player_id'] = cell.player_id
@@ -287,6 +311,7 @@ class BoardGame:
             for role in roles:
                 game_dict['player_extra'][role.player.id]['role'] = expand(role)
                 game_dict['player_extra'][role.player.id]['role']['name'] = role.role.name
+                game_dict['player_extra'][role.player.id]['role']['color'] = role.role.color
                 
         return game_dict
     

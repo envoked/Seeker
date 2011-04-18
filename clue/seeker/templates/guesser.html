@@ -14,7 +14,7 @@
 
         <ul id="role" data-role="listview" data-inset="true" data-theme="d">
             {% for player_role in roles %}
-            <li onclick="Game.guessCubicle('{{ player_role.role.id }}'); Game.text_el.html('Select a cubicle to submit your guess...'); $('.ui-dialog').dialog('close')">{{ player_role.role.name }}</li>
+            <li style="background-color: #{{ player_role.role.color }}; color: white" onclick="Game.guessCubicle('{{ player_role.role.id }}'); Game.text_el.html('Select a cubicle to submit your guess...'); $('.ui-dialog').dialog('close')">{{ player_role.role.name }}</li>
             {% endfor %}
         </ul>
        

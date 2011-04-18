@@ -48,11 +48,12 @@ body {
 
 .header {
     color: #E0E0E0;
-    border:1px solid #8C8C8C;
     background-image: url('../img/headerbg.png');
     background-color: #992632;
     text-align: center;
     background-repeat: repeat-x;
+    font-size: 0.8em;
+    height: 30px
 }
 
 .header .left-button {
@@ -66,8 +67,11 @@ body {
 
 .header a { color: white }
 
-.header h1 {display: inline-block; background: url('../img/logo.png') 0px -5px no-repeat ; overflow: visible; height: 22px; line-height: 28px; text-indent:-9999px;}
+.ui-header .ui-title {display: inline-block; background: url('../img/logo.png') 0px -3px no-repeat; width: 96px; margin: 0; padding: 0; float: left; overflow: visible; height: 22px; line-height: 28px; text-indent:-9999px;}
+.ui-header span.page-title { line-height: 34px; float: left }
+.ui-header .ui-btn { font-size: 1.0em }
 
+.ui-dialog .ui-title { margin-left: 36px }
 
 .toolbar {
     background: #222;
@@ -97,9 +101,9 @@ h1, h2, h3 {
     margin-bottom: 1em;
 }
 
-h1 { font-size: 2em }
-h2 { font-size: 1.8em }
-h3 { font-size: 1.6em }
+h1 { font-size: 1.4em }
+h2 { font-size: 1.3em }
+h3 { font-size: 1.2em }
 
 a {
 	/*text-decoration:none;*/
@@ -140,6 +144,8 @@ form {
 .floatright {
  float: right;
 }
+
+.clear { clear: both }
 
 .centerText {
     text-align: center;
@@ -192,15 +198,18 @@ form {
 }   
 
 .lightbox {
-	position:fixed;
-	top:10px;
-	left:50%;
-	margin-left:-100px;
-	width:200px;
-	background:#FFFFFF;
-	padding:10px 15px 10px 15px;
-	border:2px solid #ccc;
-	z-index:1001; 
+    position:fixed;
+    top:10px;
+    left:50%;
+    margin-left:-100px;
+    width:200px;
+    z-index:1001; 
+}
+
+.lightbox .header h1 {
+    font-size: 1.2em;
+    padding: 2px;
+    margin: 0.5px;
 }
 
 .clues li
@@ -281,3 +290,7 @@ form {
     #help #startgame1, #startgame2, #startgame3, #startgame4, #joingame1, #joingame2, #joingame3, #changechar1, #changechar2, #viewstats1, #viewstats2 {
 	display: none;
     }
+    
+.ui-btn-inner {
+    font-size: 0.8em
+}

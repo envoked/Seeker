@@ -148,22 +148,9 @@ def clues_for_player(request, game_id):
     
     role_negative = RoleFact.objects.filter(fact__neg=True, clue__player=player, fact__player=for_player).all()
     cell_negative = CellFact.objects.filter(fact__neg=True, clue__player=player, fact__player=for_player).all()
+    
+    other_players = game.player_set.exclude(pk=for_player.id).all()
 
-    # An attempt to display a list of all possible roles for the player.
-    # Known negative facts will make their corresponding role crossed out in the list
-    # Known positive facts will make thier corresponding role emphasized in the list
-    #all_roles = Role.objects.all()
-    #all_roles = list(all_roles)    
-    #for rneg in role_negative:
-    #    try:        
-    #        all_roles.remove(rneg.role)
-    #    except ValueError:
-    #        continue
-    #for rpos in role_positive:
-    #    try:
-    #        all_roles.remove(rpos.role)
-    #    except:
-    #        continue
     return locals()
 
     
@@ -269,7 +256,8 @@ def guess(request, game_id):
         alert = Alert(
             player = player,
             type = "message",
-            text = "You solved the puzzle!, waiting for other players to finish."
+            text = "You solved the puzzle!, waiting for other players to finish.",
+            important = True
         )
         alert.content_type = ContentType.objects.get_for_model(guess)
         alert.object_id = guess.id
@@ -293,7 +281,8 @@ def guess(request, game_id):
                 alert = Alert(
                     player = other,
                     type = "message",
-                    text = "%s solved the puzzle, wait for other players to finish." % (player.user.username)
+                    text = "%s solved the puzzle, wait for other players to finish." % (player.user.username),
+                    important = True
                 )
                 alert.content_type = ContentType.objects.get_for_model(guess)
                 alert.object_id = guess.id
@@ -412,6 +401,7 @@ def quit(request, game_id):
     game = get_object_or_404(Game, id=game_id)
     game.is_current = False
     game.save()
+    bg = BoardGame(game)
     
     player = Player.objects.get(
         user = request.user,
@@ -419,6 +409,8 @@ def quit(request, game_id):
     )
     player.is_current = False
     player.save()
+    bg.endgame()
+    
     return HttpResponseRedirect('/lobby/home/')
 
 @render_to('notification.html')

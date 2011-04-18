@@ -31,9 +31,9 @@
     <body>
         <div data-role="{% block page-data-role %}page{% endblock %}" id="{% block id %}seeker{% endblock %}">
             <div class="header" data-role="header" data-backbtn="{% block data-backbtn %}false{% endblock %}">
+                <h1></h1>
+		<span class="page-title">{% block header %}{% endblock %}</span>
                 
-                
-                <h1>Home</h1>
                
                 {% if user.id %}
                     {% block header_right %}<a id="homeButton" href="/lobby/home/" class="ui-btn-right">Home</a>{% endblock %}

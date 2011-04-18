@@ -7,34 +7,44 @@
 
 {% block content %}
 
-<h1>{{ for_player.user.username }}</h1>
-<img src="{{ for_player.image.url }}" />
-
-<h3 style="margin-bottom: 2px">Role</h3>
-{% if role_positive %}
-    <b style="color: green" title="{{ role_positive.0 }}">{{ role_positive.0 }}</b>
-{% else %}
-    {% if role_negative.count > 0 %}
-        {% for role in role_negative.all %}
-            <strike style="color: red">{{ role.role }}</strike>
-        {% endfor %}
+<div style="float: left; width: 50%">
+    <h3>{{ for_player.user.username }}</h3>
+    <img src="{{ for_player.image.url }}" style="width: 33%" />
+</div>
+<div style="float: left; width: 50%">
+    <ul data-role="listview" data-theme="g">
+    {% for player in other_players %}
+        <li><a onclick="Game.showCluesForPlayer({{ player.id }})">{{ player.user.username }}</a></li>
+    {% endfor %}
+    </ul>
+</div>
+<br class="clear" />
+<div style="float: left; width: 50%">
+    <h3>Role</h3>
+    {% if role_positive %}
+        <b style="padding: 0.3em; color: white; background-color: #{{ role_positive.0.role.color }}" title="{{ role_positive.0 }}">{{ role_positive.0 }}</b>
+    {% else %}
+        {% if role_negative.count > 0 %}
+            {% for role in role_negative.all %}
+                <strike style="color: red">{{ role.role }}</strike>
+            {% endfor %}
+        {% endif %}
     {% endif %}
-{% endif %}
-
-<!--{% for r in all_roles %}
-        <b>{{ r }}</b>
-{% endfor %}-->
-
-<h3 style="margin-top: 15px; margin-bottom: 2px">Cubicle</h3>
-{% if cell_positive %}
-    <b style="color: green" title="{{ cell_positive.0 }}">{{ cell_positive.0 }}</b>
-{% else %}
-    {% if cell_negative.count > 0 %}
-        {% for cell in cell_negative.all %}
-            <strike style="color: red">{{ cell.cell.x }}, {{ cell.cell.y }}</strike>
-        {% endfor %}
+</div>
+<div style="float: left; width: 50%">    
+    <h3 style="margin-top: 15px; margin-bottom: 2px">Cubicle</h3>
+    {% if cell_positive %}
+        <b style="color: green" title="{{ cell_positive.0 }}">{{ cell_positive.0 }}</b>
+    {% else %}
+        {% if cell_negative.count > 0 %}
+            {% for cell in cell_negative.all %}
+                <strike style="color: red">{{ cell.cell.x }}, {{ cell.cell.y }}</strike>
+            {% endfor %}
+        {% endif %}
     {% endif %}
-{% endif %}
+</div>
+<br class="clear" />
+<script>
 
-
+</script>
 {% endblock %}
