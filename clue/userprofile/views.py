@@ -104,7 +104,7 @@ def public(request, username):
         raise Http404
 
     template = "userprofile/profile/public.html"
-    data = { 'profile': profile, 'GOOGLE_MAPS_API_KEY': GOOGLE_MAPS_API_KEY, 'DEFAULT_AVATAR_SIZE': DEFAULT_AVATAR_SIZE }
+    data = { 'profile': profile, 'GOOGLE_MAPS_API_KEY': GOOGLE_MAPS_API_KEY, 'DEFAULT_AVATAR_SIZE': DEFAULT_AVATAR_SIZE,'history': history }
     signals.context_signal.send(sender=public, request=request, context=data)
     
     return render_to_response(template, data, context_instance=RequestContext(request))
