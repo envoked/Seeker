@@ -313,9 +313,9 @@ class CellFact(Fact):
     
     def __str__(self):
         if self.neg:
-            return "%s's cell is not (%d, %d)" % (str(self.player.user.username), self.cell.x+1, self.cell.y+1)
+            return "%s's cubicle is not (%d, %d)" % (str(self.player.user.username), self.cell.x+1, self.cell.y+1)
         else:
-            return "%s's cell is (%d, %d)" % (str(self.player.user.username), self.cell.x+1, self.cell.y+1)
+            return "%s's cubicle is (%d, %d)" % (str(self.player.user.username), self.cell.x+1, self.cell.y+1)
     
 class Alert(models.Model):
     player = models.ForeignKey(Player)
@@ -400,7 +400,7 @@ class Clue(models.Model):
             clue_str = "%s knows that %s" % (self.player.user.username, str(self.fact))
 
         clue_str = clue_str.replace("%s knows" % self.player.user.username, "you know")
-        clue_str = clue_str.replace("%s's cell" % self.player.user.username, "your cell")
+        clue_str = clue_str.replace("%s's cell" % self.player.user.username, "your cubicle")
         clue_str = clue_str.replace(self.player.user.username, "you")
         clue_str = clue_str.replace("you's", "your")
         clue_str = clue_str.replace("you is", "you're")
