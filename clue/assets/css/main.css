@@ -287,7 +287,7 @@ form {
 	display: inline;
     }
     
-    #help #startgame1, #startgame2, #startgame3, #startgame4, #joingame1, #joingame2, #joingame3, #changechar1, #changechar2, #viewstats1, #viewstats2 {
+    #help #howtoplay, #moving1, #moving2, #invest1, #invest2, #invest3, #guess1, #guess2, #guess3, #guess4, #guess5, #cluelist1, #cluelist2, #cluelist3, #howtowin1, #howtowin2, #howtowin3, #startgame1, #startgame2, #startgame3, #startgame4, #joingame1, #joingame2, #joingame3, #changechar1, #changechar2, #viewstats1, #viewstats2 {
 	display: none;
     }
     

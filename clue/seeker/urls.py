@@ -9,7 +9,6 @@ urlpatterns = patterns('',
     (r'^game/(?P<game_id>[0-9]+)/quit/$', 'seeker.play.quit'),
     (r'^game/(?P<game_id>[0-9]+)/player/$', 'seeker.play.clues_for_player'),
     (r'^game/(?P<game_id>[0-9]+)/clues/$', 'seeker.play.clues'),
-    (r'^game/(?P<game_id>[0-9]+)/help/$', 'seeker.play.help'),
     
     (r'^game/(?P<game_id>[0-9]+)/alerts/$', 'seeker.play.alerts'),
     (r'^game/(?P<game_id>[0-9]+)/alert/viewed/$', 'seeker.play.alert_viewed'),

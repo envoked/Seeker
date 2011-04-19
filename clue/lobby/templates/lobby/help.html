@@ -4,73 +4,172 @@
     
 <div id="help">
     <div id="menu">
-        <h2>Help Menu</h2>
+        <h3>Help Menu</h3>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'menu')" data-role="button" data-rel="dialog">How To Play</a>
         <a href="#" onclick="Main.helpMenu('startgame1', 'menu')" data-role="button" data-rel="dialog">Start A Game</a>
-        <a href="#" onclick="Main.helpMenu('joingame1', 'menu')" data-role="button">Join A Game</a>
-        <a href="#" onclick="Main.helpMenu('changechar1', 'menu')" data-role="button">Change Your Character</a>
-        <a href="#" onclick="Main.helpMenu('viewstats1', 'menu')" data-role="button">View Your Stats</a>
-        <a href="#" data-rel="back" data-role="button">Close Help</a>
+        <a href="#" onclick="Main.helpMenu('joingame1', 'menu')" data-role="button" data-rel="dialog">Join A Game</a>
+        <a href="#" onclick="Main.helpMenu('changechar1', 'menu')" data-role="button" data-rel="dialog">Change Your Character</a>
+    </div>
+    <div id="howtoplay">
+        <h3>How To Play</h3>
+        <a href="#" onclick="Main.helpMenu('moving1', 'howtoplay')" data-role="button" data-rel="dialog">Moving</a>
+        <a href="#" onclick="Main.helpMenu('invest1', 'howtoplay')" data-role="button" data-rel="dialog">Investigating</a>
+        <a href="#" onclick="Main.helpMenu('guess1', 'howtoplay')" data-role="button" data-rel="dialog">Guessing</a>
+        <a href="#" onclick="Main.helpMenu('cluelist1', 'howtoplay')" data-role="button" data-rel="dialog">Clue List</a>
+        <a href="#" onclick="Main.helpMenu('howtowin1', 'howtoplay')" data-role="button" data-rel="dialog">How To Win</a>
+        <a href="#" onclick="Main.helpMenu('menu', 'howtoplay')" data-role="button" data-rel="dialog">Back To Main Help</a>
+    </div>
+    <div id="moving1">
+        <h3>Moving (1/2)</h3>
+        <p>Click an unoccupied tile adjacent to your character.</p>
+        <a href="#" onclick="Main.helpMenu('moving2', 'moving1')" data-role="button" data-rel="dialog">Next Step</a>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'moving1')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="moving2">
+        <h3>Moving (2/2)</h3>
+        <p>If the spot is not occupied, you will move there.</p>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'moving2')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="invest1">
+        <h3>Investigation (1/3)</h3>
+        <p>Click the Investigate button.</p>
+        <a href="#" onclick="Main.helpMenu('invest2', 'invest1')" data-role="button" data-rel="dialog">Next Step</a>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'invest1')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="invest2">
+        <h3>Investigation (2/3)</h3>
+        <p>Click a player adjacent to you.</p>
+        <a href="#" onclick="Main.helpMenu('invest3', 'invest2')" data-role="button" data-rel="dialog">Next Step</a>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'invest2')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="invest3">
+        <h3>Investigation (3/3)</h3>
+        <p>The result of the investigation will be a new alert.</p>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'invest3')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="guess1">
+        <h3>Guessing (1/5)</h3>
+        <p>Click the Guess button.</p>
+        <a href="#" onclick="Main.helpMenu('guess2', 'guess1')" data-role="button" data-rel="dialog">Next Step</a>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'guess1')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="guess2">
+        <h3>Guessing (2/5)</h3>
+        <p>Click a Player to guess his role.</p>
+        <a href="#" onclick="Main.helpMenu('guess3', 'guess2')" data-role="button" data-rel="dialog">Next Step</a>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'guess2')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="guess3">
+        <h3>Guessing (3/5)</h3>
+        <p>Click his role from the list of roles left to guess.</p>
+        <a href="#" onclick="Main.helpMenu('guess4', 'guess3')" data-role="button" data-rel="dialog">Next Step</a>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'guess3')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="guess4">
+        <h3>Guessing (4/5)</h3>
+        <p>Click his cubicle.</p>
+        <a href="#" onclick="Main.helpMenu('guess5', 'guess4')" data-role="button" data-rel="dialog">Next Step</a>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'guess4')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="guess5">
+        <h3>Guessing (5/5)</h3>
+        <p>The result of the guess will be a new alert.</p>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'guess5')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="cluelist1">
+        <h3>Clue List (1/3)</h3>
+        <p>Click the 'Clues' button.</p>
+        <a href="#" onclick="Main.helpMenu('cluelist2', 'cluelist1')" data-role="button" data-rel="dialog">Next Step</a>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'cluelist1')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="cluelist2">
+        <h3>Clue List (2/3)</h3>
+        <p>Click a Player you want to view clues about.</p>
+        <a href="#" onclick="Main.helpMenu('cluelist3', 'cluelist2')" data-role="button" data-rel="dialog">Next Step</a>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'cluelist2')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="cluelist3">
+        <h3>Clue List (3/3)</h3>
+        <p>Green clues are positive (x IS the Mayor)<br>Red clues are negative (x IS NOT the Cop)</p>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'cluelist3')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="howtowin1">
+        <h3>How To Win (1/3)</h3>
+        <p>The goal of Seekr is to guess everyone else's ROLE and CUBE the fastest.</p>
+        <a href="#" onclick="Main.helpMenu('howtowin2', 'howtowin1')" data-role="button" data-rel="dialog">Next Step</a>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'howtowin1')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="howtowin2">
+        <h3>How To Win (2/3)</h3>
+        <p>Investigate players and move around cubes to gain clues to help you.</p>
+        <a href="#" onclick="Main.helpMenu('howtowin3', 'howtowin2')" data-role="button" data-rel="dialog">Next Step</a>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'howtowin2')" data-role="button" data-rel="dialog">Back to Help Menu</a>
+    </div>
+    <div id="howtowin3">
+        <h3>How To Win (3/3)</h3>
+        <p>You don't know how much other people have figured out so it is a race to the end!</p>
+        <a href="#" onclick="Main.helpMenu('howtoplay', 'howtowin3')" data-role="button" data-rel="dialog">Back to Help Menu</a>
     </div>
     <div id="startgame1">
-        <h2>Start Game (1/4)</h2>
-        <h3>From the Home menu, click Start Game.</h3>
+        <h3>Start Game (1/4)</h3>
+        <p>From the Home menu, click Start Game.</p>
         <a href="#" onclick="Main.helpMenu('startgame2', 'startgame1')" data-role="button" data-rel="dialog">Next Step</a>
         <a href="#" onclick="Main.helpMenu('menu', 'startgame1')" data-role="button" data-rel="dialog">Back to Help Menu</a>
     </div>
     <div id="startgame2">
-        <h2>Start Game (2/4)</h2>
-        <h3>Add a Game Title then click Create.</h3>
+        <h3>Start Game (2/4)</h3>
+        <p>Add a Game Title then click Create.</p>
         <a href="#" onclick="Main.helpMenu('startgame3', 'startgame2')" data-role="button" data-rel="dialog">Next Step</a>
         <a href="#" onclick="Main.helpMenu('menu', 'startgame2')" data-role="button" data-rel="dialog">Back to Help Menu</a>
     </div>
     <div id="startgame3">
-        <h2>Start Game (3/4)</h2>
-        <h3>Invite a friend by typing in an email address. You can also add Computer players.</h3>
+        <h3>Start Game (3/4)</h3>
+        <p>Invite a friend by typing in an email address. You can also add Computer players.</p>
         <a href="#" onclick="Main.helpMenu('startgame4', 'startgame3')" data-role="button" data-rel="dialog">Next Step</a>
         <a href="#" onclick="Main.helpMenu('menu', 'startgame3')" data-role="button" data-rel="dialog">Back to Help Menu</a>
     </div>
     <div id="startgame4">
-        <h2>Start Game (4/4)</h2>
-        <h3>When you are ready to start, click Start Game.</h3>
+        <h3>Start Game (4/4)</h3>
+        <p>When you are ready to start, click Start Game.</p>
         <a href="#" onclick="Main.helpMenu('menu', 'startgame4')" data-role="button" data-rel="dialog">Back to Help Menu</a>
     </div>
     <div id="joingame1">
-        <h2>Join a Game (1/3)</h2>
-        <h3>If you received an email invite, just click the link, log in, and you're in!</h3>
+        <h3>Join a Game (1/3)</h3>
+        <p>If you received an email invite, just click the link, log in, and you're in!</p>
         <a href="#" onclick="Main.helpMenu('joingame2', 'joingame1')" data-role="button" data-rel="dialog">Next Step</a>
         <a href="#" onclick="Main.helpMenu('menu', 'joingame1')" data-role="button" data-rel="dialog">Back to Help Menu</a>
     </div>
     <div id="joingame2">
-        <h2>Join a Game (2/3)</h2>
-        <h3>If you want to find a game to join, click Find Game from the Main Menu</h3>
+        <h3>Join a Game (2/3)</h3>
+        <p>If you want to find a game to join, click Find Game from the Main Menu</p>
         <a href="#" onclick="Main.helpMenu('joingame3', 'joingame2')" data-role="button" data-rel="dialog">Next Step</a>
         <a href="#" onclick="Main.helpMenu('menu', 'joingame2')" data-role="button" data-rel="dialog">Back to Help Menu</a>
     </div>
     <div id="joingame3">
-        <h2>Join a Game (3/3)</h2>
-        <h3>When you find a game that looks good, click the game's Name. Now you're in!</h3>
+        <h3>Join a Game (3/3)</h3>
+        <p>When you find a game that looks good, click the game's Name. Now you're in!</p>
         <a href="#" onclick="Main.helpMenu('menu', 'joingame3')" data-role="button" data-rel="dialog">Back to Help Menu</a>
     </div>
     <div id="changechar1">
-        <h2>Change Your Character (1/2)</h2>
-        <h3>Before a game starts, you can change your character by clicking Avatar.</h3>
+        <h3>Change Your Character (1/2)</h3>
+        <p>Before a game starts, you can change your character by clicking Avatar.</p>
         <a href="#" onclick="Main.helpMenu('changechar2', 'changechar1')" data-role="button" data-rel="dialog">Next Step</a>
         <a href="#" onclick="Main.helpMenu('menu', 'changechar1')" data-role="button" data-rel="dialog">Back to Help Menu</a>
     </div>
     <div id="changechar2">
-        <h2>Change Your Character (2/2)</h2>
-        <h3>Click one you like then click Pick Character.</h3>
+        <h3>Change Your Character (2/2)</h3>
+        <p>Click one you like then click Pick Character.</p>
         <a href="#" onclick="Main.helpMenu('menu', 'changechar2')" data-role="button" data-rel="dialog">Back to Help Menu</a>
     </div>
     <div id="viewstats1">
-        <h2>View Your Stats (1/2)</h2>
-        <h3>To see how good you really are, click Public Profile from the Main Menu.</h3>
+        <h3>View Your Stats (1/2)</h3>
+        <p>To see how good you really are, click Public Profile from the Main Menu.</p>
         <a href="#" onclick="Main.helpMenu('viewstats2', 'viewstats1')" data-role="button" data-rel="dialog">Next Step</a>
         <a href="#" onclick="Main.helpMenu('menu', 'viewstats1')" data-role="button" data-rel="dialog">Back to Help Menu</a>
     </div>
     <div id="viewstats2">
-        <h2>View Your Stats (2/2)</h2>
-        <h3>All your achievements and stats are listed on this page!</h3>
+        <h3>View Your Stats (2/2)</h3>
+        <p>All your achievements and stats are listed on this page!</p>
         <a href="#" onclick="Main.helpMenu('menu', 'viewstats2')" data-role="button" data-rel="dialog">Back to Help Menu</a>
     </div>
 </div>
