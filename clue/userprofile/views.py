@@ -33,6 +33,8 @@ from userprofile import signals
 import copy
 from django.contrib import messages
 from django.utils.encoding import iri_to_uri
+from seeker.models import Player, Game
+
 
 if hasattr(settings, "AWS_SECRET_ACCESS_KEY"):
     from backends.S3Storage import S3Storage
@@ -93,13 +95,18 @@ def fetch_geodata(request, lat, lng):
 
 def public(request, username):
     try:
-        profile = User.objects.get(username=username).get_profile()
+        user = User.objects.get(username=username)
+        profile = user.get_profile()
+        history = Player.objects.filter(user=user, game__is_current=False, is_current=False)
+        history = history.order_by('-game__end')[:5]
+        
     except:
         raise Http404
 
     template = "userprofile/profile/public.html"
     data = { 'profile': profile, 'GOOGLE_MAPS_API_KEY': GOOGLE_MAPS_API_KEY, 'DEFAULT_AVATAR_SIZE': DEFAULT_AVATAR_SIZE }
     signals.context_signal.send(sender=public, request=request, context=data)
+    
     return render_to_response(template, data, context_instance=RequestContext(request))
 
 @login_required

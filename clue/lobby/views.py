@@ -38,10 +38,6 @@ def home(request):
         player = None
     finally:
         traceback.print_exc()
-    
-    #show past games that have been closed and player has left
-    history = Player.objects.filter(user=request.user, game__is_current=False, is_current=False)
-    history = history.order_by('-game__end')[:5]
         
     return locals()
 

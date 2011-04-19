@@ -45,4 +45,14 @@
 		</div>
 		{% endif %}
 	</div>
+	
+	<h3>Recent Games</h3>
+    <div data-role="controlgroup">
+        {% for player in history.all %}
+        <li>
+            <span class="rank">{{ player.ranking.human_rank }}</span>
+            <a href="/seeker/game/{{ player.game.id }}/">{{ player.game.end }}</a>
+        </li>
+        {% endfor %}
+    </div>
 {% endblock %}
