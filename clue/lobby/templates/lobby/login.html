@@ -9,8 +9,6 @@ Login
 {% endblock %}
 
 {% block content %}
-    <h3>Login</h3>
-    
     {% if message %}
         <p class="error">{{ message }}</p>
     {% endif %}
@@ -23,4 +21,7 @@ Login
     
     <p>Don't have an account?<br><a href="/lobby/register/">Sign Up.</a></p>
 
+{% endblock %}
+
+{% block toolbar %}
 {% endblock %}
