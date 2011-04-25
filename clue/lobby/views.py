@@ -21,7 +21,7 @@ context = {
 @render_to('lobby/index.html')
 def index(request):
     if request.user.is_authenticated():
-        return HttpResponseRedirect('/lobby/')
+        return HttpResponseRedirect('/lobby/home/')
     return locals()
 
 @login_required
