@@ -294,3 +294,10 @@ form {
 .ui-btn-inner {
     font-size: 0.8em
 }
+
+.role {
+    font-size: 1.2em;
+    padding: 2px;
+    color: white;
+    text-shadow: none;
+}

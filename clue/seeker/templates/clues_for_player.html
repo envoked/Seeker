@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load seekr %}
 
 {% block header %}Clues{% endblock %}
 {% block header_right %}{% endblock %}
@@ -12,7 +13,8 @@
     <img src="{{ for_player.image.url }}" style="width: 33%" />
 </div>
 <div style="float: left; width: 50%">
-    <ul data-role="listview" data-theme="g">
+    <h4>Other Players</h4>
+    <ul data-role="listview" data-theme="d" data-inset="true">
     {% for player in other_players %}
         <li><a onclick="Game.showCluesForPlayer({{ player.id }})">{{ player.user.username }}</a></li>
     {% endfor %}
@@ -22,11 +24,11 @@
 <div style="float: left; width: 50%">
     <h3>Role</h3>
     {% if role_positive %}
-        <b style="padding: 0.3em; color: white; background-color: #{{ role_positive.0.role.color }}" title="{{ role_positive.0 }}">{{ role_positive.0 }}</b>
+        {{ role_positive.0.role|display_role }}
     {% else %}
         {% if role_negative.count > 0 %}
             {% for role in role_negative.all %}
-                <strike style="color: red">{{ role.role }}</strike>
+                <strike title="{{ role }}" style="color: red">{{ role.role|display_role }}</strike>
             {% endfor %}
         {% endif %}
     {% endif %}
@@ -34,11 +36,11 @@
 <div style="float: left; width: 50%">    
     <h3 style="margin-top: 15px; margin-bottom: 2px">Cubicle</h3>
     {% if cell_positive %}
-        <b style="color: green" title="{{ cell_positive.0 }}">{{ cell_positive.0 }}</b>
+        {{ cell_positive.0.cell|display_cell }}
     {% else %}
         {% if cell_negative.count > 0 %}
             {% for cell in cell_negative.all %}
-                <strike style="color: red">{{ cell.cell.x }}, {{ cell.cell.y }}</strike>
+                <strike title="{{ cell }}" style="color: red">{{ cell.cell|display_cell }}</strike>
             {% endfor %}
         {% endif %}
     {% endif %}
