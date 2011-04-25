@@ -1,1 +1,72 @@
-[{"pk": 1, "model": "seeker.role", "fields": {"name": "Thief"}}, {"pk": 2, "model": "seeker.role", "fields": {"name": "Narc"}}, {"pk": 3, "model": "seeker.role", "fields": {"name": "Convict"}}, {"pk": 4, "model": "seeker.role", "fields": {"name": "Dealer"}}, {"pk": 5, "model": "seeker.role", "fields": {"name": "Pimp"}}, {"pk": 6, "model": "seeker.role", "fields": {"name": "Junkie"}}, {"pk": 7, "model": "seeker.role", "fields": {"name": "Hacker"}}, {"pk": 8, "model": "seeker.role", "fields": {"name": "Gossiper"}}, {"pk": 9, "model": "seeker.role", "fields": {"name": "Cronie"}}]
+[{
+    "pk": 1,
+    "model": "seeker.role",
+    "fields": {
+        "name": "Thief",
+        "color": "00a5a6"
+    }
+},
+{
+    "pk": 2,
+    "model": "seeker.role",
+    "fields": {
+        "name": "Narc",
+        "color": "f6ea31"
+    }
+},
+{
+    "pk": 3,
+    "model": "seeker.role",
+    "fields": {
+        "name": "Convict",
+        "color": "fcaf40"
+    }
+},
+{
+    "pk": 4,
+    "model": "seeker.role",
+    "fields": {
+        "name": "Dealer",
+        "color": "ac5ea4" 
+    }
+},
+{
+    "pk": 5,
+    "model": "seeker.role",
+    "fields": {
+        "name": "Pimp",
+        "color": "962063"
+    }
+},
+{
+    "pk": 6,
+    "model": "seeker.role",
+    "fields": {
+        "name": "Junkie",
+        "color": "9acb4e"
+    }
+},
+{
+    "pk": 7,
+    "model": "seeker.role",
+    "fields": {
+        "name": "Hacker",
+        "color": "24a5dd"
+    }
+},
+{
+    "pk": 8,
+    "model": "seeker.role",
+    "fields": {
+        "name": "Gossiper",
+        "color": "eb3d36"
+    }
+},
+{
+    "pk": 9,
+    "model": "seeker.role",
+    "fields": {
+        "name": "Cronie",
+        "color": "2aa047"
+    }
+}]

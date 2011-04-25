@@ -38,8 +38,8 @@ div.board div.numeral {
     text-align: center;
     vertical-align: middle;
     background: #ccc;
-    color: white;
-    text-shadow: 1px 1px #aaa
+    color: #666;
+    font-size: 11px;
 }
 
 div.board div.numeral-top {
