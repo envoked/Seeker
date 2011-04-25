@@ -409,7 +409,7 @@ def quit(request, game_id):
     )
     player.is_current = False
     player.save()
-    bg.endgame()
+    #bg.endgame()
     
     return HttpResponseRedirect('/lobby/home/')
 

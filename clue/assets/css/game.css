@@ -32,6 +32,7 @@ div.board div.cell {
     background-repeat: no-repeat;
     position: relative;
     text-shadow: none;
+    overflow: hidden;
 }
 
 div.board div.numeral {
@@ -163,7 +164,7 @@ div.board div.you div.text-overlay-central {
     font-size: 1.2em
 }
 
-div.board .tile {
+div.board .tile, div.board .tile-perm {
     position: absolute;
     z-index: 8;
     width: 100%;

@@ -1,6 +1,7 @@
-import traceback, random
+import traceback, random, os
 from django.db import models
 from django.db import IntegrityError
+from django.conf import settings
 from django.contrib.auth.models import *
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
@@ -213,17 +214,31 @@ class Player(models.Model):
         else:
             return '%s (current) in %s at %s' % (self.user.username, str(self.game), str(self.get_position()))
 
+def get_assets(folder):
+    images = []
+    path = '%simg/%s' % (settings.MEDIA_ROOT, folder)
+    for infile in os.listdir(path):
+        if infile.endswith(".png"):
+            images.append(infile)
+    return images
+
+BOARD_IMAGES = get_assets('board')
+
 class Cell(models.Model):
     x = models.IntegerField(null=True)
     y = models.IntegerField(null=True)
     game = models.ForeignKey(Game) #LB - performance
     created = models.DateTimeField(auto_now_add=True)
     color = models.CharField(max_length=6)
+    image = models.ImageField(null=True, upload_to='img/board', blank=True)
     COLOR_OPTIONS = ['cccccc', '006699', '666666', 'a0a0a0']
     
     def save(self, *args, **kwargs):
         if not self.color:
             self.color = random.choice(self.COLOR_OPTIONS)
+        #if this sell has not been saved, give it an image 1/3 of the time
+        if not self.image and not self.id and random.random() < 0.3:
+            self.image = 'img/board/' + random.choice(BOARD_IMAGES)
             
         return super(Cell, self).save(args, kwargs)
     

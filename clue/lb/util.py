@@ -57,7 +57,10 @@ def expand(row):
         elif type(field_value).__name__ == 'bool':
             field_value = int(field_value)
         elif type(field_value).__name__ in ['ImageFieldFile', 'FieldFile']:
-            field_value = field_value.url
+            if field_value is not None and field_value != "":
+                field_value = field_value.url
+            else:
+                continue
         elif type(field_value).__name__ == 'HTTPError':
             field_value = 0
         

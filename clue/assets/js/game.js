@@ -173,8 +173,8 @@ Game = {
         this.el.html("");
         this.el.css('width', ($(window).width()) + 'px')
         this.el.css('height', (Game.el.width()) + 'px')
-        var td_width = Math.floor(((this.el.width()-20)/this.data.game.board_size) - 6)
-        var td_height = Math.floor(((this.el.height()-20)/this.data.game.board_size) - 6)
+        var td_width = Math.floor(((this.el.width()-16)/this.data.game.board_size) - 6)
+        var td_height = Math.floor(((this.el.height()-16)/this.data.game.board_size) - 6)
         
         var tr = $('<div class="row">')
         var td = ($('<div class="cell numeral numeral-topleft"> </div>'))
@@ -208,7 +208,10 @@ Game = {
                 
                 td.css('width', td_width)
                 td.css('height', td_height)
-                if (cell) td.css('background-color', '#' + cell['color'])
+                if (cell) {
+                    td.css('background-color', '#' + cell['color'])
+                    if (cell.image) td_inner.append($('<img class="tile-perm" src="' + cell.image + '" />'))
+                }
                 td.click(GameCell.cellClick)
                 column.push(td)
                 tr.append(td)
@@ -236,7 +239,7 @@ Game = {
                 td.find(".text-overlay").remove()
                 
                 var td_inner = $(td.find('.inner'))
-                td_inner.html("")
+                td_inner.find('.tile').remove()
                 td_inner.attr('class', 'inner')
                 td_inner.css('background-color', 'transparent')
                 var player = this.playerAt(row, col)
@@ -268,11 +271,11 @@ Game = {
                 {
                     td.addClass('your-cubicle selectable')
                     td.append($('<div class="text-overlay br">').html("Your Cubicle"))
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubeNoWall.png">'))
+                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubicles/cubeTopRight.png">'))
                 }
                 else if (cubicle)
                 {
-                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubeTopRightWall.png">'))
+                    td_inner.append($('<img class="tile" src="' + this.media_url + 'img/cubicles/cubeBottomLeft.png">'))
                 }
                 
                 //If there is a player here
