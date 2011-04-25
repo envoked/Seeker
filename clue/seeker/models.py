@@ -231,7 +231,7 @@ class Cell(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     color = models.CharField(max_length=6)
     image = models.ImageField(null=True, upload_to='img/board', blank=True)
-    COLOR_OPTIONS = ['cccccc', '006699', '666666', 'a0a0a0']
+    COLOR_OPTIONS = ['d1d3d4']
     
     def save(self, *args, **kwargs):
         if not self.color:

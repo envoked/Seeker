@@ -256,10 +256,11 @@ Game = {
                 if (cubicle)
                 {
                     td.addClass('a-cubicle').attr('cell', cubicle.id)
-                    if (this.knowsPlayer(cubicle.player_id))
+                    if (Game.knowsPlayer(cubicle.player_id))
                     {
-                        var owner = this.getById('players', cubicle.player_id)
-                        td.append($('<div class="text-overlay" style="top:2em">').html(owner.user.username))
+                        var owner = this.original_data.player_extra[cubicle.player_id]
+                        //td_inner.append($('<div class="text-overlay" style="top:2em">').html(owner.user.username))
+                        td_inner.css('background-color', '#' + owner.role.color)
                     }
                 } else {
                     //td_inner.append($('<img class="tile" src="' + this.media_url + 'img/empty.png" style="opacity:0.8;">'))
@@ -462,6 +463,8 @@ Game = {
     
     knowsPlayer: function(player_id)
     {
+        if (player_id == Game.original_data.me.id) return true;
+        
         for (var i in this.data.correct_guesses)
         {
             var guess =  this.data.correct_guesses[i]

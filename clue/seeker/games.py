@@ -124,12 +124,11 @@ class BoardGame:
         unkown_facts = 0
         for human in human_players:
             unkown_facts += human.unkown_facts()
-        print "UFFF", unkown_facts
-        
+            
         if unkown_facts == 0 and self.game.is_current:
             self.endgame()
             
-        return False
+        return unkown_facts == 0
     
     def endgame(self):
         self.game.is_current = False
