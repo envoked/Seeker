@@ -37,8 +37,8 @@ div.board div.cell {
 div.board div.numeral {
     text-align: center;
     vertical-align: middle;
-    background: #ccc;
-    color: #666;
+    background: #dcddde;
+    color: black;
     font-size: 11px;
 }
 
@@ -58,8 +58,8 @@ div.board div.numeral-topleft {
 
 div.board div.inner {
     position: relative;
-    height: 95%;
-    border: 3px solid #6e93b4;
+    height: 94%;
+    border: 3px solid #dcddde;
     background: transparent;
 }
 
