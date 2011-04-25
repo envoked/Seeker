@@ -28,8 +28,8 @@ Game.init({{ game.id }}, $('.board'), '{% media_url %}', {{ player.id }})
 
 {% block toolbar %}
     <a href="/lobby/help/" data-rel="dialog">Help</a>
-    <a href="#" onclick="Game.cluesForPlayer()">Clues</a>
-    <a id="show_alerts" onclick="Game.showAlerts()">Alerts</a>
-    <a href="#" onclick="Game.showGuesser()">Guess</a>
     <a href="#" onclick="Game.investigate()">Investigate</a>
+    <a id="show_alerts" onclick="Game.showAlerts()">Alerts</a>
+    <a href="#" onclick="Game.cluesForPlayer()">Clues</a>
+    <a href="#" onclick="Game.showGuesser()">Guess</a>
 {% endblock %}
